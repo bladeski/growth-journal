@@ -68,6 +68,17 @@ describe('PWAManager.isPWA', () => {
     // ensure referrer doesn't indicate Android app - use getter helper to override jsdom accessor
     setGetter(document, 'referrer', () => '');
 
+    // Diagnostic: assert which of the three checks is causing truthiness on CI
+    const mmMatches = window.matchMedia('(display-mode: standalone)').matches;
+    const navStandalone = (window.navigator as Navigator & { standalone?: boolean }).standalone;
+    const ref = document.referrer;
+    // log for CI visibility
+    // eslint-disable-next-line no-console
+    console.debug('diag: matchMedia.matches=', mmMatches, 'navigator.standalone=', navStandalone, 'referrer=', ref);
+
+    expect(mmMatches).toBe(false);
+    expect(navStandalone).toBeFalsy();
+    expect(ref.includes('android-app://')).toBe(false);
     expect(isPWA()).toBe(false);
   });
 });
