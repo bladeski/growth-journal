@@ -168,10 +168,17 @@ self.addEventListener('message', (event: MessageEvent<SwMessage>) => {
       typeof msg.payload === 'object' && msg.payload
         ? (msg.payload as Record<string, unknown>)
         : {};
+    console.log('SW: add request', { type: msg.type, store, item });
     openDB()
       .then((db) => addToStore(db, store, item))
-      .then(() => respond({ success: true }))
-      .catch((err) => respond({ success: false, error: String(err) }));
+      .then((key) => {
+        console.log('SW: addToStore result', { store, key });
+        respond({ success: true });
+      })
+      .catch((err) => {
+        console.error('SW: addToStore error', err);
+        respond({ success: false, error: String(err) });
+      });
     return;
   }
 

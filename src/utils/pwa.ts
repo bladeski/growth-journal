@@ -41,6 +41,18 @@ export class PWAManager {
           type: 'module',
         });
         console.log('Service Worker registered successfully:', registration);
+        // Diagnostic: log registration worker states to help debug 'active: null' cases
+        try {
+          console.log('SW registration state:', {
+            active: registration.active,
+            installing: registration.installing,
+            waiting: registration.waiting,
+            scope: registration.scope,
+            updateViaCache: registration.updateViaCache,
+          });
+        } catch (e) {
+          // ignore logging errors
+        }
 
         // Handle service worker updates
         registration.addEventListener('updatefound', () => {
