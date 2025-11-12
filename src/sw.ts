@@ -10,9 +10,9 @@ self.addEventListener('install', (event: ExtendableEvent) => {
     }),
   );
   // Immediately activate the new service worker instead of waiting
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  if (typeof self.skipWaiting === 'function') self.skipWaiting();
+  // Use a safe any-cast to access optional runtime-only APIs without ts-ignore
+  const swSelf: any = self;
+  if (typeof swSelf.skipWaiting === 'function') swSelf.skipWaiting();
 });
 
 // Fetch event - serve cached content when offline
@@ -70,9 +70,8 @@ self.addEventListener('activate', (event: ExtendableEvent) => {
     }),
   );
   // Claim clients immediately so the new SW controls pages without a navigation
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  if (typeof self.clients?.claim === 'function') self.clients.claim();
+  const swSelf2: any = self;
+  if (swSelf2.clients && typeof swSelf2.clients.claim === 'function') swSelf2.clients.claim();
 });
 
 // Background sync for journal entries (when connectivity is restored)

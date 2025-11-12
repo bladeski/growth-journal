@@ -71,8 +71,8 @@ export class PWAManager {
       this.showInstallButton();
       // Helpful debug: expose on window for quick manual invocation in console
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      window.__deferredPwaPrompt = e;
+      // expose on window for quick manual invocation in console (typed as any)
+      (window as any).__deferredPwaPrompt = e;
     });
   }
 

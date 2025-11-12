@@ -38,8 +38,13 @@ export class IndexedDbDataService implements IDataService {
         resolve(data);
       };
 
-      // @ts-expect-error: controller exists check above
-      navigator.serviceWorker.controller.postMessage({ type, payload }, [channel.port2]);
+      // Use an explicit cast to any to access controller.postMessage safely
+      const controller = (navigator.serviceWorker as any).controller;
+      if (controller && typeof controller.postMessage === 'function') {
+        controller.postMessage({ type, payload }, [channel.port2]);
+      } else {
+        resolve({ success: false, error: 'Service worker controller missing' });
+      }
     });
   }
 
