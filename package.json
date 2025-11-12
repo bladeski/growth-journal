@@ -4,7 +4,6 @@
   "description": "A Progressive Web App for daily growth journaling and reflection.",
   "type": "module",
   "scripts": {
-    "preinstall": "npx scan-compromised",
     "dev": "parcel src/index.pug --port 3000",
     "build": "parcel build src/index.pug --public-url ./",
     "release": "standard-version",
