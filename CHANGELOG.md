@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/bladeski/growth-journal/compare/v0.0.5...v0.0.6) (2025-11-12)
+
+
+### Bug Fixes
+
+* wrap list items in reflection tips with unordered lists for better structure ([8114dc3](https://github.com/bladeski/growth-journal/commit/8114dc33aaf9c8a25335ac0264ed51eacbb18dd0))
+
 ### [0.0.5](https://github.com/bladeski/growth-journal/compare/v0.0.4...v0.0.5) (2025-11-12)
 
 
