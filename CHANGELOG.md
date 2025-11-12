@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/bladeski/growth-journal/compare/v0.0.6...v0.0.7) (2025-11-12)
+
+
+### Bug Fixes
+
+* improve date handling in IndexedDB for time-keyed stores and enhance test readability ([123c4d1](https://github.com/bladeski/growth-journal/commit/123c4d1045baf52e98df344ab4160db3af78fc9b))
+
 ### [0.0.6](https://github.com/bladeski/growth-journal/compare/v0.0.5...v0.0.6) (2025-11-12)
 
 
