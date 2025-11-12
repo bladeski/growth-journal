@@ -278,6 +278,34 @@ function addToStore(
   return new Promise((resolve, reject) => {
     const tx = db.transaction(storeName, 'readwrite');
     const store = tx.objectStore(storeName);
+    // For time-keyed stores (daily/weekly/monthly checkins), prefer using the date as
+    // the primary key so records are written/read by date instead of an auto-increment id.
+    // This keeps existing schema (keyPath: 'id') but assigns the 'id' value to the
+    // ISO date string when present, so add/put will create a stable key per date.
+    try {
+      const timeStores = new Set(['morning', 'midday', 'evening', 'weekly', 'monthly']);
+      // prefer canonical 'date', but fall back to 'check_date' or 'entry_date' used elsewhere
+      const d =
+        (typeof item.date === 'string' && item.date) ||
+        (typeof item.check_date === 'string' && item.check_date) ||
+        (typeof item.entry_date === 'string' && item.entry_date) ||
+        undefined;
+      if (timeStores.has(storeName)) {
+        // If no date provided, default to today's ISO date so today's checkins are keyed by date
+        const finalDate = d || new Date().toISOString().slice(0, 10);
+        if (finalDate) {
+          // ensure the id uses the date string so subsequent lookups keyed by date are stable
+          // also ensure the canonical 'date' field exists for index lookups
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (item as any).id = finalDate;
+          // populate the date field if missing
+          if (!(item as any).date) (item as any).date = finalDate;
+        }
+      }
+    } catch (e) {
+      // ignore assignment errors and proceed to add
+    }
+
     const req = store.add(item as unknown);
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);

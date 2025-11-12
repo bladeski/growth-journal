@@ -27,7 +27,7 @@ describe('normalizeReflections (dryRun)', () => {
     const origSet = proto.setEveningReflection;
     // assign our mocks
     proto.getEveningReflection = getEveningReflection as unknown as (
-      date: string
+      date: string,
     ) => Promise<unknown>;
     proto.setEveningReflection = setEveningReflection as unknown as (rec: unknown) => Promise<void>;
 

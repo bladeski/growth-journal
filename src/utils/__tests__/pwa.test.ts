@@ -55,7 +55,11 @@ describe('PWAManager.isPWA', () => {
 
   test('returns true when display-mode is standalone', () => {
     // assign test doubles using robust helper
-    setProp(window, 'matchMedia', (query: string) => ({ matches: true, media: query }) as MediaQueryList);
+    setProp(
+      window,
+      'matchMedia',
+      (query: string) => ({ matches: true, media: query }) as MediaQueryList,
+    );
     setProp(window, 'navigator', { standalone: false } as Navigator & { standalone?: boolean });
 
     expect(isPWA()).toBe(true);
