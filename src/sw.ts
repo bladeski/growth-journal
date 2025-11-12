@@ -3,14 +3,45 @@ const urlsToCache = ['/', '/index.html', '/index.js', '/styles/styles.css', '/ma
 
 // Install event - cache resources
 self.addEventListener('install', (event: ExtendableEvent) => {
+  // Normalize cache URLs relative to the service worker script location
+  const scopeBase = new URL('.', self.location.href).toString();
+  const normalizedUrls = urlsToCache.map((p) => {
+    // If it's already an absolute URL, keep it
+    try {
+      const u = new URL(p);
+      if (u.protocol === 'http:' || u.protocol === 'https:') return u.toString();
+    } catch (e) {
+      // not an absolute URL - fall through
+    }
+    // Remove any leading slash so resolution is relative to scopeBase (not origin root)
+    const trimmed = p.replace(/^\//, '');
+    return new URL(trimmed, scopeBase).toString();
+  });
+
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Opened cache');
-      return cache.addAll(urlsToCache);
-    }),
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+      console.log('Opened cache', CACHE_NAME, 'base:', scopeBase);
+      try {
+        await cache.addAll(normalizedUrls);
+        console.log('All assets cached successfully');
+      } catch (err) {
+        // addAll failed for at least one request - try to add items individually
+        console.warn('cache.addAll failed, falling back to per-item add', err);
+        for (const url of normalizedUrls) {
+          try {
+            await cache.add(url);
+            console.log('Cached', url);
+          } catch (e) {
+            // Log and continue - do not fail the install because missing a non-critical asset
+            console.warn('Failed to cache', url, e);
+          }
+        }
+      }
+    })(),
   );
+
   // Immediately activate the new service worker instead of waiting
-  // Use a safe any-cast to access optional runtime-only APIs without ts-ignore
   const swSelf: any = self;
   if (typeof swSelf.skipWaiting === 'function') swSelf.skipWaiting();
 });
