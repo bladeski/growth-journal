@@ -9,7 +9,7 @@ import type {
   IMonthlyReflectionData,
   IDataService,
   IEveningQuestionsData,
-} from '../interfaces';
+} from '../interfaces/index';
 
 type IdbResponse<T> = { success: true; items?: T } | { success: false; error: string };
 

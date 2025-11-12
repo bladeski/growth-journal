@@ -1,5 +1,5 @@
 import IndexedDbDataService from '../IndexedDbDataService';
-import type { IEveningCheckinData } from '../../interfaces';
+import type { IEveningCheckinData } from '../../interfaces/index';
 
 export type NormalizeOptions = {
   daysBack?: number; // how many days back to scan (default 3650)

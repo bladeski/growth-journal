@@ -1,4 +1,4 @@
-import { IGrowthIntentionData } from '../interfaces';
+import { IGrowthIntentionData } from '../interfaces/index';
 
 const GrowthIntentionData: IGrowthIntentionData[] = [
   // Week 1: Self-Awareness & Emotional Regulation

@@ -3,11 +3,13 @@ import { isPWA } from '../pwa-static';
 describe('PWAManager.isPWA', () => {
   const originalMatchMedia = window.matchMedia;
   const originalNavigator = window.navigator;
+  const originalReferrer = document.referrer;
 
   afterEach(() => {
     // restore
     Object.defineProperty(window, 'matchMedia', { value: originalMatchMedia, configurable: true });
     Object.defineProperty(window, 'navigator', { value: originalNavigator, configurable: true });
+    Object.defineProperty(document, 'referrer', { value: originalReferrer, configurable: true });
   });
 
   test('returns true when display-mode is standalone', () => {
@@ -34,8 +36,8 @@ describe('PWAManager.isPWA', () => {
       configurable: true,
     });
 
-    // ensure referrer doesn't indicate Android app
-    Object.defineProperty(document, 'referrer', { value: '', configurable: true });
+  // ensure referrer doesn't indicate Android app - define a getter to override jsdom accessor
+  Object.defineProperty(document, 'referrer', { get: () => '', configurable: true });
 
     expect(isPWA()).toBe(false);
   });
