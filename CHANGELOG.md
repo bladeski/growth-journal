@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.10](https://github.com/bladeski/growth-journal/compare/v0.0.9...v0.0.10) (2025-11-12)
+
+
+### Bug Fixes
+
+* normalize cache URLs in service worker installation and improve caching error handling ([b1af1cc](https://github.com/bladeski/growth-journal/commit/b1af1cc17d75636761245480792b3eb1107f053d))
+
 ### [0.0.9](https://github.com/bladeski/growth-journal/compare/v0.0.8...v0.0.9) (2025-11-12)
 
 
