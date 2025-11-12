@@ -1,79 +1,51 @@
-# 🛠️ TypeScript Project Template
+# Growth Journal
 
-A minimal, practical starter for building small browser apps with TypeScript and Web Components using Parcel. Includes example component, Pug templates, and a simple BaseComponent to accelerate development.
+A Progressive Web App for daily growth journaling and reflection. This repository contains the client-side PWA: Web Components written in TypeScript, built with Parcel, and designed for offline-first usage via a Service Worker and IndexedDB.
 
----
+Short quick-start
 
-## What this project is
+1. Install
 
-- Opinionated small app template using Parcel v2, TypeScript, Pug templates and CSS.
-- Contains a BaseComponent class that:
-  - accepts a template (template id or template function),
-  - accepts initial props,
-  - proxies `this.props` so direct assignments (e.g. `this.props.count = 1`) update the DOM,
-  - accepts inline or external styles to inject into the shadow root,
-  - performs a one-time template setup and incremental updates thereafter.
-- ExampleComponent demonstrates usage and how to import CSS/Pug as strings for use inside components.
-
----
-
-## 🚀 Quick Start
-
-1. Clone
-```bash
-git clone https://github.com/bladeski/basic-template.git
-cd basic-template
-```
-2. Install
-```bash
+```powershell
 npm install
 ```
-3. Develop
-```bash
+
+2. Develop
+
+```powershell
 npm run dev
 ```
-4. Build
-```bash
-npm run build
-```
-5. Test (if enabled)
-```bash
-npm run test
+
+3. Build
+
+```powershell
+npm run build:pwa
 ```
 
----
+4. Lint/format
 
-## 📂 Project structure (important files)
-* `src/index.pug` — app entry (imports component templates).
-* `src/components/BaseComponent.ts` — shared base class.
-* `src/components/ExampleComponent/ExampleComponent.pug` — component * template.
-* `src/components/ExampleComponent/ExampleComponent.ts` — component implementation.
-* `src/styles/` — global design tokens and utilities.
-* `src/types/bundle-text.d.ts` — declaration for bundle-text: imports.
+```powershell
+npm run lint
+npm run format
+```
 
----
+Project highlights
 
-## ⚙️ Included scripts
-- npm run dev — run in watch/development mode
-- npm run build — compile TypeScript to dist/
-- npm run lint — run ESLint
-- npm run test — run Jest (if configured)
+- PWA-ready: `manifest.json` + `sw.ts` (service worker manages an IndexedDB instance)
+- Offline-first data: `src/data/IndexedDbDataService.ts` proxies requests to the service worker
+- Web Components: lightweight components under `src/components`
+- Seed data: `src/data/GrowthIntentions.ts` contains starter intentions
 
----
+Project structure (selected files)
 
-## 💡 Tips
-- Adjust tsconfig.json targets and module settings for your environment
-- Add environment variables in .env and share .env.example
-- Keep dependencies updated with npm outdated / npm update
+- `src/index.pug` — entry HTML template
+- `src/index.ts` — app bootstrap and PWA registration
+- `src/sw.ts` — service worker (module)
+- `src/data` — data services & seed data
+- `src/components` — Web Components
+- `src/interfaces` — TypeScript interfaces (data shapes)
+- `src/styles` — shared CSS variables and styles
 
----
+If you plan to publish this app, run `npm run build:pwa` and deploy the contents of `dist/` to a static host.
 
-## Contributing & Extending
-Extend BaseComponent for common behavior.
-Use component-level CSS variables (design tokens in src/styles) to theme components.
-Add unit tests for components using your preferred test runner.
-
----
-
-## 📜 License
-MIT
+License: MIT
