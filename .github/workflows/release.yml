@@ -44,6 +44,9 @@ jobs:
         id: bump
         run: |
           # standard-version uses conventional commits to determine the next version
+          # ensure git has an identity in the runner so commits succeed
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           npx standard-version
 
       - name: Get new tag and top changelog entry
