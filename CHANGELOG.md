@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/bladeski/growth-journal/compare/v0.0.4...v0.0.5) (2025-11-12)
+
+
+### Bug Fixes
+
+* add id-token permission for workflow ([cae395a](https://github.com/bladeski/growth-journal/commit/cae395a21a2f8080726d454815e1147d8008b23c))
+
 ### [0.0.4](https://github.com/bladeski/growth-journal/compare/v0.0.3...v0.0.4) (2025-11-12)
 
 
