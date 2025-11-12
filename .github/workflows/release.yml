@@ -26,19 +26,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: 'yarn'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install dependencies (yarn)
+        run: yarn install --frozen-lockfile
 
       - name: Run linter
-        run: npm run lint
+        run: yarn lint
 
       - name: Run tests (if present)
-        run: npm run test --if-present
+        run: yarn test --if-present
 
       - name: Build
-        run: npm run build
+        run: yarn build
 
       - name: Bump version and generate changelog (standard-version)
         id: bump
@@ -65,7 +65,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md package.json package-lock.json 2>/dev/null || true
+          git add CHANGELOG.md package.json yarn.lock 2>/dev/null || true
           # commit only if there are changes (standard-version already committed and tagged locally, but in case)
           if ! git diff --staged --quiet; then
             git commit -m "chore(release): update changelog and package version" || true
