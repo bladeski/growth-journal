@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.8](https://github.com/bladeski/growth-journal/compare/v0.0.7...v0.0.8) (2025-11-12)
+
+
+### Bug Fixes
+
+* enhance service worker handling and improve response validation in IndexedDbDataService ([dc90eaa](https://github.com/bladeski/growth-journal/commit/dc90eaacb6c4d80c4b74268e452990db10c69ae7))
+
 ### [0.0.7](https://github.com/bladeski/growth-journal/compare/v0.0.6...v0.0.7) (2025-11-12)
 
 
