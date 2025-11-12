@@ -20,29 +20,61 @@ type IdbResponse<T> = { success: true; items?: T } | { success: false; error: st
  */
 export class IndexedDbDataService implements IDataService {
   private static ensureSW(): ServiceWorker | null {
-    if (!navigator.serviceWorker || !navigator.serviceWorker.controller) return null;
-    return navigator.serviceWorker.controller;
+    // If the current page is controlled by a service worker, return its controller.
+    // In deployed environments the page may not be immediately controlled after registration;
+    // callers should use postMessage which also attempts to use the active registration when needed.
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      return navigator.serviceWorker.controller;
+    }
+    return null;
   }
 
-  private static postMessage<TResult = unknown>(
+  private static async postMessage<TResult = unknown>(
     type: string,
     payload?: unknown,
   ): Promise<IdbResponse<TResult>> {
-    return new Promise((resolve) => {
-      const sw = IndexedDbDataService.ensureSW();
-      if (!sw) return resolve({ success: false, error: 'No active service worker' });
+    // Try to use the controller first. If none, wait for the service worker to be ready
+    // and use the active worker from the registration. This handles deployed pages that
+    // registered the SW but are not yet controlled.
+    let sw: ServiceWorker | null = IndexedDbDataService.ensureSW();
 
+    if (!sw && 'serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        if (registration) {
+          sw = registration.active || registration.installing || registration.waiting || null;
+        } else {
+          sw = null;
+        }
+      } catch (e) {
+        // ignore and fall through to error reply below
+      }
+    }
+
+    if (!sw) return { success: false, error: 'No active service worker' };
+
+    return await new Promise<IdbResponse<TResult>>((resolve) => {
       const channel = new MessageChannel();
-      channel.port1.onmessage = (ev) => {
-        const data = ev.data.payload as IdbResponse<TResult>;
-        resolve(data);
+      let responded = false;
+      const timeout = setTimeout(() => {
+        if (!responded) resolve({ success: false, error: 'Service worker response timeout' });
+      }, 5000);
+
+      channel.port1.onmessage = (ev: MessageEvent) => {
+        responded = true;
+        clearTimeout(timeout);
+        const data =
+          (ev.data && (ev.data.payload as IdbResponse<TResult>)) ||
+          (ev.data as IdbResponse<TResult> | undefined);
+        if (data) return resolve(data);
+        return resolve({ success: false, error: 'Invalid response from service worker' });
       };
-      // Use the ensured ServiceWorker (sw) to post the message; it implements postMessage
+
       try {
         sw.postMessage({ type, payload }, [channel.port2]);
       } catch (err) {
-        // if postMessage isn't available for some reason, fail gracefully
-        resolve({ success: false, error: String(err) });
+        clearTimeout(timeout);
+        if (!responded) resolve({ success: false, error: String(err) });
       }
     });
   }
