@@ -1,0 +1,106 @@
+.checkin-container
+  checkin-header#evening-header(
+    data-prop:title="Evening Integration"
+    data-prop:description="Reflect on your day and integrate your learnings"
+    data-prop:coreValue="{{coreValue}}"
+    data-prop:intention="{{intention}}"
+  )
+
+  .checkin-body
+    reflection-tips(data-prop:title="Evening Integration Tips")
+      li End your day by acknowledging your growth in
+      li Notice patterns without harsh self-judgment
+      li Tomorrow is a fresh opportunity to practice
+      li Empathy includes being kind to yourself
+      li Celebrating small wins builds momentum for lasting change
+
+    .checkin-main
+      card-component
+        form.checkin-form(data-action="submit:handleSubmit" novalidate)
+          message-component#error-message(
+            data-prop:type="error"
+            data-prop:role="alert"
+            data-prop:aria-live="assertive"
+          )
+          message-component#success-message(
+            data-prop:type="success"
+            data-prop:role="status"
+            data-prop:aria-live="polite"
+          )
+
+          .form-group.required
+            label(for="what-went-well")
+              span.label-text {{whatWentWellQuestion}}
+              span.label-hint Celebrate something positive from your day, big or small
+            textarea(
+              id="what-went-well"
+              name="what_went_well"
+              rows="3"
+              placeholder="Reflect on how you practiced today's intention..."
+              data-action="input:updateWhatWentWell"
+              required
+              minlength="10"
+              aria-required="true"
+            )
+
+          .form-group
+            label(for="defensive-moments")
+              span.label-text {{defensiveMomentsQuestion}}
+              span.label-hint Notice patterns of reactivity without judgment
+            textarea(
+              id="defensive-moments"
+              name="defensive_moments"
+              rows="3"
+              placeholder="Reflect on today's growth opportunity..."
+              data-action="input:updateDefensiveMoments"
+              minlength="5"
+            )
+
+          .form-group
+            label(for="better-response")
+              span.label-text How could I apply {{coreValueLower}} better next time?
+              span.label-hint What would a compassionate, curious response look like?
+            textarea(
+              id="better-response"
+              name="better_response"
+              rows="3"
+              placeholder="Think about how today's core value could guide your response..."
+              data-action="input:updateBetterResponse"
+              minlength="5"
+            )
+
+          .form-group.required
+            label(for="empathy-practice")
+              span.label-text {{empathyPracticeQuestion}}
+              span.label-hint Reflect on moments when you connected with others' experiences
+            textarea(
+              id="empathy-practice"
+              name="empathy_practice"
+              rows="3"
+              placeholder="Consider how today's focus helped you connect with others..."
+              data-action="input:updateEmpathyPractice"
+              required
+              minlength="10"
+              aria-required="true"
+            )
+
+          .form-group.required
+            label(for="small-win")
+              span.label-text {{smallWinQuestion}}
+              span.label-hint What's one thing you did today that you're proud of?
+            textarea(
+              id="small-win"
+              name="small_win"
+              rows="3"
+              placeholder="Celebrate a moment where you practiced today's intention..."
+              data-action="input:updateSmallWin"
+              required
+              minlength="5"
+              aria-required="true"
+            )
+
+          .form-actions
+            button(type="submit" class="btn btn-primary")
+              | {{submitButtonText}}
+            button(type="button" class="btn btn-secondary" data-action="click:cancel")
+              | Cancel

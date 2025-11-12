@@ -3,12 +3,18 @@
 }
 
 html,
-body,
+body {
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-body);
+  font-size: 18px;
+}
+
 button,
 input,
 select,
 textarea {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-family-ui);
+  font-weight: var(--font-weight-body);
 }
 
 button {
@@ -19,8 +25,8 @@ button {
   padding: calc(var(--space-sm) - 2px) var(--space-md);
   font-size: var(--font-size-md);
   border-radius: var(--radius-sm);
-  border: var(--border-width) solid var(--color-border);
-  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  background: transparent;
   color: var(--color-text);
   height: var(--button-height);
 
@@ -33,12 +39,13 @@ button {
 .btn-primary {
   background: var(--color-primary);
   color: var(--color-primary-contrast);
-  border-color: transparent;
+  border-color: var(--color-primary);
 }
 
 /* Headings — sizes, comfortable line-height and spacing */
 h1,
 .h1 {
+  font-family: var(--font-family-heading);
   font-size: var(--heading-1);
   line-height: 1.1;
   margin: var(--heading-margin-top) 0 var(--heading-margin-bottom);
@@ -48,45 +55,209 @@ h1,
 
 h2,
 .h2 {
+  font-family: var(--font-family-heading);
   font-size: var(--heading-2);
   line-height: 1.15;
   margin: calc(var(--heading-margin-top) / 1.25) 0 calc(var(--heading-margin-bottom) / 1.25);
   padding: calc(var(--heading-padding-vertical) / 1.25) 0;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 h3,
 .h3 {
+  font-family: var(--font-family-heading);
   font-size: var(--heading-3);
   line-height: 1.2;
   margin: calc(var(--heading-margin-top) / 1.5) 0 calc(var(--heading-margin-bottom) / 1.5);
   padding: 0;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 h4,
 .h4 {
+  font-family: var(--font-family-heading);
   font-size: var(--heading-4);
   line-height: 1.25;
   margin: calc(var(--heading-margin-top) / 2) 0 calc(var(--heading-margin-bottom) / 2);
   padding: 0;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 h5,
 .h5 {
+  font-family: var(--font-family-heading);
   font-size: var(--heading-5);
   line-height: 1.3;
   margin: calc(var(--heading-margin-top) / 2.5) 0 calc(var(--heading-margin-bottom) / 2.5);
   padding: 0;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 h6,
 .h6 {
+  font-family: var(--font-family-heading);
   font-size: var(--heading-6);
   line-height: 1.35;
   margin: calc(var(--heading-margin-top) / 3) 0 calc(var(--heading-margin-bottom) / 3);
   padding: 0;
+  font-weight: 700;
+}
+
+/* Global text and heading color rules */
+body,
+body * {
+  color: var(--color-text);
+}
+
+/* Headings should use the accent colour */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-accent);
+}
+
+.form-group {
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.form-group:has(:required) .label-text::after {
+  content: " *";
+  color: var(--color-danger);
+  font-weight: bold;
+}
+
+.label-text {
+  display: block;
   font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
+  font-size: 1.2rem;
+}
+
+.label-hint {
+  display: block;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='date'],
+input[type='time'],
+input[type='datetime-local'],
+input[type='url'],
+input[type='tel'],
+input[type='search'],
+select {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-family: inherit;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+input[type='text']:focus,
+input[type='email']:focus,
+input[type='password']:focus,
+input[type='number']:focus,
+input[type='date']:focus,
+input[type='time']:focus,
+input[type='datetime-local']:focus,
+input[type='url']:focus,
+input[type='tel']:focus,
+input[type='search']:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+  box-shadow: var(--card-shadow);
+  transform: translateY(-2px);
+}
+
+textarea {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-family: inherit;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  resize: vertical;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  min-height: 120px;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+  box-shadow: var(--card-shadow);
+  transform: translateY(-2px);
+}
+
+/* Two-column checkin body: left tips rail + right main form */
+.checkin-body {
+  display: grid;
+  grid-template-columns: minmax(var(--checkin-tips-width), 1fr) minmax(500px, 1100px) minmax(var(--checkin-tips-width), 1fr);
+  gap: var(--checkin-body-gap);
+  align-items: start;
+  width: 100%;
+  padding: var(--spacing-lg)
+}
+
+/* Main column containing the question + form */
+.checkin-main {
+  min-width: 0;
+}
+
+.checkin-main .form-container {
+  width: 100%;
+  max-width: 900px;
+  box-shadow: var(--form-shadow);
+  background: var(--color-surface);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  border: var(--form-border);
+}
+
+/* Keep messages above form and visible when populated */
+.checkin-main .error-message,
+.checkin-main .success-message {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Responsive: collapse to single column on narrow screens */
+@media (max-width: 800px) {
+  .checkin-body {
+    display: block;
+  }
+  
+  .checkin-tips { 
+    position: static; 
+    width: 100%; 
+    margin: 0 0 var(--spacing-md) 0; 
+    top: auto; 
+  }
+  
+  .checkin-main .form-container { 
+    max-width: 100%; 
+    padding: var(--spacing-md); 
+  }
 }

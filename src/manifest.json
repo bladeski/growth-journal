@@ -1,0 +1,83 @@
+{
+  "name": "Growth Journal",
+  "short_name": "GrowthJournal",
+  "description": "A Progressive Web App for daily growth journaling and reflection",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2196f3",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "lifestyle"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "icons/icon-72-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-96-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-128-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-144-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-152-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-192-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "icons/icon-512-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Entry",
+      "short_name": "New Entry",
+      "description": "Create a new journal entry",
+      "url": "/new-entry",
+      "icons": [
+        {
+          "src": "icons/icon-192-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Reflect",
+      "short_name": "Reflect",
+      "description": "View reflection dashboard",
+      "url": "/reflect",
+      "icons": [
+        {
+          "src": "icons/icon-192-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

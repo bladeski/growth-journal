@@ -1,0 +1,80 @@
+.checkin-container
+  checkin-header#midday-header(
+    data-prop:title="Midday Reflection"
+    data-prop:coreValue="{{coreValue}}"
+    data-prop:intention="{{intention}}"
+  )
+
+  .checkin-body
+    reflection-tips(data-prop:title="Reflection Tips")
+      li Growth happens when we pause and notice our patterns
+      li Your intention for today is about
+      li Notice without judgment - awareness is the first step
+      li Ask yourself: "How can I practice this in this moment?"
+      li Be compassionate with yourself as you learn and grow
+
+    .checkin-main
+      card-component
+        form.checkin-form(data-action="submit:handleSubmit" novalidate)
+          // feedback messages (placed above the fields so they're visible immediately)
+          message-component#error-message(
+            data-prop:type="error"
+            data-prop:role="alert"
+            data-prop:aria-live="assertive"
+          )
+          message-component#success-message(
+            data-prop:type="success"
+            data-prop:role="status"
+            data-prop:aria-live="polite"
+          )
+
+          .form-group
+            label(for="defensive-moment")
+              span.label-text How did I practice my intention today?
+              span.label-hint Describe a moment where you practiced (or could have practiced) today's focus
+            textarea(
+              id="defensive-moment"
+              name="defensive_moment"
+              rows="3"
+              placeholder="e.g., When someone questioned my idea, I tried to pause before responding..."
+              data-action="input:updateDefensiveMoment"
+              required
+              minlength="10"
+              aria-required="true"
+            )
+
+          .form-group
+            label(for="initial-thought")
+              span.label-text What thoughts or feelings came up?
+              span.label-hint What was your immediate reaction or inner dialogue?
+            textarea(
+              id="initial-thought"
+              name="initial_thought"
+              rows="3"
+              placeholder="e.g., I felt defensive and wanted to prove I was right..."
+              data-action="input:updateInitialThought"
+              required
+              minlength="10"
+              aria-required="true"
+            )
+
+          .form-group
+            label(for="healthier-reframe")
+              span.label-text How could I apply today's core value next time?
+              span.label-hint How would focusing on {{coreValueLower}} change your approach?
+            textarea(
+              id="healthier-reframe"
+              name="healthier_reframe"
+              rows="3"
+              placeholder="e.g., I could pause and ask questions to understand their perspective better..."
+              data-action="input:updateHealthierReframe"
+              required
+              minlength="10"
+              aria-required="true"
+            )
+
+          .form-actions
+            button(type="submit" class="btn btn-primary")
+              | {{submitButtonText}}
+            button(type="button" class="btn btn-secondary" data-action="click:cancel")
+              | Cancel

@@ -27,6 +27,11 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
+"@bladeski/logger@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@bladeski/logger/-/logger-1.0.3.tgz#15468fa9844e695cab704d86117d132b95378d40"
+  integrity sha512-4HAODvDKyut/LgZ01sBGzRJPB0fh5ngse1eqgrKmlMC6g+tt9rB7xn1MF/D04qnZJv/W2fSrm6wjZEGWBPTFwQ==
+
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0":
   version "4.9.0"
   resolved "https://registry.yarnpkg.com/@eslint-community/eslint-utils/-/eslint-utils-4.9.0.tgz#7308df158e064f0dd8b8fdb58aa14fa2a7f913b3"
@@ -485,6 +490,14 @@
     globals "^13.24.0"
     nullthrows "^1.1.1"
 
+"@parcel/packager-raw-url@2.16.0":
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/@parcel/packager-raw-url/-/packager-raw-url-2.16.0.tgz#f9e1efeade61e1b8e4393c0768e2b8947ee13073"
+  integrity sha512-03P3gN/xi4Nf45IX1GSdm7heD4XdhjoTEqWYOvyVOyxKDsiM4IYivswviP7UOzxmP2eX+JRCB2K3w2T+XgIAqA==
+  dependencies:
+    "@parcel/plugin" "2.16.0"
+    "@parcel/utils" "2.16.0"
+
 "@parcel/packager-raw@2.16.0":
   version "2.16.0"
   resolved "https://registry.yarnpkg.com/@parcel/packager-raw/-/packager-raw-2.16.0.tgz#07e6c36c9ca05cde02a45f2fa4b943355c418593"
@@ -804,6 +817,16 @@
     "@parcel/plugin" "2.16.0"
     "@parcel/rust" "2.16.0"
 
+"@parcel/transformer-webmanifest@2.16.0":
+  version "2.16.0"
+  resolved "https://registry.yarnpkg.com/@parcel/transformer-webmanifest/-/transformer-webmanifest-2.16.0.tgz#5bbdf777ccda975d720c3134927903d49f2b252f"
+  integrity sha512-v5+xNQvjYFOjVOgvXoDn2ulnujo+Qc9hkZeD40sNt0F+HIZIvyCuCXzpb1M7PaTeJXHhqsCyu9TDKFq4bBKPAw==
+  dependencies:
+    "@mischnic/json-sourcemap" "^0.1.1"
+    "@parcel/diagnostic" "2.16.0"
+    "@parcel/plugin" "2.16.0"
+    "@parcel/utils" "2.16.0"
+
 "@parcel/types-internal@2.16.0":
   version "2.16.0"
   resolved "https://registry.yarnpkg.com/@parcel/types-internal/-/types-internal-2.16.0.tgz#0476cfdcc80ab53bae0ab660ba1932e0c6943d0a"
@@ -1034,6 +1057,11 @@
   version "2.0.10"
   resolved "https://registry.yarnpkg.com/@types/pug/-/pug-2.0.10.tgz#52f8dbd6113517aef901db20b4f3fca543b88c1f"
   integrity sha512-Sk/uYFOBAB7mb74XcpizmH0KOR2Pv3D2Hmrh1Dmy5BmK3MpdSa5kqZcg6EKBdklU0bFXX9gCfzvpnyUehrPIuA==
+
+"@types/serviceworker@^0.0.167":
+  version "0.0.167"
+  resolved "https://registry.yarnpkg.com/@types/serviceworker/-/serviceworker-0.0.167.tgz#f5ef50aaff9038223a5336da0d99c515e862b696"
+  integrity sha512-Np7fMd3niW5oL4Jz1A1T7pX5ZYriQJ6mob2g476RN47RqObajLkPjhPc4cnRpbEftsJLiIA0f7emykckcDxMxA==
 
 "@typescript-eslint/eslint-plugin@^7.0.0":
   version "7.18.0"

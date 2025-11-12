@@ -1,0 +1,64 @@
+.dashboard-container
+  header.app-header
+    .header-content
+      .app-title
+        img.app-logo(src="../../images/logo.svg" alt="Growth Journal Logo")
+        h1 Growth Journal
+      .header-actions
+        button.btn-primary(data-action="click:viewAnalytics") Analytics
+        button.btn-secondary(data-action="click:openPersonalGrowth") Growth Journal
+        button.btn-secondary(data-action="click:newWeeklyReview") Weekly
+        button.btn-secondary(data-action="click:newMonthlyReflection") Monthly
+    .header-progress-bar
+      .header-progress-fill(data-progress="{{completionPercentage}}")
+  
+  .dashboard-content
+    .dashboard-grid
+      card-component.today-progress
+        span(slot="title") Today's Check-ins
+        .checkin-status
+          .checkin-item.morning-item(class="{{morningCompleted ? 'completed' : ''}}" data-action="click:newMorningCheckin")
+            .checkin-label Morning Intentions
+            .checkin-status-text {{morningStatusText}}
+          
+          .checkin-item.midday-item(class="{{middayCompleted ? 'completed' : ''}}" data-action="click:newMiddayCheckin")
+            .checkin-label Midday Reflection
+            .checkin-status-text {{middayStatusText}}
+          
+          .checkin-item.evening-item(class="{{eveningCompleted ? 'completed' : ''}}" data-action="click:newEveningCheckin")
+            .checkin-label Evening Integration
+            .checkin-status-text {{eveningStatusText}}
+      
+      card-component.activity-summary
+        span(slot="title") Recent Activity (7 days)
+        .activity-stats
+          .activity-stat
+            .stat-value {{recentMorningCount}}
+            .stat-label Morning Check-ins
+          
+          .activity-stat
+            .stat-value {{recentMiddayCount}}
+            .stat-label Midday Reflections
+          
+          .activity-stat
+            .stat-value {{recentEveningCount}}
+            .stat-label Evening Integrations
+      
+      card-component.recent-insights
+        span(slot="title") Recent Insights
+        .insights-list
+      
+      card-component.periodic-checkins
+        span(slot="title") Periodic Check-ins
+        .periodic-stats
+            .periodic-item
+              .period-label This Week
+              .period-right
+                .period-count {{weeklyCount}} weekly reviews
+                button.btn-secondary(data-action="click:newWeeklyReview") Add Weekly Review
+          
+            .periodic-item
+              .period-label This Month
+              .period-right
+                .period-count {{monthlyCount}} monthly reflections
+                button.btn-secondary(data-action="click:newMonthlyReflection") Add Monthly Reflection

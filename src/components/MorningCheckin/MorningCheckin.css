@@ -1,0 +1,22 @@
+.checkin-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
+  position: relative;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.checkin-form {
+  max-width: 900px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .checkin-container {
+    padding: var(--spacing-md);
+    max-width: 100%;
+  }
+}

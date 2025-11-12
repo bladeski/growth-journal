@@ -1,0 +1,35 @@
+.checkin-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+.question-text {
+  color: var(--color-text);
+  font-style: italic;
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+  margin: 0 0 var(--space-md) 0;
+  font-weight: 500;
+}
+
+.checkin-form h3 {
+  margin: 0 0 var(--spacing-md) 0;
+  color: rgb(var(--primary-colour-rgb));
+}
+
+@media (max-width: 768px) {
+  .checkin-container {
+    padding: var(--spacing-md);
+    gap: var(--spacing-lg);
+  }
+  
+  .checkin-header h2 {
+    font-size: var(--heading-1);
+  }
+}

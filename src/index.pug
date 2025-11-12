@@ -3,11 +3,33 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    title Basic Template
+    meta(name="description" content="A Progressive Web App for daily growth journaling and reflection")
+    meta(name="theme-color" content="#2196f3")
+    
+    // PWA Meta Tags
+    link(rel="manifest" href="./manifest.json")
+    
+    // iOS Meta Tags
+    meta(name="mobile-web-app-capable" content="yes")
+    meta(name="apple-mobile-web-app-status-bar-style" content="default")
+    meta(name="apple-mobile-web-app-title" content="Growth Journal")
+    link(rel="apple-touch-icon" href="icons/icon-152-152.png")
+    
+    // Windows Meta Tags
+    meta(name="msapplication-TileImage" content="icons/icon-144-144.png")
+    meta(name="msapplication-TileColor" content="#2196f3")
+    
+    title Growth Journal
     link(rel="stylesheet" href="./styles/styles.css")
   body
-    header
-      h1 Hello, Basic Template!      
-      badge-component
-    example-component
+    #app
+      growth-dashboard#dashboard
+    // PWA UI elements (hidden by default). PWAManager will show them when appropriate.
+    #pwa-ui
+      .install-container(style="display:none;")
+        button#install-button.install-button(aria-label="Install Growth Journal") Install Growth Journal
+        button#install-ignore.button-ignore(aria-label="Ignore install prompt") Ignore
+      div#update-notification(style="display:none;") New version available — refresh to update
+      div#offline-indicator(style="display:none;") You are offline — some features may be limited
+      span#online-status.status-online Online
     script(type="module" src="./index.ts")

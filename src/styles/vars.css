@@ -1,11 +1,29 @@
 /* Design tokens / CSS variables */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
+  /* typography */
+  --font-family-heading: 'Merriweather', serif;
+  --font-family-body: 'Inter', sans-serif;
+  --font-family-ui: 'Inter', sans-serif;
+
+  --font-weight-body: 300;
+
   /* spacing (margins / paddings) */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* spacing aliases for components */
+  --spacing-xs: var(--space-xs);
+  --spacing-sm: var(--space-sm);
+  --spacing-md: var(--space-md);
+  --spacing-lg: var(--space-lg);
+  --spacing-xl: var(--space-xl);
+  --spacing-2xl: var(--space-2xl);
 
   /* font sizes */
   --font-size-xs: 0.75rem;
@@ -20,34 +38,31 @@
   /* 24px */
 
   /* color palette */
+  --primary-colour-rgb: 163, 200, 137;   /* #A3C889 */
+  --secondary-colour-rgb: 224, 219, 166; /* #E0DBA6 */
+  --accent-colour-rgb: 44, 110, 111;      /* #2C6E6F */
+  --background-colour-rgb: 255, 252, 243;/* #FFFCF3 */
+  --text-colour-rgb: 56, 56, 56;       /* #383838 */
+  
+  /* RGB design tokens */
+  --color-primary-rgb: var(--primary-colour-rgb);
+  --color-primary-contrast-rgb: 255, 255, 255; /* #FFFFFF */
+  --color-secondary-rgb: var(--secondary-colour-rgb);
+  --color-accent-rgb: var(--accent-colour-rgb);
+  --color-bg-rgb: var(--background-colour-rgb);
+  --color-surface-rgb: 255, 255, 255; /* #FFFFFF */
+  --color-text-rgb: var(--text-colour-rgb);
+  --color-muted-rgb: 108, 117, 125; /* #6C757D */
+  --color-border-rgb: 229, 229, 227; /* #E5E5E3 */
 
-  /* RGB design tokens for easier use in rgba() and filters */
-  --color-primary-rgb: 13, 110, 253;
-  /* #0d6efd */
-  --color-primary-contrast-rgb: 255, 255, 255;
-  /* #ffffff */
-  --color-accent-rgb: 102, 16, 242;
-  /* #6610f2 */
-  --color-bg-rgb: 215, 237, 252;
-  /* #d7edfc */
-  --color-surface-rgb: 248, 249, 250;
-  /* #f8f9fa */
-  --color-text-rgb: 33, 37, 41;
-  /* #212529 */
-  --color-muted-rgb: 108, 117, 125;
-  /* #6c757d */
-  --color-border-rgb: 156, 158, 160;
-  /* #9c9ea0 */
-
-  --color-success-rgb: 25, 135, 84;
-  /* #198754 */
-  --color-warning-rgb: 255, 193, 7;
-  /* #ffc107 */
-  --color-danger-rgb: 220, 53, 69;
-  /* #dc3545 */
+  --color-info-rgb: 90, 156, 168;     /* #5A9CA8 */
+  --color-success-rgb: 107, 163, 104; /* #6BA368 */
+  --color-warning-rgb: 217, 164, 65;  /* #D9A443 */
+  --color-danger-rgb: 199, 92, 92;    /* #C75C5C */
 
   --color-primary: rgb(var(--color-primary-rgb));
   --color-primary-contrast: rgb(var(--color-primary-contrast-rgb));
+  --color-secondary: rgb(var(--color-secondary-rgb));
   --color-accent: rgb(var(--color-accent-rgb));
   --color-bg: rgb(var(--color-bg-rgb));
   --color-surface: rgb(var(--color-surface-rgb));
@@ -55,17 +70,97 @@
   --color-muted: rgb(var(--color-muted-rgb));
   --color-border: rgb(var(--color-border-rgb));
 
+  --color-info: rgb(var(--color-info-rgb));
   --color-success: rgb(var(--color-success-rgb));
   --color-warning: rgb(var(--color-warning-rgb));
   --color-danger: rgb(var(--color-danger-rgb));
 
+  /* extended color variants */
+  --color-primary-light: rgba(var(--color-primary-rgb), 0.1);
+  --color-primary-dark: rgb(134, 158, 107);  /* Darker sage green */
+  --color-secondary-light: rgba(var(--color-secondary-rgb), 0.1);
+  --color-secondary-dark: rgb(186, 173, 133); /* Darker warm sand */
+  --color-accent-light: rgba(var(--color-accent-rgb), 0.1);
+  --color-accent-dark: rgb(35, 88, 89);      /* Darker deep teal */
+  --color-info-light: rgba(var(--color-info-rgb), 0.1);
+  --color-info-dark: rgb(72, 125, 134);     /* Darker muted teal */
+  --color-success-light: rgba(var(--color-success-rgb), 0.1);
+  --color-success-dark: rgb(86, 130, 83);   /* Darker sage green */
+  --color-warning-light: rgba(var(--color-warning-rgb), 0.1);
+  --color-warning-dark: rgb(174, 131, 52);  /* Darker warm yellow */
+  --color-danger-light: rgba(var(--color-danger-rgb), 0.1);
+  --color-danger-dark: rgb(159, 74, 74);    /* Darker muted red */
+  --color-text-secondary: rgb(108, 117, 125);
+  --color-background: var(--color-bg);
+
   /* radii & border */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
   --radius-squircle: 200px;
   --border-width: 1px;
-  --focus-ring: 0 0 0 3px rgba(13, 110, 253, 0.15);
+  --focus-ring: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
+
+  /* border radius aliases */
+  --border-radius: var(--radius-md);
+  --border-radius-lg: var(--radius-lg);
+  --border-radius-sm: var(--radius-sm);
+
+  /* shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.10);
+  --shadow-xl: 0 15px 25px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.05);
+  /* control card shadows centrally; set to 'none' to remove shadow from cards */
+  --card-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+
+  /* form styling */
+  --form-border: 1px solid rgba(var(--color-border-rgb), 0.9);
+  --form-shadow: var(--card-shadow);
+
+  /* common color aliases */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-transparent: transparent;
+
+  /* common rgba values */
+  --bg-overlay-light: rgba(0, 0, 0, 0.02);
+  --bg-overlay-medium: rgba(0, 0, 0, 0.1);
+  --bg-subtle-white: rgba(255, 255, 255, 0.3);
+  --bg-surface-gradient-start: rgba(255, 255, 255, 0.9);
+  --bg-surface-gradient-end: rgba(255, 255, 255, 0.7);
+  --bg-surface-white: rgba(255, 255, 255, 0.95);
+
+  /* neutral grays for UI elements */
+  --color-gray-50: #f8f9fa;
+  --color-gray-100: #f0f0f0;
+  --color-gray-200: #e9ecef;
+  --color-gray-300: #e0e0e0;
+  --color-gray-400: #ddd;
+  --color-gray-500: #6c757d;
+  --color-gray-600: #495057;
+  --color-gray-700: #34495e;
+  --color-gray-800: #2c3e50;
+
+  /* legacy blue (for PersonalGrowth component) - consider migrating to primary */
+  --color-blue: #3498db;
+  --color-blue-hover: #229954;
+  --color-blue-light: rgba(52, 152, 219, 0.1);
+
+  /* success variants */
+  --color-success-bg: #d5edda;
+  --color-success-text: #155724;
+  --color-success-border: #c3e6cb;
+  --color-success-green: #27ae60;
+
+  /* danger variants */
+  --color-danger-bg: #f8d7da;
+  --color-danger-text: #721c24;
+  --color-danger-border: #f5c6cb;
+
+  /* neutral variants */
+  --color-neutral: #95a5a6;
+  --color-neutral-dark: #7f8c8d;
 
   --button-height: 40px;
 
@@ -87,4 +182,10 @@
   --heading-margin-top: var(--space-lg);
   --heading-margin-bottom: var(--space-md);
   --heading-padding-vertical: var(--space-sm);
+
+  /* checkin header sizing used by components */
+  --checkin-header-height: 56px;
+  --checkin-tips-width: 250px;
+  --checkin-body-gap: var(--spacing-lg);
 }
+

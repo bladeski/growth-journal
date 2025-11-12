@@ -1,0 +1,146 @@
+﻿.personal-growth-container
+  checkin-header#personal-growth-header
+
+  .checkin-body
+    .checkin-tips
+      h3 Journal Navigation
+
+      .date-selector
+        label(for="journal-date") Select Date
+        input#journal-date(type="date")
+
+      .entry-summary
+        h4 Available Entries
+        .summary-item
+          .summary-label Morning Intention
+          .summary-status#morning-status Not set
+          button.edit-btn#edit-morning(data-action="click:editMorningCheckin") Edit
+        .summary-item
+          .summary-label Midday Reflection
+          .summary-status#midday-status Not set
+          button.edit-btn#edit-midday(data-action="click:editMiddayCheckin") Edit
+        .summary-item
+          .summary-label Evening Integration
+          .summary-status#evening-status Not set
+          button.edit-btn#edit-evening(data-action="click:editEveningCheckin") Edit
+
+      .quick-nav
+        h4 Quick Navigation
+        button.nav-btn(data-action="click:goToToday") Today
+        button.nav-btn(data-action="click:goToPrevious") Previous Day
+        button.nav-btn(data-action="click:goToNext") Next Day
+
+    .checkin-main
+      message-component#error-message(
+        data-prop:type="error"
+        data-prop:role="alert"
+        data-prop:aria-live="assertive"
+      )
+      message-component#success-message(
+        data-prop:type="success"
+        data-prop:role="status"
+        data-prop:aria-live="polite"
+      )
+
+      .journal-content
+        .empty-state#empty-state
+          .empty-icon 
+          h3 No entries for this date
+          p Select a different date or create a new entry using the daily check-ins.
+
+        card-component.entry-section#intention-section
+          span(slot="title") Morning Intention
+          span(slot="subtitle")#intention-date
+
+          .entry-card
+            .entry-field
+              .field-label Core Value Focus
+              .field-value#core-value-display 
+
+            .entry-field
+              .field-label Morning Intention
+              .field-value#morning-intention-display 
+
+            .entry-field
+              .field-label Micro Practice
+              .field-value#micro-practice-display 
+
+            .entry-field
+              .field-label Affirmation
+              .field-value#affirmation-display 
+
+        card-component.entry-section#midday-section
+          span(slot="title") Midday Reflection
+          span(slot="subtitle")#midday-date
+
+          .entry-card
+            .entry-field
+              .field-label How did I practice my intention today?
+              .field-value#defensive-moment-display —
+
+            .entry-field
+              .field-label What thoughts or feelings came up?
+              .field-value#initial-thought-display —
+
+            .entry-field
+              .field-label How could I apply today's core value next time?
+              .field-value#healthier-reframe-midday-display —
+
+        card-component.entry-section#reflection-section
+          span(slot="title") Evening Integration
+          span(slot="subtitle")#reflection-date
+
+          .entry-card
+            .entry-field
+              .field-label#what-went-well-question What went well today?
+              .field-value#what-went-well-display —
+
+            .entry-field
+              .field-label#defensive-moments-question When did I feel defensive, superior or dismissive?
+              .field-value#defensive-moments-display —
+
+            .entry-field
+              .field-label How could I apply core value better next time?
+              .field-value#better-response-display —
+
+            .entry-field
+              .field-label#empathy-practice-question How did I practice empathy today?
+              .field-value#empathy-practice-display —
+
+            .entry-field
+              .field-label#small-win-question One small win I want to celebrate
+              .field-value#small-win-display —
+
+        card-component.metrics-section#metrics-section
+          span(slot="title") Daily Metrics
+
+          .metrics-grid
+            .metric-card
+              .metric-label Apologies Given
+              .metric-value#apologies-display 0
+
+            .metric-card
+              .metric-label Pauses Before Reacting
+              .metric-value#pauses-display 0
+
+            .metric-card
+              .metric-label Empathy Moments
+              .metric-value#empathy-moments-display 0
+
+            .metric-card
+              .metric-label Defensive Reactions
+              .metric-value#defensive-reactions-display 0
+
+            .metric-card
+              .metric-label Vulnerability Shared
+              .metric-value#vulnerability-display 0
+
+            .metric-card
+              .metric-label Empathy Rating
+              .metric-value#empathy-rating-display 5/10
+
+            .metric-card
+              .metric-label Responsibility Rating
+              .metric-value#responsibility-rating-display 5/10
+
+  // Removed redundant floating close button; header already provides one

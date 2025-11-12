@@ -5,85 +5,78 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   background-color: var(--color-bg);
-  background-image:
-    linear-gradient(
-      120deg,
-      rgba(var(--color-primary-rgb), 0.08) 0%,
-      rgba(var(--color-accent-rgb), 0.07) 18%,
-      rgba(var(--color-bg-rgb), 0.10) 32%,
-      rgba(var(--color-primary-rgb), 0.06) 45%,
-      rgba(var(--color-accent-rgb), 0.08) 60%,
-      rgba(var(--color-bg-rgb), 0.12) 72%,
-      rgba(var(--color-primary-rgb), 0.07) 85%,
-      rgba(var(--color-accent-rgb), 0.10) 92%,
-      rgba(var(--color-bg-rgb), 0.95) 100%
-    ),
-    repeating-linear-gradient(
-      135deg,
-      transparent 0 8px,
-      rgba(var(--color-primary-rgb), 0.06) 8px 12px,
-      transparent 12px 32px
-    ),
-    repeating-linear-gradient(
-      120deg,
-      transparent 0 20px,
-      rgba(var(--color-accent-rgb), 0.10) 20px 24px,
-      transparent 24px 48px
-    );
-  background-repeat: no-repeat;
-  background-size: cover;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   line-height: 1.6;
   font-size: var(--font-size-md);
-  padding: var(--space-lg);
-  gap: var(--space-md);
+  padding: 0;
+  gap: 0;
 }
 
-/* small utility examples (optional) */
-.u-pad-sm {
-  padding: var(--space-sm);
-}
-
-.u-pad-md {
-  padding: var(--space-md);
-}
-
-.u-pad-lg {
-  padding: var(--space-lg);
-}
-
-.u-mr-sm {
-  margin-right: var(--space-sm);
-}
-
-.u-mb-md {
-  margin-bottom: var(--space-md);
-}
-
-.text-muted {
-  color: var(--color-muted);
-}
-
-.text-primary {
-  color: var(--color-primary);
-}
-
-/* small helper to tighten spacing for compact headers */
-.header-compact {
-  margin-top: calc(var(--heading-margin-top) / 2);
-  margin-bottom: calc(var(--heading-margin-bottom) / 2);
-}
-
-header {
+#app {
   width: 100%;
+  min-height: 100vh;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+}
+
+/* PWA UI styles */
+#pwa-ui {
+  pointer-events: none; /* allow clicks only on interactive children */
+}
+
+#online-status,
+#offline-indicator {
+  display: none; /* hidden by default; visibility controlled by JS when needed */
+}
+
+/* Floating install button (centered, sticky above bottom). Dismissable via close control */
+.install-container {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 28px;
+  z-index: 9999;
+  pointer-events: auto;
+  display: flex;
+  gap: 8px;
   align-items: center;
 }
 
+#install-button {
+  background-color: var(--color-accent, #2196f3);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 28px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  font-weight: 600;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+#install-button.dismissed {
+  display: none !important;
+}
+
+/* small close control inside the button (visually hidden by default; JS can show) */
+/* Ignore button inside container */
+.button-ignore,
+#install-ignore {
+  background: rgba(0,0,0,0.06);
+  border: 0;
+  padding: 8px 10px;
+  border-radius: 18px;
+  cursor: pointer;
+  color: var(--color-foreground, #222);
+}
+
+.install-container.dismissed {
+  display: none !important;
+}

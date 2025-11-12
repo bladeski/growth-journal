@@ -1,4 +1,9 @@
-import { IBaseComponent, PropTypes } from '../interfaces/IBaseComponent';
+import { LoggingService } from '@bladeski/logger';
+import baseStyles from 'bundle-text:../styles/base.css';
+import { IBaseComponent } from '../interfaces/IBaseComponent';
+import { PropTypes } from '../models';
+
+const logger = LoggingService.getInstance();
 
 /**
  * BaseComponent
@@ -68,14 +73,20 @@ export abstract class BaseComponent<
   constructor(
     template?: string | ((locals?: { props: TProps }) => string),
     initialProps?: Partial<TProps>,
-    styles?: string[]
+    styles?: string[],
   ) {
     super();
     this.attachShadow({ mode: 'open' });
 
-    // store styles (decide whether each is a path)
+    // Always include base styles, then component-specific styles
+    const allStyles: string[] = [baseStyles];
     if (Array.isArray(styles) && styles.length > 0) {
-      this.styles = styles.filter(Boolean);
+      allStyles.push(...styles.filter(Boolean));
+    }
+
+    // store styles (decide whether each is a path)
+    if (allStyles.length > 0) {
+      this.styles = allStyles;
       const pathRegex = /(^\.\/|^\/|\.css$|^https?:\/\/)/i;
       for (const s of this.styles) {
         if (pathRegex.test(s)) this.stylesIsPath.add(s);
@@ -94,11 +105,8 @@ export abstract class BaseComponent<
     };
 
     // create proxied props object and use it for this.props
-    this._propsProxy = new Proxy(
-      this.props as unknown as Record<string, unknown>,
-      handler
-    ) as TProps;
-    this.props = this._propsProxy;
+    this._propsProxy = new Proxy(this.props as Record<string, unknown>, handler) as TProps;
+    this.props = this._propsProxy || this.props;
 
     // merge initial props into the proxy (keeps proxy intact)
     if (initialProps) {
@@ -109,11 +117,9 @@ export abstract class BaseComponent<
       // treat as template id; create a fn that resolves the template when called
       this.templateId = template;
       this.templateFn = () => {
-        const tpl = document.getElementById(
-          this.templateId ?? ''
-        ) as HTMLTemplateElement | null;
+        const tpl = document.getElementById(this.templateId ?? '') as HTMLTemplateElement | null;
         if (!tpl) {
-          console.warn(`BaseComponent: template with id "${this.templateId}" not found.`);
+          logger.warning(`BaseComponent: template with id "${this.templateId}" not found.`);
           return '';
         }
         return tpl.innerHTML;
@@ -135,12 +141,10 @@ export abstract class BaseComponent<
     this.templateId = id;
     const tpl = document.getElementById(id) as HTMLTemplateElement | null;
     if (!tpl) {
-      console.warn(`BaseComponent: template with id "${id}" not found.`);
+      logger.warning(`BaseComponent: template with id "${id}" not found.`);
       // still set templateFn to a resolver so future renders will pick it up if added to DOM
       this.templateFn = () => {
-        const t = document.getElementById(
-          this.templateId ?? ''
-        ) as HTMLTemplateElement | null;
+        const t = document.getElementById(this.templateId ?? '') as HTMLTemplateElement | null;
         return t ? t.innerHTML : '';
       };
       return;
@@ -155,6 +159,14 @@ export abstract class BaseComponent<
    * Clears shadow DOM and internal binding state.
    */
   disconnectedCallback = (): void => {
+    // Allow subclasses to clean up any timers or external listeners first
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this as any).onDisconnect?.();
+    } catch (e) {
+      // ignore cleanup errors
+    }
+
     if (this.shadowRoot) {
       this.shadowRoot.innerHTML = '';
       this.initialized = false;
@@ -164,45 +176,102 @@ export abstract class BaseComponent<
   };
 
   /**
+   * Optional hook subclasses can override to clean up timers or listeners
+   * before the base disconnected logic runs.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+  protected onDisconnect(): void {
+    // default no-op
+  }
+
+  /**
    * Lifecycle: component added to DOM.
    *
    * Triggers the initial render (a no-op if templateFn is not set).
+   * Also reads any data-prop: attributes and sets them as props.
    */
   connectedCallback(): void {
+    // Auto-sync data-prop: attributes to props before rendering
+    this.syncDataPropAttributes();
     this.render();
+  }
+
+  /**
+   * Sync all data-prop:* attributes to their corresponding props.
+   * This runs automatically on connectedCallback.
+   */
+  private syncDataPropAttributes(): void {
+    const observedAttrs = (this.constructor as typeof BaseComponent).observedAttributes;
+
+    for (const attrName of observedAttrs) {
+      // Handle both formats: "data-prop:title" and plain "title"
+      if (attrName.startsWith('data-prop:')) {
+        const propName = this.dataPropToPropName(attrName);
+        const attrValue = this.getAttribute(attrName);
+
+        if (attrValue !== null) {
+          this.syncAttributeToProp(propName, attrValue);
+        }
+      } else {
+        const attrValue = this.getAttribute(attrName);
+        if (attrValue !== null) {
+          this.syncAttributeToProp(attrName, attrValue);
+        }
+      }
+    }
+  }
+
+  /**
+   * Convert data-prop:attribute-name to camelCase prop name.
+   * e.g., "data-prop:title" -> "title"
+   * e.g., "data-prop:core-value" -> "coreValue"
+   */
+  private dataPropToPropName(attrName: string): string {
+    const withoutPrefix = attrName.replace(/^data-prop:/, '');
+    // Convert kebab-case to camelCase
+    return withoutPrefix.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+  }
+
+  /**
+   * Sync a single attribute value to its corresponding prop.
+   */
+  private syncAttributeToProp(propName: string, attrValue: string): void {
+    const currentValue = (this.props as Record<string, unknown>)[propName];
+    const propType = typeof currentValue;
+    let value: unknown = attrValue;
+
+    if (propType === 'number') value = Number(attrValue);
+    if (propType === 'boolean') value = attrValue !== 'false' && attrValue !== '';
+
+    // Assign into proxied props so proxy handler is preserved
+    (this.props as Record<string, unknown>)[propName] = value;
   }
 
   /**
    * Called when an observed attribute changes.
    *
+   * Handles both "data-prop:attribute-name" and plain "attribute" formats.
    * Converts attribute strings to the existing prop type (number/boolean/string)
    * based on the current prop value type, updates this.props and updates bound
    * DOM nodes for that single attribute (no full re-render).
    *
    * Note: assignment preserves the proxy so bound updates happen as expected.
    *
-   * @param name - Attribute name (also prop key)
+   * @param name - Attribute name (may include data-prop: prefix)
    * @param oldValue - Previous attribute value
    * @param newValue - New attribute value
    */
-  attributeChangedCallback(
-    name: keyof TProps & string,
-    oldValue: string | null,
-    newValue: string | null
-  ): void {
+  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
     if (oldValue !== newValue) {
-      const currentValue = this.props[name];
-      const propType = typeof currentValue;
-      let value: unknown = newValue;
+      // Convert data-prop:attribute-name to camelCase prop name
+      const propName = name.startsWith('data-prop:') ? this.dataPropToPropName(name) : name;
 
-      if (propType === 'number') value = Number(newValue);
-      if (propType === 'boolean') value = newValue !== null;
+      if (newValue !== null) {
+        this.syncAttributeToProp(propName, newValue);
+      }
 
-      // assign into proxied props so proxy handler is preserved
-      (this.props as Record<string, unknown>)[name] = value;
-
-      // update only the bound nodes for this attribute (no full re-render)
-      this.updateBindings(name);
+      // Update only the bound nodes for this prop (no full re-render)
+      this.updateBindings(propName as keyof TProps & string);
     }
   }
 
@@ -232,9 +301,7 @@ export abstract class BaseComponent<
    * @param detail - Event detail payload
    */
   emit<K extends keyof TEvents & string>(eventName: K, detail: TEvents[K]): void {
-    this.dispatchEvent(
-      new CustomEvent(eventName, { detail, bubbles: true, composed: true })
-    );
+    this.dispatchEvent(new CustomEvent(eventName, { detail, bubbles: true, composed: true }));
   }
 
   /**
@@ -349,9 +416,7 @@ export abstract class BaseComponent<
         if (event && typeof method === 'function') {
           el.addEventListener(event, method.bind(this));
         } else {
-          console.warn(
-            `No method "${methodName}" found on component for action "${action}"`
-          );
+          console.warn(`No method "${methodName}" found on component for action "${action}"`);
         }
       });
     });

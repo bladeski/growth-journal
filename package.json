@@ -1,20 +1,29 @@
 {
-  "name": "basic-template",
+  "name": "growth-journal",
   "version": "0.0.1",
-  "description": "A basic TypeScript project template using Parcel bundler and ES modules.",
+  "description": "A Progressive Web App for daily growth journaling and reflection.",
   "type": "module",
   "scripts": {
     "preinstall": "npx scan-compromised",
-    "dev": "parcel src/index.pug",
-    "build": "parcel build src/index.pug",
+    "dev": "parcel src/index.pug --port 3000",
+    "build": "parcel build src/index.pug --public-url ./",
+    "build:pwa": "npm run build && npm run copy-pwa-files",
+    "copy-pwa-files": "powershell -Command \"Copy-Item src/manifest.json dist/; Copy-Item src/sw.ts dist/sw.js; if (Test-Path src/icons) { Copy-Item -Recurse src/icons dist/ }\"",
     "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,scss,pug,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css,scss,pug,json,md}\"",
     "clean": "rm -rf .parcel-cache dist"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@bladeski/logger": "^1.0.3"
+  },
   "devDependencies": {
+    "@parcel/packager-raw-url": "2.16.0",
     "@parcel/transformer-inline-string": "2.16.0",
     "@parcel/transformer-pug": "^2.16.0",
+    "@parcel/transformer-webmanifest": "2.16.0",
     "@types/pug": "^2.0.10",
+    "@types/serviceworker": "^0.0.167",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.57.0",
@@ -30,7 +39,10 @@
     "typescript",
     "parcel",
     "esmodules",
-    "template"
+    "pwa",
+    "growth-journal",
+    "journaling",
+    "reflection"
   ],
   "author": "Jonathan Blades <jonoblades@gmail.com>",
   "license": "MIT"

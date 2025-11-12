@@ -1,0 +1,124 @@
+.reflection-container
+  checkin-header.reflection-header#monthly-header(
+    data-prop:title="Monthly Reflection"
+    data-prop:description="Deep dive into your growth patterns and progress"
+  )
+
+  .checkin-body
+    reflection-tips(data-prop:title="Monthly Reflection Tips")
+      li Look at the big picture - what themes emerged this month?
+      li Celebrate progress, even if it feels small
+      li Use challenges as learning opportunities, not failures
+      li Set one specific, measurable goal for next month
+      li Consider how your growth impacts those around you
+      li Remember: sustainable change happens gradually
+
+    .checkin-main
+      card-component
+        form.reflection-form(data-action="submit:handleSubmit" novalidate)
+          message-component#error-message(
+            data-prop:type="error"
+            data-prop:role="alert"
+            data-prop:aria-live="assertive"
+          )
+          message-component#success-message(
+            data-prop:type="success"
+            data-prop:role="status"
+            data-prop:aria-live="polite"
+          )
+
+          .metrics-section
+            h3 Growth Metrics
+            
+            .form-row
+              .form-group
+                label(for="apologies-given")
+                  span.label-text Number of genuine apologies given
+                  span.label-hint Count sincere apologies where you took responsibility
+                input(
+                  type="number"
+                  id="apologies-given"
+                  name="genuine_apologies_given"
+                  min="0"
+                  max="100"
+                  placeholder="0"
+                  data-action="input:updateGenuineApologiesGiven"
+                )
+
+              .form-group
+                label(for="paused-reactions")
+                  span.label-text Number of times I paused before reacting
+                  span.label-hint Moments when you caught yourself and chose your response
+                input(
+                  type="number"
+                  id="paused-reactions"
+                  name="times_paused_before_reacting"
+                  min="0"
+                  max="100"
+                  placeholder="0"
+                  data-action="input:updateTimesPausedBeforeReacting"
+                )
+
+              .form-group
+                label(for="partner-score")
+                  span.label-text Accountability partner feedback score
+                  span.label-hint A quick rating from your partner (1-10)
+                .rating-control
+                  input(
+                    type="range"
+                    id="partner-score"
+                    name="accountability_partner_feedback_score"
+                    min="1"
+                    max="10"
+                    value="5"
+                    data-action="input:updateAccountabilityPartnerFeedbackScore"
+                  )
+                  span.rating-value(data-prop:text="accountability_partner_feedback_score")
+
+          .reflection-section
+            h3 Deep Reflection
+            
+            .form-group
+              label(for="growth-moment")
+                span.label-text Biggest growth moment this month
+                span.label-hint Describe a specific situation where you experienced significant personal growth
+              textarea(
+                id="growth-moment"
+                name="biggest_growth_moment"
+                rows="4"
+                minlength="10"
+                placeholder="e.g., When I received difficult feedback, I listened without defending and asked clarifying questions..."
+                data-action="input:updateBiggestGrowthMoment"
+              )
+
+            .form-group
+              label(for="biggest-challenge")
+                span.label-text Biggest challenge this month
+                span.label-hint What situation or pattern was most difficult for you to navigate?
+              textarea(
+                id="biggest-challenge"
+                name="biggest_challenge"
+                rows="4"
+                minlength="10"
+                placeholder="e.g., I struggled with staying calm during high-pressure meetings..."
+                data-action="input:updateBiggestChallenge"
+              )
+
+            .form-group
+              label(for="next-month-goal")
+                span.label-text One new goal for next month
+                span.label-hint Based on this month's learnings, what specific goal will you focus on?
+              textarea(
+                id="next-month-goal"
+                name="new_goal_next_month"
+                rows="3"
+                minlength="10"
+                placeholder="e.g., Practice asking one clarifying question before giving my opinion..."
+                data-action="input:updateNewGoalNextMonth"
+              )
+
+          .form-actions
+            button(type="submit" class="btn btn-primary")
+              | {{submitButtonText}}
+            button(type="button" class="btn btn-secondary" data-action="click:cancel")
+              | Back to Dashboard
