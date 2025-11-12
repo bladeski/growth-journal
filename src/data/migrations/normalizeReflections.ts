@@ -50,16 +50,22 @@ export async function normalizeReflections(options: NormalizeOptions = {}) {
     // Some legacy records used `small_win` (singular). Promote it to `small_wins` if empty.
     // Keep both if you need to preserve the original key; here we move the value and remove the old key.
     // NOTE: setEveningReflection uses the same keying strategy so overwriting will update the same record.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const anyRec: any = after as any;
+    // Support legacy field names used in older records
+    type LegacyEveningFields = Partial<IEveningCheckinData> & {
+      small_win?: string | string[];
+      reflection_text?: string;
+    };
+
+    const anyRec = after as Record<string, unknown> & LegacyEveningFields;
     if (anyRec.small_win && !anyRec.small_wins) {
-      anyRec.small_wins = anyRec.small_win;
+      // preserve string/array values as-is
+      anyRec.small_wins = anyRec.small_win as string | string[];
       delete anyRec.small_win;
     }
 
     // Normalize reflection_text -> what_went_well when missing
     if (anyRec.reflection_text && !anyRec.what_went_well) {
-      anyRec.what_went_well = anyRec.reflection_text;
+      anyRec.what_went_well = anyRec.reflection_text as string;
       delete anyRec.reflection_text;
     }
 

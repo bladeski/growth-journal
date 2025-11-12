@@ -37,13 +37,12 @@ export class IndexedDbDataService implements IDataService {
         const data = ev.data.payload as IdbResponse<TResult>;
         resolve(data);
       };
-
-      // Use an explicit cast to any to access controller.postMessage safely
-      const controller = (navigator.serviceWorker as any).controller;
-      if (controller && typeof controller.postMessage === 'function') {
-        controller.postMessage({ type, payload }, [channel.port2]);
-      } else {
-        resolve({ success: false, error: 'Service worker controller missing' });
+      // Use the ensured ServiceWorker (sw) to post the message; it implements postMessage
+      try {
+        sw.postMessage({ type, payload }, [channel.port2]);
+      } catch (err) {
+        // if postMessage isn't available for some reason, fail gracefully
+        resolve({ success: false, error: String(err) });
       }
     });
   }

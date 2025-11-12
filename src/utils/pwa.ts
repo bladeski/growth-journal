@@ -70,9 +70,11 @@ export class PWAManager {
       this.deferredPrompt = e;
       this.showInstallButton();
       // Helpful debug: expose on window for quick manual invocation in console
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // expose on window for quick manual invocation in console (typed as any)
-      (window as any).__deferredPwaPrompt = e;
+      // expose on window for quick manual invocation in console (typed safely)
+      interface DeferredWindow extends Window {
+        __deferredPwaPrompt?: BeforeInstallPromptEvent;
+      }
+      (window as DeferredWindow).__deferredPwaPrompt = e;
     });
   }
 

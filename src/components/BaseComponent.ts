@@ -161,8 +161,9 @@ export abstract class BaseComponent<
   disconnectedCallback = (): void => {
     // Allow subclasses to clean up any timers or external listeners first
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this as any).onDisconnect?.();
+      // call subclass hook if present without using `any`
+      const selfWithHook = this as unknown as { onDisconnect?: () => void };
+      selfWithHook.onDisconnect?.();
     } catch (e) {
       // ignore cleanup errors
     }
