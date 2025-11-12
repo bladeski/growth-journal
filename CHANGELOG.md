@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/bladeski/growth-journal/compare/v0.0.3...v0.0.4) (2025-11-12)
+
+
+### Bug Fixes
+
+* update GitHub Pages deployment steps in release workflow ([1de5175](https://github.com/bladeski/growth-journal/commit/1de5175df17399c1d4b8b26382d61741fad82d0f))
+* update upload-pages-artifact action to version 2 ([04edfe4](https://github.com/bladeski/growth-journal/commit/04edfe4d7d9fc9a339fec08c10aac8150ac0e090))
+* update upload-pages-artifact action to version 3 ([a484e1f](https://github.com/bladeski/growth-journal/commit/a484e1fe9dc4ff99843378f8c8a2f8f5a8bebc6d))
+
 ### [0.0.3](https://github.com/bladeski/growth-journal/compare/v0.0.2...v0.0.3) (2025-11-12)
 
 ### 0.0.2 (2025-11-12)
