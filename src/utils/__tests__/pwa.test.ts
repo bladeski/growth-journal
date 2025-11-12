@@ -54,31 +54,19 @@ describe('PWAManager.isPWA', () => {
   }
 
   test('returns true when display-mode is standalone', () => {
-    // assign test doubles using Object.defineProperty
-    Object.defineProperty(window, 'matchMedia', {
-      value: (query: string) => ({ matches: true, media: query }) as MediaQueryList,
-      configurable: true,
-    });
-    Object.defineProperty(window, 'navigator', {
-      value: { standalone: false } as Navigator & { standalone?: boolean },
-      configurable: true,
-    });
+    // assign test doubles using robust helper
+    setProp(window, 'matchMedia', (query: string) => ({ matches: true, media: query }) as MediaQueryList);
+    setProp(window, 'navigator', { standalone: false } as Navigator & { standalone?: boolean });
 
     expect(isPWA()).toBe(true);
   });
 
   test('returns false when not standalone', () => {
-    Object.defineProperty(window, 'matchMedia', {
-      value: (query: string) => ({ matches: false, media: query }) as MediaQueryList,
-      configurable: true,
-    });
-    Object.defineProperty(window, 'navigator', {
-      value: { standalone: false } as Navigator & { standalone?: boolean },
-      configurable: true,
-    });
+    setProp(window, 'matchMedia', (query: string) => ({ matches: false, media: query }) as MediaQueryList);
+    setProp(window, 'navigator', { standalone: false } as Navigator & { standalone?: boolean });
 
-  // ensure referrer doesn't indicate Android app - define a getter to override jsdom accessor
-  Object.defineProperty(document, 'referrer', { get: () => '', configurable: true });
+    // ensure referrer doesn't indicate Android app - use getter helper to override jsdom accessor
+    setGetter(document, 'referrer', () => '');
 
     expect(isPWA()).toBe(false);
   });
