@@ -7,6 +7,7 @@
     "preinstall": "npx scan-compromised",
     "dev": "parcel src/index.pug --port 3000",
     "build": "parcel build src/index.pug --public-url ./",
+    "release": "standard-version",
     "build:pwa": "npm run build && npm run copy-pwa-files",
     "copy-pwa-files": "powershell -Command \"Copy-Item src/manifest.json dist/; Copy-Item src/sw.ts dist/sw.js; if (Test-Path src/icons) { Copy-Item -Recurse src/icons dist/ }\"",
     "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
@@ -34,6 +35,7 @@
     "prettier": "^3.6.2",
     "pug": "^3.0.3",
     "typescript": "^5.4.0"
+    ,"standard-version": "^9.3.2"
   },
   "keywords": [
     "typescript",
