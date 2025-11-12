@@ -1,0 +1,88 @@
+name: CI & Release
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build, Test, Release and Deploy
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ci-release-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run tests (if present)
+        run: npm run test --if-present
+
+      - name: Build
+        run: npm run build
+
+      - name: Bump version and generate changelog (standard-version)
+        id: bump
+        run: |
+          # standard-version uses conventional commits to determine the next version
+          npx standard-version
+
+      - name: Get new tag and top changelog entry
+        id: get_tag
+        run: |
+          # get the most recent tag (created by standard-version)
+          TAG=$(git describe --tags --abbrev=0)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+          # extract the top changelog entry (from first '## [' to the next '## [' )
+          awk 'BEGIN{found=0} /^## \[/{if(found==0){found=1; print; next} else exit} found{print}' CHANGELOG.md > release_notes.md
+
+          echo "release_notes<<EOF" >> $GITHUB_OUTPUT
+          cat release_notes.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Commit changelog and package.json changes
+        if: steps.bump.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md package.json package-lock.json 2>/dev/null || true
+          # commit only if there are changes (standard-version already committed and tagged locally, but in case)
+          if ! git diff --staged --quiet; then
+            git commit -m "chore(release): update changelog and package version" || true
+          fi
+          git push --follow-tags origin HEAD:main
+
+      - name: Create GitHub release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          release_name: ${{ steps.get_tag.outputs.tag }}
+          body: ${{ steps.get_tag.outputs.release_notes }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
