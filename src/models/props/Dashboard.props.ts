@@ -1,8 +1,8 @@
 export type RecentActivity = {
   morning: Array<{
     check_date: string;
-    practice_intention: string;
-    core_value_focus: string;
+    intention: string;
+    core_focus: string;
   }>;
   evening: Array<{
     check_date: string;

@@ -283,10 +283,17 @@ export class IndexedDbDataService implements IDataService {
         recent_activity.morning.push({
           check_date: asString(mr.check_date),
           date: asString(mr.date),
-          practice_intention: asString(mr.practice_intention) || asString(mr.morning_intention),
-          morning_intention: asString(mr.morning_intention) || undefined,
-          core_value_focus: asString(mr.core_value_focus) || undefined,
-          core_value: asString(mr.core_value) || undefined,
+          // normalize legacy fields into canonical names used by UI/components
+          intention:
+            asString(mr.practice_intention) ||
+            asString(mr.morning_intention) ||
+            asString(mr.intention) ||
+            undefined,
+          core_focus:
+            asString(mr.core_value_focus) ||
+            asString(mr.core_value) ||
+            asString(mr.focus) ||
+            undefined,
         });
       }
       const e = await this.getEveningReflection(d);

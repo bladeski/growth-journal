@@ -92,7 +92,8 @@ export class DashboardComponent extends BaseComponent<DashboardProps, DashboardE
         const strong = document.createElement('strong');
         strong.textContent = 'Practice: ';
         const span = document.createElement('span');
-        span.textContent = String(item.practice_intention || '');
+        // support canonicalized field name `intention` (fallback to legacy key)
+        span.textContent = item.intention || '';
 
         insightText.appendChild(strong);
         insightText.appendChild(span);

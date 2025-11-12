@@ -16,10 +16,8 @@ export interface IDashboardAnalytics {
     morning: Array<{
       check_date?: string;
       date?: string;
-      practice_intention?: string;
-      morning_intention?: string;
-      core_value_focus?: string;
-      core_value?: string;
+      intention?: string;
+      core_focus?: string;
     }>;
     evening: Array<{
       check_date?: string;
