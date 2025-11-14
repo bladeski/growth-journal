@@ -1,5 +1,5 @@
 import { LoggingService } from '@bladeski/logger';
-import { PWAManager } from './utils/pwa.ts';
+import { PWAManager } from './utils/PwaManager.ts';
 import GrowthIntentions from './data/GrowthIntentions.ts';
 import IndexedDbDataService from './data/IndexedDbDataService.ts';
 // Register web components (side-effect import)
@@ -20,7 +20,7 @@ function setupWelcomeMessage() {
     if (pwaManager.getOnlineStatus()) {
       statusMessage.textContent = '✅ Ready to capture your growth journey!';
     } else {
-      statusMessage.textContent = '📱 Offline mode - your entries will sync later';
+      statusMessage.textContent = '📱 Offline mode - but you can use me as normal!';
     }
 
     welcomeSection.appendChild(statusMessage);
@@ -34,7 +34,7 @@ function initializeApp() {
   const options: ILoggingConfigurationOptions = {
     applicationName: 'growth-journal',
     enableConsoleCore: true,
-    enableLocalStorageCore: true
+    enableLocalStorageCore: true,
   };
   LoggingService.initialize(options);
   const logger = LoggingService.getInstance();
@@ -59,7 +59,7 @@ function initializeApp() {
   const handleHashRoute = () => {
     try {
       const raw = location.hash || '#/';
-      const route = raw.replace(/^#\/?/, '').split(/[\/?#]/)[0];
+      const route = raw.replace(/^#\/?/, '').split(/[/?#]/)[0];
       (app as GrowthJournalApp).navigateTo(route || '');
     } catch (e) {
       // swallow routing errors
@@ -268,8 +268,9 @@ class GrowthJournalApp {
     }
     // Ensure the URL reflects the dashboard view
     try {
-      if (location.hash !== '#/' && location.hash !== '' && location.hash !== '#/dashboard') location.hash = '#/';
-      else if (location.hash === '' ) location.hash = '#/';
+      if (location.hash !== '#/' && location.hash !== '' && location.hash !== '#/dashboard') {
+        location.hash = '#/';
+      } else if (location.hash === '') location.hash = '#/';
     } catch (e) {
       // ignore in environments where location isn't writable
     }
@@ -284,7 +285,7 @@ class GrowthJournalApp {
     if (!skipHistory) {
       this.logger.info('Pushing to history before showing morning checkin', {
         current: this.currentView,
-        historyLength: this.navigationHistory.length
+        historyLength: this.navigationHistory.length,
       });
       this.navigationHistory.push(this.currentView);
     }
@@ -466,7 +467,7 @@ class GrowthJournalApp {
     this.logger.info('Going back', {
       previousView,
       currentView: this.currentView,
-      remainingHistory: this.navigationHistory.length
+      remainingHistory: this.navigationHistory.length,
     });
 
     if (!previousView) {

@@ -3,9 +3,9 @@ import { jest } from '@jest/globals';
 import '../../src/components/Settings/Settings.ts';
 
 // ensure TextEncoder/TextDecoder are available in the Jest JSDOM environment
-// @ts-ignore
+// @ts-expect-error - global types don't include TextEncoder/TextDecoder
 if (typeof global.TextEncoder === 'undefined') global.TextEncoder = TextEncoder;
-// @ts-ignore
+// @ts-expect-error - global types don't include TextEncoder/TextDecoder
 if (typeof global.TextDecoder === 'undefined') global.TextDecoder = TextDecoder;
 
 describe('Settings.installPwa', () => {
@@ -20,18 +20,16 @@ describe('Settings.installPwa', () => {
   afterEach(() => {
     document.body.innerHTML = '';
     // cleanup any global helper
-    // @ts-ignore
     delete window.__deferredPwaPrompt;
   });
 
   test('installPwa uses deferred prompt when available', async () => {
     const deferred = {
       prompt: jest.fn(),
-      userChoice: Promise.resolve({ outcome: 'accepted' })
+      userChoice: Promise.resolve({ outcome: 'accepted' }),
     } as unknown as BeforeInstallPromptEvent;
 
     // attach test deferred prompt helper
-    // @ts-ignore
     window.__deferredPwaPrompt = deferred;
 
     const comp = settingsEl as unknown as { installPwa?: () => Promise<void> };

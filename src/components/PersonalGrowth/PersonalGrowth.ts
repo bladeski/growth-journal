@@ -8,7 +8,7 @@ import type { IPersonalGrowthProps } from './interfaces/IPersonalGrowthProps.ts'
 import type {
   IGrowthIntentionData,
   IMiddayCheckinData,
-  IEveningCheckinData
+  IEveningCheckinData,
 } from '../../interfaces/index.ts';
 import { LoggingService } from '@bladeski/logger';
 import type { IPersonalGrowthEvents } from './interfaces/IPersonalGrowthEvents.ts';
@@ -235,7 +235,7 @@ export class PersonalGrowth extends BaseComponent<IPersonalGrowthProps, IPersona
         date,
         intentionData: this.intentionData,
         middayData: this.middayData,
-        reflectionData: this.reflectionData
+        reflectionData: this.reflectionData,
       });
 
       // Update header with contextual metadata once intention data is loaded
@@ -349,11 +349,11 @@ export class PersonalGrowth extends BaseComponent<IPersonalGrowthProps, IPersona
     this.setText('#morning-intention-display', this.intentionData.intention || '—');
     this.setText(
       '#micro-practice-display',
-      this.formatMicroPractice(this.intentionData.focus) || '—'
+      this.formatMicroPractice(this.intentionData.focus) || '—',
     );
     this.setText(
       '#affirmation-display',
-      String(((this.intentionData as Record<string, unknown>).affirmation as string) || '—')
+      String(((this.intentionData as Record<string, unknown>).affirmation as string) || '—'),
     );
   }
 
@@ -367,7 +367,7 @@ export class PersonalGrowth extends BaseComponent<IPersonalGrowthProps, IPersona
         'Review your morning intention, midday reflection and evening integration entries.',
       coreValue: this.intentionData.core_value || '',
       intention: this.intentionData.intention || '',
-      metadata: metadataHtml
+      metadata: metadataHtml,
     });
   }
 
@@ -384,24 +384,24 @@ export class PersonalGrowth extends BaseComponent<IPersonalGrowthProps, IPersona
     this.setText('#reflection-date', date);
     this.setText(
       '#what-went-well-question',
-      this.dynamicQuestions.what_went_well || 'What went well today?'
+      this.dynamicQuestions.what_went_well || 'What went well today?',
     );
     this.setText('#what-went-well-display', this.reflectionData.what_went_well || '—');
     this.setText(
       '#defensive-moments-question',
       this.dynamicQuestions.defensive_moments ||
-        'When did I feel defensive, superior or dismissive?'
+        'When did I feel defensive, superior or dismissive?',
     );
     this.setText('#defensive-moments-display', this.reflectionData.defensive_moments || '—');
     this.setText('#better-response-display', this.reflectionData.better_response || '—');
     this.setText(
       '#empathy-practice-question',
-      this.dynamicQuestions.empathy_practice || 'How did I practice empathy today?'
+      this.dynamicQuestions.empathy_practice || 'How did I practice empathy today?',
     );
     this.setText('#empathy-practice-display', this.reflectionData.empathy_practice || '—');
     this.setText(
       '#small-win-question',
-      this.dynamicQuestions.small_win || 'One small win I want to celebrate'
+      this.dynamicQuestions.small_win || 'One small win I want to celebrate',
     );
     this.setText('#small-win-display', this.reflectionData.small_win || '—');
   }
@@ -414,7 +414,7 @@ export class PersonalGrowth extends BaseComponent<IPersonalGrowthProps, IPersona
       this.dynamicQuestions.what_went_well,
       this.dynamicQuestions.defensive_moments,
       this.dynamicQuestions.empathy_practice,
-      this.dynamicQuestions.small_win
+      this.dynamicQuestions.small_win,
     ].filter(Boolean);
     const promptSet = new Set(questionPrompts.map((p) => (p || '').trim()));
     Object.keys(data).forEach((key) => {
@@ -433,13 +433,13 @@ export class PersonalGrowth extends BaseComponent<IPersonalGrowthProps, IPersona
     this.setText('#empathy-moments-display', String(this.progressData.empathy_moments || 0));
     this.setText(
       '#defensive-reactions-display',
-      String(this.progressData.defensive_reactions || 0)
+      String(this.progressData.defensive_reactions || 0),
     );
     this.setText('#vulnerability-display', String(this.progressData.vulnerability_shared || 0));
     this.setText('#empathy-rating-display', `${this.progressData.self_rating_empathy || 5}/10`);
     this.setText(
       '#responsibility-rating-display',
-      `${this.progressData.self_rating_responsibility || 5}/10`
+      `${this.progressData.self_rating_responsibility || 5}/10`,
     );
   }
 
@@ -457,7 +457,7 @@ export class PersonalGrowth extends BaseComponent<IPersonalGrowthProps, IPersona
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   }
 
@@ -469,7 +469,7 @@ export class PersonalGrowth extends BaseComponent<IPersonalGrowthProps, IPersona
       ask_question: 'Ask a clarifying question instead of defending',
       acknowledge_feelings: "Acknowledge the other person's feelings first",
       say_sorry: "Apologize when I'm wrong",
-      share_vulnerability: 'Share a moment of vulnerability'
+      share_vulnerability: 'Share a moment of vulnerability',
     };
 
     return practices[value] || value;
@@ -518,7 +518,7 @@ export class PersonalGrowth extends BaseComponent<IPersonalGrowthProps, IPersona
       reflection: this.reflectionData,
       progress: this.progressData,
       dynamicQuestions: this.dynamicQuestions,
-      date: this.selectedDate
+      date: this.selectedDate,
     };
   }
 

@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.28% </span>
+                <span class="strong">13.33% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>2/14</span>
+                <span class='fraction'>2/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">15.38% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/10</span>
+                <span class='fraction'>2/13</span>
             </div>
         
             
@@ -99,15 +99,22 @@
 <a name='L34'></a><a href='#L34'>34</a>
 <a name='L35'></a><a href='#L35'>35</a>
 <a name='L36'></a><a href='#L36'>36</a>
-<a name='L37'></a><a href='#L37'>37</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -115,19 +122,22 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -142,8 +152,10 @@
  * can mock/replace it easily if needed.
  */
 export function createMessageChannel(): MessageChannel {
-  if (typeof (globalThis as any).MessageChannel !== 'undefined') {
-    return new (globalThis as any).MessageChannel();
+  if (typeof globalThis !== 'undefined' &amp;&amp; 'MessageChannel' in globalThis) {
+    return new (
+      globalThis as typeof globalThis &amp; { MessageChannel: typeof MessageChannel }
+    ).MessageChannel();
   }
 &nbsp;
   // Minimal polyfill for MessageChannel/MessagePort used in tests.
@@ -151,12 +163,13 @@ export function createMessageChannel(): MessageChannel {
 <span class="cstat-no" title="statement not covered" >    _onmessage: ((ev: { data: unknown }) =&gt; void) | null = null;</span>
 <span class="fstat-no" title="function not covered" >    postMessage(</span>_data: unknown) {
       // no-op; posting will be wired by the creator
+<span class="cstat-no" title="statement not covered" >      void _data;</span>
     }
 <span class="fstat-no" title="function not covered" >    set o</span>nmessage(fn: ((ev: { data: unknown }) =&gt; void) | null) {
 <span class="cstat-no" title="statement not covered" >      this._onmessage = fn;</span>
     }
 <span class="fstat-no" title="function not covered" >    get o</span>nmessage() {
-<span class="cstat-no" title="statement not covered" >      return this._onmessage as any;</span>
+<span class="cstat-no" title="statement not covered" >      return this._onmessage;</span>
     }
   }
 &nbsp;
@@ -164,10 +177,12 @@ export function createMessageChannel(): MessageChannel {
   const port2 = <span class="cstat-no" title="statement not covered" >new FakePort();</span>
 &nbsp;
   // wire ports so postMessage on one triggers onmessage on the other
-  (<span class="cstat-no" title="statement not covered" >port1 as any).postMessage = <span class="fstat-no" title="function not covered" >(d</span>: unknown) =&gt; <span class="cstat-no" title="statement not covered" >setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >port2._onmessage?.({ data: d }),</span> 0);</span></span>
-  (<span class="cstat-no" title="statement not covered" >port2 as any).postMessage = <span class="fstat-no" title="function not covered" >(d</span>: unknown) =&gt; <span class="cstat-no" title="statement not covered" >setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >port1._onmessage?.({ data: d }),</span> 0);</span></span>
+  (<span class="cstat-no" title="statement not covered" >port1 as FakePort &amp; { postMessage: (data: unknown) =&gt; void }).postMessage = <span class="fstat-no" title="function not covered" >(d</span>: unknown) =&gt;</span>
+<span class="cstat-no" title="statement not covered" >    setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >port2._onmessage?.({ data: d }),</span> 0);</span>
+  (<span class="cstat-no" title="statement not covered" >port2 as FakePort &amp; { postMessage: (data: unknown) =&gt; void }).postMessage = <span class="fstat-no" title="function not covered" >(d</span>: unknown) =&gt;</span>
+<span class="cstat-no" title="statement not covered" >    setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >port1._onmessage?.({ data: d }),</span> 0);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return { port1: port1 as any, port2: port2 as any } as unknown as MessageChannel;</span>
+<span class="cstat-no" title="statement not covered" >  return { port1: port1, port2: port2 } as unknown as MessageChannel;</span>
 }
 &nbsp;
 export default createMessageChannel;
@@ -178,7 +193,7 @@ export default createMessageChannel;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-14T15:48:53.838Z
+                at 2025-11-14T22:41:45.550Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

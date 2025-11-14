@@ -20,7 +20,7 @@ export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEve
     { selector: '#defensive-moments', propName: 'defensive_moments' },
     { selector: '#better-response', propName: 'better_response' },
     { selector: '#empathy-practice', propName: 'empathy_practice' },
-    { selector: '#small-win', propName: 'small_win' }
+    { selector: '#small-win', propName: 'small_win' },
   ];
 
   constructor() {
@@ -43,9 +43,9 @@ export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEve
         smallWinQuestion: 'One small win I want to celebrate',
         coreValue: '',
         coreValueLower: '',
-        intention: ''
+        intention: '',
       },
-      [styles]
+      [styles],
     );
 
     // Load today's questions and reflection on mount
@@ -59,7 +59,7 @@ export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEve
       title: 'Evening Integration',
       description: 'Reflect on your day and integrate your learnings',
       coreValue: this.props.coreValue,
-      intention: this.props.intention
+      intention: this.props.intention,
     });
     this.updateTipsContent();
   }
@@ -129,7 +129,7 @@ export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEve
           defensive_moments: d.defensive_moments,
           better_response: d.better_response,
           empathy_practice: d.empathy_practice,
-          small_win: d.small_win
+          small_win: d.small_win,
         };
         this.props.what_went_well = d.what_went_well || '';
         this.props.defensive_moments = d.defensive_moments || '';
@@ -145,7 +145,7 @@ export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEve
         description: `Reflect and integrate your learnings from ${this.formatDate(when)}`,
         coreValue: this.props.coreValue,
         intention: this.props.intention,
-        metadata: `<div class="date-label">${this.formatDate(when)}</div>`
+        metadata: `<div class="date-label">${this.formatDate(when)}</div>`,
       });
 
       this.render();
@@ -159,7 +159,7 @@ export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEve
       const data = {
         what_went_well: this.props.what_went_well,
         empathy_practice: this.props.empathy_practice,
-        small_win: this.props.small_win
+        small_win: this.props.small_win,
       };
       return !data.what_went_well?.trim() ||
         !data.empathy_practice?.trim() ||
@@ -173,7 +173,7 @@ export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEve
       defensive_moments: this.props.defensive_moments || '',
       better_response: this.props.better_response || '',
       empathy_practice: this.props.empathy_practice || '',
-      small_win: this.props.small_win || ''
+      small_win: this.props.small_win || '',
     });
 
     const apiCall = async (data: IEveningCheckinData) => {
@@ -198,7 +198,7 @@ export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEve
       dataBuilder,
       apiCall,
       'Evening reflection saved successfully!',
-      'evening check-in'
+      'evening check-in',
     );
 
     // Update tracking state after successful submission
@@ -209,10 +209,10 @@ export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEve
         defensive_moments: this.props.defensive_moments,
         better_response: this.props.better_response,
         empathy_practice: this.props.empathy_practice,
-        small_win: this.props.small_win
+        small_win: this.props.small_win,
       };
       const eventData: IEveningCheckinData = {
-        ...this.existingData
+        ...this.existingData,
       } as IEveningCheckinData;
       this.emit('submit', eventData);
     }
@@ -283,7 +283,7 @@ export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEve
         description: `Reflect and integrate your learnings from ${this.formatDate(date)}`,
         coreValue: this.props.coreValue,
         intention: this.props.intention,
-        metadata: `<div class="date-label">${this.formatDate(date)}</div>`
+        metadata: `<div class="date-label">${this.formatDate(date)}</div>`,
       });
 
       this.render();
@@ -304,7 +304,7 @@ export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEve
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   }
 }

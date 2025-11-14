@@ -12,3 +12,5 @@ export type { IProgressMetrics } from './IProgressMetrics.ts';
 export type { ICoreIntention } from './ICoreIntention.ts';
 export type { IBaseComponent } from './IBaseComponent.ts';
 export type { IMiddayQuestionsData } from './IMiddayQuestionsData.ts';
+export type { ISwMessage } from './ISwMessage.ts';
+export type { IGrowthJournalWindow } from './IGrowthJournalWindow.ts';

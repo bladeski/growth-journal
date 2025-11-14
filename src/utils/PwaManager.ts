@@ -40,7 +40,7 @@ export class PWAManager {
         // for the worker source (src/sw.ts). Register as a module so TS/ESM code works.
         const swUrl = new URL('../sw.ts', import.meta.url);
         const registration = await navigator.serviceWorker.register(swUrl.toString(), {
-          type: 'module'
+          type: 'module',
         });
         console.log('Service Worker registered successfully:', registration);
         // Diagnostic: log registration worker states to help debug 'active: null' cases
@@ -50,7 +50,7 @@ export class PWAManager {
             installing: registration.installing,
             waiting: registration.waiting,
             scope: registration.scope,
-            updateViaCache: registration.updateViaCache
+            updateViaCache: registration.updateViaCache,
           });
         } catch (e) {
           // ignore logging errors

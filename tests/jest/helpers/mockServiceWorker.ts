@@ -8,7 +8,9 @@
  * `IndexedDbDataService.postMessage`.
  */
 
-export type IdbResponse<T = unknown> = { success: true; items?: T } | { success: false; error: string };
+export type IdbResponse<T = unknown> =
+  | { success: true; items?: T }
+  | { success: false; error: string };
 
 export function installMockServiceWorker(
   responder: (type: string, payload: unknown) => IdbResponse | Promise<IdbResponse>,
@@ -23,7 +25,7 @@ export function installMockServiceWorker(
           if (this._onmessage) this._onmessage({ data });
         }, 0);
       }
-      set onmessage(fn: (ev: { data: unknown }) => void) {
+      set onmessage(fn: ((ev: { data: unknown }) => void) | null) {
         this._onmessage = fn;
       }
       get onmessage() {
@@ -38,8 +40,10 @@ export function installMockServiceWorker(
         this.port1 = new FakePort();
         this.port2 = new FakePort();
         // connect ports so postMessage on one triggers onmessage on the other
-        this.port1.postMessage = (d: unknown) => setTimeout(() => this.port2._onmessage?.({ data: d }), 0);
-        this.port2.postMessage = (d: unknown) => setTimeout(() => this.port1._onmessage?.({ data: d }), 0);
+        this.port1.postMessage = (d: unknown) =>
+          setTimeout(() => this.port2._onmessage?.({ data: d }), 0);
+        this.port2.postMessage = (d: unknown) =>
+          setTimeout(() => this.port1._onmessage?.({ data: d }), 0);
       }
     } as any;
   }
@@ -66,7 +70,11 @@ export function installMockServiceWorker(
   } as unknown as ServiceWorker;
 
   // Provide navigator.serviceWorker and a ready promise which resolves to a registration
-  const registration = { active: mockSW, installing: null, waiting: null } as unknown as ServiceWorkerRegistration;
+  const registration = {
+    active: mockSW,
+    installing: null,
+    waiting: null,
+  } as unknown as ServiceWorkerRegistration;
 
   // Install onto global navigator
   const nav = (global as any).navigator || (global as any).window?.navigator;

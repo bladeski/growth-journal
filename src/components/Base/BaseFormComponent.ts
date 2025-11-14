@@ -17,7 +17,7 @@ const logger = LoggingService.getInstance();
  */
 export abstract class BaseFormComponent<
   TProps extends IFormProps,
-  TEvents = Record<string, never>
+  TEvents = Record<string, never>,
 > extends BaseComponent<TProps, TEvents> {
   /**
    * Handle form submission with standardized validation and loading states
@@ -35,7 +35,7 @@ export abstract class BaseFormComponent<
     dataBuilder: () => TData,
     apiCall: (data: TData) => Promise<unknown>,
     successMessage: string,
-    componentName: string
+    componentName: string,
   ): Promise<void> {
     event.preventDefault();
 
@@ -73,7 +73,7 @@ export abstract class BaseFormComponent<
 
       // Emit submit event with data (subclass should handle)
       this.dispatchEvent(
-        new CustomEvent('submit', { detail: data, bubbles: true, composed: true })
+        new CustomEvent('submit', { detail: data, bubbles: true, composed: true }),
       );
 
       return;
@@ -142,7 +142,7 @@ export abstract class BaseFormComponent<
    */
   cancel(): void {
     this.dispatchEvent(
-      new CustomEvent('cancel', { detail: undefined, bubbles: true, composed: true })
+      new CustomEvent('cancel', { detail: undefined, bubbles: true, composed: true }),
     );
   }
 

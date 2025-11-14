@@ -12,7 +12,7 @@ export class MessageComponent extends BaseComponent<
     'data-prop:message',
     'data-prop:type',
     'data-prop:role',
-    'data-prop:aria-live'
+    'data-prop:aria-live',
   ];
 
   constructor() {
@@ -22,9 +22,9 @@ export class MessageComponent extends BaseComponent<
         message: '',
         type: 'info',
         role: '',
-        ariaLive: ''
+        ariaLive: '',
       },
-      [styles]
+      [styles],
     );
   }
 

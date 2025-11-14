@@ -55,7 +55,7 @@ export class IndexedDbDataService implements IDataService {
     if (!sw) return { success: false, error: 'No active service worker' };
 
     return await new Promise<IdbResponse<TResult>>((resolve) => {
-  const channel = createMessageChannel();
+      const channel = createMessageChannel();
       let responded = false;
       const timeout = setTimeout(() => {
         if (!responded) resolve({ success: false, error: 'Service worker response timeout' });

@@ -11,10 +11,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What moment of patience am I proud of today?',
       defensive_moments: 'When did I feel defensive today? How did pausing help?',
       empathy_practice: 'How did showing patience help me connect with someone?',
-      small_win: "What's one way I demonstrated patience today?"
+      small_win: "What's one way I demonstrated patience today?",
     },
     week_theme: 'Self-Awareness & Emotional Regulation',
-    focus: 'building awareness of reactions'
+    focus: 'building awareness of reactions',
   },
   {
     core_value: 'Awareness',
@@ -25,10 +25,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What emotion did I handle well today?',
       defensive_moments: 'What emotion did I feel most strongly today? Did I name it?',
       empathy_practice: 'How did emotional awareness help me understand someone else?',
-      small_win: "What's one emotion I successfully identified and processed today?"
+      small_win: "What's one emotion I successfully identified and processed today?",
     },
     week_theme: 'Self-Awareness & Emotional Regulation',
-    focus: 'building awareness of reactions'
+    focus: 'building awareness of reactions',
   },
   {
     core_value: 'Active Listening',
@@ -39,10 +39,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'When did I listen really well today?',
       defensive_moments: 'Who did I listen to today? How did they respond?',
       empathy_practice: "How did active listening help me understand someone's perspective?",
-      small_win: "What's one conversation where I listened more than I spoke?"
+      small_win: "What's one conversation where I listened more than I spoke?",
     },
     week_theme: 'Self-Awareness & Emotional Regulation',
-    focus: 'building awareness of reactions'
+    focus: 'building awareness of reactions',
   },
   {
     core_value: 'Kindness',
@@ -53,10 +53,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What act of kindness am I proud of today?',
       defensive_moments: 'How did the other person react? How did I feel giving it?',
       empathy_practice: 'How did showing kindness create connection today?',
-      small_win: 'What genuine compliment or kind gesture did I offer?'
+      small_win: 'What genuine compliment or kind gesture did I offer?',
     },
     week_theme: 'Self-Awareness & Emotional Regulation',
-    focus: 'building awareness of reactions'
+    focus: 'building awareness of reactions',
   },
   {
     core_value: 'Humility',
@@ -67,10 +67,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What went well when I showed humility today?',
       defensive_moments: 'What mistake did I admit? How did it feel?',
       empathy_practice: 'How did admitting a mistake help me connect with others?',
-      small_win: 'What mistake did I own up to without making excuses?'
+      small_win: 'What mistake did I own up to without making excuses?',
     },
     week_theme: 'Self-Awareness & Emotional Regulation',
-    focus: 'building awareness of reactions'
+    focus: 'building awareness of reactions',
   },
   {
     core_value: 'Curiosity',
@@ -81,10 +81,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What did I learn about someone by being curious?',
       defensive_moments: 'What did I learn about them?',
       empathy_practice: 'How did curiosity help me understand someone better?',
-      small_win: "What genuine question did I ask about someone's experience?"
+      small_win: "What genuine question did I ask about someone's experience?",
     },
     week_theme: 'Self-Awareness & Emotional Regulation',
-    focus: 'building awareness of reactions'
+    focus: 'building awareness of reactions',
   },
   {
     core_value: 'Empathy',
@@ -95,10 +95,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: "When did I successfully step into someone else's shoes?",
       defensive_moments: 'Whose perspective did I try to understand?',
       empathy_practice: "How did imagining someone's feelings change my response?",
-      small_win: 'What moment of empathy am I proud of today?'
+      small_win: 'What moment of empathy am I proud of today?',
     },
     week_theme: 'Self-Awareness & Emotional Regulation',
-    focus: 'building awareness of reactions'
+    focus: 'building awareness of reactions',
   },
 
   // Week 2: Empathy & Perspective
@@ -111,10 +111,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'When did I make someone feel heard and understood?',
       defensive_moments: 'What words did I use to show validation?',
       empathy_practice: "How did validating someone's feelings strengthen our connection?",
-      small_win: 'What specific words did I use to validate someone today?'
+      small_win: 'What specific words did I use to validate someone today?',
     },
     week_theme: 'Empathy & Perspective',
-    focus: "stepping into others' shoes"
+    focus: "stepping into others' shoes",
   },
   {
     core_value: 'Self-Awareness',
@@ -125,10 +125,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'When did I find security within myself today?',
       defensive_moments: 'Did I seek validation today? How else could I feel secure?',
       empathy_practice: 'How did self-awareness help me connect authentically?',
-      small_win: 'What moment of inner security am I proud of?'
+      small_win: 'What moment of inner security am I proud of?',
     },
     week_theme: 'Empathy & Perspective',
-    focus: "stepping into others' shoes"
+    focus: "stepping into others' shoes",
   },
   {
     core_value: 'Humility',
@@ -139,10 +139,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'When did I step back and let someone else shine?',
       defensive_moments: 'Did I let someone else shine today?',
       empathy_practice: 'How did humility create space for others to be heard?',
-      small_win: 'What moment of humility made someone else feel valued?'
+      small_win: 'What moment of humility made someone else feel valued?',
     },
     week_theme: 'Empathy & Perspective',
-    focus: "stepping into others' shoes"
+    focus: "stepping into others' shoes",
   },
   {
     core_value: 'Accountability',
@@ -153,10 +153,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What went well when I took accountability today?',
       defensive_moments: 'What apology did I give? Did I include Acknowledge + Impact + Change?',
       empathy_practice: 'How did apologizing help repair connection?',
-      small_win: 'What sincere apology or accountability moment am I proud of?'
+      small_win: 'What sincere apology or accountability moment am I proud of?',
     },
     week_theme: 'Empathy & Perspective',
-    focus: "stepping into others' shoes"
+    focus: "stepping into others' shoes",
   },
   {
     core_value: 'Gratitude',
@@ -167,10 +167,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What am I most grateful for today?',
       defensive_moments: 'Who did I thank? How did it affect them?',
       empathy_practice: 'How did expressing gratitude strengthen a relationship?',
-      small_win: 'What specific gratitude did I express today?'
+      small_win: 'What specific gratitude did I express today?',
     },
     week_theme: 'Empathy & Perspective',
-    focus: "stepping into others' shoes"
+    focus: "stepping into others' shoes",
   },
   {
     core_value: 'Responsibility',
@@ -181,10 +181,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What went well when I took responsibility?',
       defensive_moments: 'What did I own up to today?',
       empathy_practice: 'How did taking responsibility help someone else?',
-      small_win: 'What action did I own without making excuses?'
+      small_win: 'What action did I own without making excuses?',
     },
     week_theme: 'Empathy & Perspective',
-    focus: "stepping into others' shoes"
+    focus: "stepping into others' shoes",
   },
   {
     core_value: 'Integrity',
@@ -195,10 +195,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: "What promise did I keep that I'm proud of?",
       defensive_moments: 'What promise did I keep? How did it feel?',
       empathy_practice: 'How did keeping my word strengthen trust?',
-      small_win: 'What commitment did I honor today?'
+      small_win: 'What commitment did I honor today?',
     },
     week_theme: 'Empathy & Perspective',
-    focus: "stepping into others' shoes"
+    focus: "stepping into others' shoes",
   },
 
   // Week 3: Responsibility & Integrity
@@ -211,10 +211,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What truth did I share courageously?',
       defensive_moments: 'What truth did I share?',
       empathy_practice: 'How did honesty create deeper connection?',
-      small_win: 'What uncomfortable truth did I share with kindness?'
+      small_win: 'What uncomfortable truth did I share with kindness?',
     },
     week_theme: 'Responsibility & Integrity',
-    focus: 'owning actions, building trust'
+    focus: 'owning actions, building trust',
   },
   {
     core_value: 'Ownership',
@@ -225,10 +225,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'When did I take ownership instead of blaming?',
       defensive_moments: 'Did I shift blame today? How could I have owned it?',
       empathy_practice: 'How did owning my part help resolve a situation?',
-      small_win: 'What situation did I own my part in instead of blaming?'
+      small_win: 'What situation did I own my part in instead of blaming?',
     },
     week_theme: 'Responsibility & Integrity',
-    focus: 'owning actions, building trust'
+    focus: 'owning actions, building trust',
   },
   {
     core_value: 'Fairness',
@@ -239,10 +239,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'When did I act fairly even when it was hard?',
       defensive_moments: 'Did I treat someone equally today?',
       empathy_practice: 'How did fairness help someone feel valued?',
-      small_win: 'What fair decision am I proud of today?'
+      small_win: 'What fair decision am I proud of today?',
     },
     week_theme: 'Responsibility & Integrity',
-    focus: 'owning actions, building trust'
+    focus: 'owning actions, building trust',
   },
   {
     core_value: 'Reconciliation',
@@ -253,10 +253,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What relationship repair am I proud of?',
       defensive_moments: 'What step did I take to repair trust?',
       empathy_practice: 'How did working on repair help me understand them?',
-      small_win: 'What gesture of reconciliation did I make?'
+      small_win: 'What gesture of reconciliation did I make?',
     },
     week_theme: 'Responsibility & Integrity',
-    focus: 'owning actions, building trust'
+    focus: 'owning actions, building trust',
   },
   {
     core_value: 'Empathy',
@@ -267,10 +267,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'When did pausing help me respond with empathy?',
       defensive_moments: 'Did I pause and validate someone today?',
       empathy_practice: 'How did combining pause and empathy change an interaction?',
-      small_win: 'What moment of pause + empathy am I proud of?'
+      small_win: 'What moment of pause + empathy am I proud of?',
     },
     week_theme: 'Responsibility & Integrity',
-    focus: 'owning actions, building trust'
+    focus: 'owning actions, building trust',
   },
   {
     core_value: 'Vulnerability',
@@ -281,10 +281,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What vulnerability created connection today?',
       defensive_moments: 'What did I share that felt risky but honest?',
       empathy_practice: 'How did my vulnerability help someone else open up?',
-      small_win: 'What brave, honest thing did I share?'
+      small_win: 'What brave, honest thing did I share?',
     },
     week_theme: 'Responsibility & Integrity',
-    focus: 'owning actions, building trust'
+    focus: 'owning actions, building trust',
   },
   {
     core_value: 'Encouragement',
@@ -295,10 +295,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'Who did I encourage and how?',
       defensive_moments: 'How did I support their growth?',
       empathy_practice: 'How did encouraging them help me understand their struggles?',
-      small_win: 'What specific encouragement did I offer someone?'
+      small_win: 'What specific encouragement did I offer someone?',
     },
     week_theme: 'Responsibility & Integrity',
-    focus: 'owning actions, building trust'
+    focus: 'owning actions, building trust',
   },
 
   // Week 4: Growth & Integration
@@ -311,10 +311,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'How did I handle criticism or feedback well?',
       defensive_moments: 'What criticism did I receive? How did I respond?',
       empathy_practice: 'How did staying calm help me understand their perspective?',
-      small_win: 'What feedback did I receive without getting defensive?'
+      small_win: 'What feedback did I receive without getting defensive?',
     },
     week_theme: 'Growth & Integration',
-    focus: 'combining skills, planning long-term change'
+    focus: 'combining skills, planning long-term change',
   },
   {
     core_value: 'Service',
@@ -325,10 +325,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What act of service brought me joy?',
       defensive_moments: 'What did I do? How did it feel not to be noticed?',
       empathy_practice: 'How did serving others help me understand their needs?',
-      small_win: 'What did I do for someone without them knowing?'
+      small_win: 'What did I do for someone without them knowing?',
     },
     week_theme: 'Growth & Integration',
-    focus: 'combining skills, planning long-term change'
+    focus: 'combining skills, planning long-term change',
   },
   {
     core_value: 'Reflection',
@@ -339,10 +339,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What positive change in myself am I noticing?',
       defensive_moments: 'What old patterns have softened?',
       empathy_practice: 'How has my growth helped me connect better with others?',
-      small_win: 'What old reaction did I handle differently today?'
+      small_win: 'What old reaction did I handle differently today?',
     },
     week_theme: 'Growth & Integration',
-    focus: 'combining skills, planning long-term change'
+    focus: 'combining skills, planning long-term change',
   },
   {
     core_value: 'Vision',
@@ -353,10 +353,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What about today would I want to remember?',
       defensive_moments: 'What do I want to remember about this journey?',
       empathy_practice: 'How has this growth journey changed how I see others?',
-      small_win: 'What insight about myself am I grateful for?'
+      small_win: 'What insight about myself am I grateful for?',
     },
     week_theme: 'Growth & Integration',
-    focus: 'combining skills, planning long-term change'
+    focus: 'combining skills, planning long-term change',
   },
   {
     core_value: 'Celebration',
@@ -367,10 +367,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What growth am I celebrating today?',
       defensive_moments: "What am I proud of? What's my next step?",
       empathy_practice: "How has celebrating progress helped me appreciate others' journeys?",
-      small_win: 'What positive change in myself do I want to acknowledge?'
+      small_win: 'What positive change in myself do I want to acknowledge?',
     },
     week_theme: 'Growth & Integration',
-    focus: 'combining skills, planning long-term change'
+    focus: 'combining skills, planning long-term change',
   },
   {
     core_value: 'Awareness',
@@ -381,10 +381,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'How did I handle a trigger well today?',
       defensive_moments: 'What triggered me today? How did I respond?',
       empathy_practice: "How did understanding my triggers help me empathize with others'?",
-      small_win: 'What trigger did I notice and manage differently?'
+      small_win: 'What trigger did I notice and manage differently?',
     },
     week_theme: 'Growth & Integration',
-    focus: 'combining skills, planning long-term change'
+    focus: 'combining skills, planning long-term change',
   },
   {
     core_value: 'Self-Compassion',
@@ -395,10 +395,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'How did I treat myself with kindness today?',
       defensive_moments: 'How did I show kindness to myself?',
       empathy_practice: 'How did self-compassion help me extend compassion to others?',
-      small_win: 'What gentle way did I treat myself when I made a mistake?'
+      small_win: 'What gentle way did I treat myself when I made a mistake?',
     },
     week_theme: 'Growth & Integration',
-    focus: 'combining skills, planning long-term change'
+    focus: 'combining skills, planning long-term change',
   },
 
   // Final Days: Consolidation
@@ -411,10 +411,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What healthy boundary served me well today?',
       defensive_moments: 'What boundary did I set? How did it feel?',
       empathy_practice: 'How did setting boundaries help me show up better for others?',
-      small_win: 'What boundary did I set with kindness but firmness?'
+      small_win: 'What boundary did I set with kindness but firmness?',
     },
     week_theme: 'Consolidation',
-    focus: 'consolidating learning'
+    focus: 'consolidating learning',
   },
   {
     core_value: 'Adaptability',
@@ -425,10 +425,10 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'How did I adapt well to change today?',
       defensive_moments: 'What change did I welcome today?',
       empathy_practice: "How did embracing change help me understand others' challenges?",
-      small_win: 'What unexpected change did I handle gracefully?'
+      small_win: 'What unexpected change did I handle gracefully?',
     },
     week_theme: 'Consolidation',
-    focus: 'consolidating learning'
+    focus: 'consolidating learning',
   },
 
   // Day 31(for months with 31 days)
@@ -441,11 +441,11 @@ const GrowthIntentionData: IGrowthIntentionData[] = [
       what_went_well: 'What about this journey brings me the most joy?',
       defensive_moments: 'What moment brought me the most joy? How can I carry that forward?',
       empathy_practice: 'How has this journey helped me connect more deeply with others?',
-      small_win: 'What joyful intention am I setting for what comes next?'
+      small_win: 'What joyful intention am I setting for what comes next?',
     },
     week_theme: 'Consolidation',
-    focus: 'consolidating learning'
-  }
+    focus: 'consolidating learning',
+  },
 ];
 
 export default GrowthIntentionData;

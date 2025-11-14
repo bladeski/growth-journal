@@ -57,7 +57,7 @@ describe('IndexedDbDataService (unit)', () => {
     // normalized fields should be strings (or empty) not objects
     expect(typeof gi!.core_value).toBe('string');
     expect(typeof gi!.intention).toBe('string');
-    expect(typeof gi!.refection || gi!.reflection === undefined).toBeTruthy();
+    expect(typeof gi!.reflection || gi!.reflection === undefined).toBeTruthy();
     // evening_questions should be preserved as object shape
     expect(typeof gi!.evening_questions).toBe('object');
 

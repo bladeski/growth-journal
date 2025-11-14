@@ -11,7 +11,7 @@ export class CheckinHeader extends BaseComponent<ICheckinHeaderProps, ICheckinHe
     'data-prop:show-daily-focus',
     'data-prop:core-value',
     'data-prop:intention',
-    'data-prop:metadata'
+    'data-prop:metadata',
   ];
 
   constructor() {
@@ -23,9 +23,9 @@ export class CheckinHeader extends BaseComponent<ICheckinHeaderProps, ICheckinHe
         showDailyFocus: false,
         coreValue: '',
         intention: '',
-        metadata: ''
+        metadata: '',
       },
-      [styles]
+      [styles],
     );
   }
 

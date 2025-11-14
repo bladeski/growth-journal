@@ -16,7 +16,7 @@ export class WeeklyReview extends BaseFormComponent<IWeeklyReviewProps, IWeeklyR
   private readonly fieldMappings = [
     { selector: '#skill-focused', propName: 'skill_focused_on' },
     { selector: '#empathy-rating', propName: 'empathy_self_rating' },
-    { selector: '.rating-value', propName: 'empathy_self_rating' }
+    { selector: '.rating-value', propName: 'empathy_self_rating' },
   ];
 
   constructor() {
@@ -43,9 +43,9 @@ export class WeeklyReview extends BaseFormComponent<IWeeklyReviewProps, IWeeklyR
         successMessage: '',
         isLoading: false,
         submitButtonText: 'Save Weekly Review',
-        loadingClass: ''
+        loadingClass: '',
       },
-      [styles]
+      [styles],
     );
 
     this.currentWeekStart = weekStartString;
@@ -60,7 +60,7 @@ export class WeeklyReview extends BaseFormComponent<IWeeklyReviewProps, IWeeklyR
       this.updateHeaderValues('#weekly-header', {
         title: 'Weekly Review',
         description: 'Reflect on your growth and patterns from this week',
-        metadata: `Week of: <strong>${this.props.week_of}</strong>`
+        metadata: `Week of: <strong>${this.props.week_of}</strong>`,
       });
     }, 0);
   }
@@ -148,7 +148,7 @@ export class WeeklyReview extends BaseFormComponent<IWeeklyReviewProps, IWeeklyR
       what_triggered_me: this.props.what_triggered_me,
       try_differently_next_week: this.props.try_differently_next_week,
       accountability_partner_feedback: this.props.accountability_partner_feedback,
-      empathy_self_rating: parseInt(this.props.empathy_self_rating || '')
+      empathy_self_rating: parseInt(this.props.empathy_self_rating || ''),
     };
 
     try {

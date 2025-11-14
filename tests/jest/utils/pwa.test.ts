@@ -12,7 +12,11 @@ describe('PWAManager.isPWA', () => {
   });
 
   // Helpers to set/restore properties robustly in various jsdom/browser environments
-  function setProp<T extends object, K extends keyof any>(obj: T, prop: K, value: any) {
+  function setProp<T extends object, K extends string | number | symbol>(
+    obj: T,
+    prop: K,
+    value: unknown,
+  ) {
     try {
       Object.defineProperty(obj, prop as string, { value, configurable: true });
     } catch {
@@ -26,7 +30,11 @@ describe('PWAManager.isPWA', () => {
     }
   }
 
-  function setGetter<T extends object, K extends keyof any>(obj: T, prop: K, getter: () => any) {
+  function setGetter<T extends object, K extends string | number | symbol>(
+    obj: T,
+    prop: K,
+    getter: () => unknown,
+  ) {
     try {
       Object.defineProperty(obj, prop as string, { get: getter, configurable: true });
     } catch {
@@ -40,7 +48,11 @@ describe('PWAManager.isPWA', () => {
     }
   }
 
-  function restoreProp<T extends object, K extends keyof any>(obj: T, prop: K, original: any) {
+  function restoreProp<T extends object, K extends string | number | symbol>(
+    obj: T,
+    prop: K,
+    original: any,
+  ) {
     try {
       Object.defineProperty(obj, prop as string, { value: original, configurable: true });
     } catch {
@@ -58,7 +70,7 @@ describe('PWAManager.isPWA', () => {
     setProp(
       window,
       'matchMedia',
-      (query: string) => ({ matches: true, media: query }) as MediaQueryList
+      (query: string) => ({ matches: true, media: query }) as MediaQueryList,
     );
     setProp(window, 'navigator', { standalone: false } as Navigator & { standalone?: boolean });
 
@@ -67,7 +79,11 @@ describe('PWAManager.isPWA', () => {
 
   test('returns false when not standalone', () => {
     // Some CI environments expose a non-configurable matchMedia; use getter to override reliably
-    setGetter(window, 'matchMedia', () => ((query: string) => ({ matches: false, media: query }) as MediaQueryList));
+    setGetter(
+      window,
+      'matchMedia',
+      () => (query: string) => ({ matches: false, media: query }) as MediaQueryList,
+    );
     setProp(window, 'navigator', { standalone: false } as Navigator & { standalone?: boolean });
 
     // ensure referrer doesn't indicate Android app - use getter helper to override jsdom accessor

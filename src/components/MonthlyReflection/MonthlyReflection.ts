@@ -21,7 +21,7 @@ export class MonthlyReflection extends BaseFormComponent<
     { selector: '#apologies-given', propName: 'genuine_apologies_given' },
     { selector: '#paused-reactions', propName: 'times_paused_before_reacting' },
     { selector: '#partner-score', propName: 'accountability_partner_feedback_score' },
-    { selector: '.rating-value', propName: 'accountability_partner_feedback_score' }
+    { selector: '.rating-value', propName: 'accountability_partner_feedback_score' },
   ];
 
   constructor() {
@@ -44,9 +44,9 @@ export class MonthlyReflection extends BaseFormComponent<
         successMessage: '',
         isLoading: false,
         submitButtonText: 'Save Monthly Reflection',
-        loadingClass: ''
+        loadingClass: '',
       },
-      [styles]
+      [styles],
     );
 
     this.currentMonth = monthYearCode;
@@ -60,7 +60,7 @@ export class MonthlyReflection extends BaseFormComponent<
       this.updateHeaderValues('#monthly-header', {
         title: 'Monthly Reflection',
         description: 'Deep dive into your growth patterns and progress',
-        metadata: `Month: <strong>${this.props.month_year}</strong>`
+        metadata: `Month: <strong>${this.props.month_year}</strong>`,
       });
     }, 0);
   }
@@ -81,7 +81,7 @@ export class MonthlyReflection extends BaseFormComponent<
   updateGenuineApologiesGiven = this.createFieldUpdater('genuine_apologies_given');
   updateTimesPausedBeforeReacting = this.createFieldUpdater('times_paused_before_reacting');
   updateAccountabilityPartnerFeedbackScore = this.createFieldUpdater(
-    'accountability_partner_feedback_score'
+    'accountability_partner_feedback_score',
   );
   updateBiggestGrowthMoment = this.createFieldUpdater('biggest_growth_moment');
   updateBiggestChallenge = this.createFieldUpdater('biggest_challenge');
@@ -106,10 +106,10 @@ export class MonthlyReflection extends BaseFormComponent<
         this.props.month_year = mapString(data.month_year ?? this.currentMonth);
         this.props.genuine_apologies_given = mapString(data.genuine_apologies_given ?? '0');
         this.props.times_paused_before_reacting = mapString(
-          data.times_paused_before_reacting ?? '0'
+          data.times_paused_before_reacting ?? '0',
         );
         this.props.accountability_partner_feedback_score = mapString(
-          data.accountability_partner_feedback_score ?? '5'
+          data.accountability_partner_feedback_score ?? '5',
         );
         this.props.biggest_growth_moment = mapString(data.biggest_growth_moment ?? '');
         this.props.biggest_challenge = mapString(data.biggest_challenge ?? '');
@@ -138,14 +138,14 @@ export class MonthlyReflection extends BaseFormComponent<
           parseInt(this.props.accountability_partner_feedback_score || '5') || undefined,
         biggest_growth_moment: (this.props.biggest_growth_moment || '').trim(),
         biggest_challenge: (this.props.biggest_challenge || '').trim(),
-        new_goal_next_month: (this.props.new_goal_next_month || '').trim()
+        new_goal_next_month: (this.props.new_goal_next_month || '').trim(),
       }),
       (data: IMonthlyReflectionData) => {
         const idb = new IndexedDbDataService();
         return idb.setMonthlyReview(data);
       },
       'Monthly reflection saved successfully!',
-      'monthly reflection'
+      'monthly reflection',
     );
 
     // Dispatch event for parent components if successful
@@ -158,7 +158,7 @@ export class MonthlyReflection extends BaseFormComponent<
           parseInt(this.props.accountability_partner_feedback_score || '5') || undefined,
         biggest_growth_moment: (this.props.biggest_growth_moment || '').trim(),
         biggest_challenge: (this.props.biggest_challenge || '').trim(),
-        new_goal_next_month: (this.props.new_goal_next_month || '').trim()
+        new_goal_next_month: (this.props.new_goal_next_month || '').trim(),
       };
       this.hasExistingReflection = true;
       this.emit('submit', data);

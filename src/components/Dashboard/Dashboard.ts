@@ -25,9 +25,9 @@ export class DashboardComponent extends BaseComponent<IDashboardProps, IDashboar
         hasRecentActivity: false,
         recentActivity: { morning: [], evening: [] },
         isLoading: true,
-        completionPercentage: 0
+        completionPercentage: 0,
       },
-      [styles]
+      [styles],
     );
   }
 
@@ -64,7 +64,7 @@ export class DashboardComponent extends BaseComponent<IDashboardProps, IDashboar
 
     // Update header progress bar
     const headerProgressFill = this.shadowRoot.querySelector(
-      '.header-progress-fill'
+      '.header-progress-fill',
     ) as HTMLElement;
     if (headerProgressFill) {
       headerProgressFill.style.width = `${this.props.completionPercentage}%`;
@@ -190,7 +190,7 @@ export class DashboardComponent extends BaseComponent<IDashboardProps, IDashboar
       const todayStatus = analytics?.today_status || {
         morning_completed: false,
         midday_completed: false,
-        evening_completed: false
+        evening_completed: false,
       };
 
       // Debug: show the todayStatus mapping applied to the dashboard

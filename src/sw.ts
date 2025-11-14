@@ -43,7 +43,8 @@ self.addEventListener('install', (event: ExtendableEvent) => {
 
       // Attempt to discover additional assets referenced by index.html (app shell)
       try {
-        const indexUrl = normalizedUrls.find((u) => u.endsWith('/index.html')) ||
+        const indexUrl =
+          normalizedUrls.find((u) => u.endsWith('/index.html')) ||
           new URL('index.html', scopeBase).toString();
         const resp = await fetch(indexUrl);
         if (resp && resp.ok) {
@@ -58,7 +59,11 @@ self.addEventListener('install', (event: ExtendableEvent) => {
               const u = new URL(raw, indexUrl);
               if (u.origin !== self.location.origin) continue;
               // only cache assets with known extensions or in-scope HTML
-              if (ASSET_EXT.test(u.pathname) || u.pathname.endsWith('.html') || u.pathname.endsWith('manifest.json')) {
+              if (
+                ASSET_EXT.test(u.pathname) ||
+                u.pathname.endsWith('.html') ||
+                u.pathname.endsWith('manifest.json')
+              ) {
                 urls.add(u.toString());
               }
             } catch (e) {
@@ -79,11 +84,12 @@ self.addEventListener('install', (event: ExtendableEvent) => {
       } catch (e) {
         console.warn('Failed to fetch/parse index.html for asset discovery', e);
       }
-    })()
+    })(),
   );
 
   // Immediately activate the new service worker instead of waiting
-  const swSelf: any = self;
+  // Use ServiceWorkerGlobalScope-ish typing available in the worker
+  const swSelf = self as unknown as ServiceWorkerGlobalScope & { skipWaiting?: () => void };
   if (typeof swSelf.skipWaiting === 'function') swSelf.skipWaiting();
 });
 
@@ -114,7 +120,11 @@ self.addEventListener('fetch', (event: FetchEvent) => {
           }
           return networkResponse;
         })
-        .catch(() => caches.match('/index.html').then((cached) => cached || new Response('Offline', { status: 503 })))
+        .catch(() =>
+          caches
+            .match('/index.html')
+            .then((cached) => cached || new Response('Offline', { status: 503 })),
+        ),
     );
     return;
   }
@@ -145,7 +155,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 
       // No cache - await network
       return networkFetch.then((resp) => resp || new Response('Not found', { status: 404 }));
-    })
+    }),
   );
 });
 
@@ -159,12 +169,14 @@ self.addEventListener('activate', (event: ExtendableEvent) => {
             console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
-        })
+        }),
       );
-    })
+    }),
   );
   // Claim clients immediately so the new SW controls pages without a navigation
-  const swSelf2: any = self;
+  const swSelf2 = self as unknown as ServiceWorkerGlobalScope & {
+    clients?: { claim?: () => Promise<void> };
+  };
   if (swSelf2.clients && typeof swSelf2.clients.claim === 'function') swSelf2.clients.claim();
 });
 
@@ -182,33 +194,32 @@ async function syncJournalEntries() {
 }
 
 // Simple message-based IndexedDB handling for client requests
-interface SwMessage {
-  type: string;
-  payload?: unknown;
-}
+import type { ISwMessage } from './interfaces/index.ts';
 
-self.addEventListener('message', (event: MessageEvent<SwMessage>) => {
-  const msg = event.data || ({} as SwMessage);
+self.addEventListener('message', (event: MessageEvent<ISwMessage>) => {
+  const msg = event.data || ({} as ISwMessage);
   if (!msg || !msg.type) return;
 
   const respond = (payload: unknown) => {
     if (event.ports && event.ports[0]) {
       event.ports[0].postMessage({ type: msg.type + ':response', payload });
-    } else if (event.source && 'postMessage' in event.source) {
-      (event.source as { postMessage?: (data: unknown) => void }).postMessage?.({
-        type: msg.type + ':response',
-        payload
-      });
+      return;
+    }
+    const src = event.source as unknown as
+      | { postMessage?: (data: unknown, transfer?: Transferable[]) => void }
+      | undefined;
+    if (src && typeof src.postMessage === 'function') {
+      src.postMessage({ type: msg.type + ':response', payload });
     }
   };
 
   // map message types to store names and operations
   const mapGetAll: Record<string, string> = {
-    'IDB:GetGrowthIntentions': 'intentions'
+    'IDB:GetGrowthIntentions': 'intentions',
   };
 
   const mapSetAll: Record<string, string> = {
-    'IDB:SetGrowthIntentions': 'intentions'
+    'IDB:SetGrowthIntentions': 'intentions',
   };
 
   const mapAdd: Record<string, string> = {
@@ -217,7 +228,7 @@ self.addEventListener('message', (event: MessageEvent<SwMessage>) => {
     'IDB:AddMiddayCheckin': 'midday',
     'IDB:AddEveningReflection': 'evening',
     'IDB:AddWeeklyReview': 'weekly',
-    'IDB:AddMonthlyReview': 'monthly'
+    'IDB:AddMonthlyReview': 'monthly',
   };
 
   const mapGetByDate: Record<string, string> = {
@@ -227,7 +238,7 @@ self.addEventListener('message', (event: MessageEvent<SwMessage>) => {
     'IDB:GetMiddayCheckin': 'midday',
     'IDB:GetEveningReflection': 'evening',
     'IDB:GetWeeklyReview': 'weekly',
-    'IDB:GetMonthlyReview': 'monthly'
+    'IDB:GetMonthlyReview': 'monthly',
   };
 
   // Handle getAll
@@ -293,9 +304,9 @@ self.addEventListener('message', (event: MessageEvent<SwMessage>) => {
       .then((db) =>
         Promise.all(
           ['intentions', 'morning', 'midday', 'evening', 'weekly', 'monthly'].map((s) =>
-            readAllFromStore(db, s).then((items) => ({ store: s, items }))
-          )
-        )
+            readAllFromStore(db, s).then((items) => ({ store: s, items })),
+          ),
+        ),
       )
       .then((results) => {
         const payload: Record<string, unknown[]> = {};
@@ -313,9 +324,15 @@ self.addEventListener('message', (event: MessageEvent<SwMessage>) => {
       .then((db) =>
         Promise.all(
           Object.keys(payload).map((storeName) =>
-            writeAllToStore(db, storeName, Array.isArray(payload[storeName]) ? (payload[storeName] as Record<string, unknown>[]) : [])
-          )
-        )
+            writeAllToStore(
+              db,
+              storeName,
+              Array.isArray(payload[storeName])
+                ? (payload[storeName] as Record<string, unknown>[])
+                : [],
+            ),
+          ),
+        ),
       )
       .then(() => respond({ success: true }))
       .catch((err) => respond({ success: false, error: String(err) }));
@@ -358,7 +375,7 @@ function readAllFromStore(db: IDBDatabase, storeName: string): Promise<Record<st
 function writeAllToStore(
   db: IDBDatabase,
   storeName: string,
-  items: Record<string, unknown>[]
+  items: Record<string, unknown>[],
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(storeName, 'readwrite');
@@ -377,7 +394,7 @@ function writeAllToStore(
 function getAllByDate(
   db: IDBDatabase,
   storeName: string,
-  date: string
+  date: string,
 ): Promise<Record<string, unknown>[]> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(storeName, 'readonly');
@@ -393,7 +410,7 @@ function getAllByDate(
             const d = typeof obj.date === 'string' ? obj.date : undefined;
             const w = typeof obj.week_of === 'string' ? obj.week_of : undefined;
             return d === date || w === date;
-          })
+          }),
         );
       };
       req.onerror = () => reject(req.error);
@@ -409,9 +426,10 @@ function getAllByDate(
 function addToStore(
   db: IDBDatabase,
   storeName: string,
-  item: Record<string, unknown>
+  item: Record<string, unknown>,
 ): Promise<IDBValidKey | undefined> {
   return new Promise((resolve, reject) => {
+    type ItemRecord = Record<string, unknown>;
     const tx = db.transaction(storeName, 'readwrite');
     const store = tx.objectStore(storeName);
     // For time-keyed stores (daily/weekly/monthly checkins), prefer using the date as
@@ -432,10 +450,10 @@ function addToStore(
         if (finalDate) {
           // ensure the id uses the date string so subsequent lookups keyed by date are stable
           // also ensure the canonical 'date' field exists for index lookups
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (item as any).id = finalDate;
+          const it = item as ItemRecord;
+          it.id = finalDate;
           // populate the date field if missing
-          if (!(item as any).date) (item as any).date = finalDate;
+          if (!it.date) it.date = finalDate;
         }
       }
     } catch (e) {

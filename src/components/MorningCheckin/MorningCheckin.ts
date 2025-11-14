@@ -16,7 +16,7 @@ export class MorningCheckin extends BaseFormComponent<IMorningCheckinProps, IMor
 
   private readonly fieldMappings = [
     { selector: '#practice-intention', propName: 'intention' },
-    { selector: '#core-value', propName: 'core_value' }
+    { selector: '#core-value', propName: 'core_value' },
   ];
 
   constructor() {
@@ -29,9 +29,9 @@ export class MorningCheckin extends BaseFormComponent<IMorningCheckinProps, IMor
         successMessage: '',
         isLoading: false,
         submitButtonText: 'Save Morning Intentions',
-        loadingClass: ''
+        loadingClass: '',
       },
-      [styles]
+      [styles],
     );
 
     // Load today's checkin (or prefill) on creation
@@ -43,7 +43,7 @@ export class MorningCheckin extends BaseFormComponent<IMorningCheckinProps, IMor
     this.updateFormValues(this.fieldMappings);
     this.updateHeaderValues('#morning-header', {
       title: 'Morning Intentions',
-      description: 'Set your intentions and focus for the day ahead'
+      description: 'Set your intentions and focus for the day ahead',
     });
   }
 
@@ -66,7 +66,7 @@ export class MorningCheckin extends BaseFormComponent<IMorningCheckinProps, IMor
         this.hasExistingCheckin = true;
         this.existingData = {
           intention: existing.intention,
-          core_value: existing.core_value
+          core_value: existing.core_value,
         };
         this.props.intention = existing.intention || '';
         this.props.core_value = existing.core_value || '';
@@ -93,7 +93,7 @@ export class MorningCheckin extends BaseFormComponent<IMorningCheckinProps, IMor
       this.updateHeaderValues('#morning-header', {
         title: 'Morning Intentions',
         description: `Set your intentions and focus for ${this.formatDate(when)}`,
-        metadata: `<div class="date-label">${this.formatDate(when)}</div>`
+        metadata: `<div class="date-label">${this.formatDate(when)}</div>`,
       });
     } catch (error) {
       logger.error('Error loading morning check-in', { error, date });
@@ -104,7 +104,7 @@ export class MorningCheckin extends BaseFormComponent<IMorningCheckinProps, IMor
     const validator = () => {
       const data = {
         practice_intention: this.props.intention,
-        core_value: this.props.core_value
+        core_value: this.props.core_value,
       };
 
       if (!data.practice_intention?.trim() || !data.core_value?.trim()) {
@@ -115,7 +115,7 @@ export class MorningCheckin extends BaseFormComponent<IMorningCheckinProps, IMor
 
     const dataBuilder = (): IMorningCheckinData => ({
       intention: String(this.props.intention || ''),
-      core_value: String(this.props.core_value || '')
+      core_value: String(this.props.core_value || ''),
     });
 
     const apiCall = async (data: IMorningCheckinData) => {
@@ -128,7 +128,7 @@ export class MorningCheckin extends BaseFormComponent<IMorningCheckinProps, IMor
           entry_date: this.targetDate,
           morning_intention: data.intention,
           core_value: data.core_value,
-          date: this.targetDate
+          date: this.targetDate,
         } as Record<string, unknown>;
         result = await idb.addGrowthIntention(intentionData);
       } else {
@@ -149,7 +149,7 @@ export class MorningCheckin extends BaseFormComponent<IMorningCheckinProps, IMor
       dataBuilder,
       apiCall,
       'Morning intentions saved successfully!',
-      'morning check-in'
+      'morning check-in',
     );
   }
 
@@ -174,7 +174,7 @@ export class MorningCheckin extends BaseFormComponent<IMorningCheckinProps, IMor
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   }
 }

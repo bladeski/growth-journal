@@ -3,15 +3,21 @@ import IndexedDbDataService from '../../../src/data/IndexedDbDataService.ts';
 import { jest } from '@jest/globals';
 
 describe('normalizeReflections (dryRun)', () => {
-  const legacyRecord = {
+  const legacyRecord: {
+    date: string;
+    small_win: string;
+    reflection_text: string;
+  } = {
     date: '2025-01-01',
     small_win: 'I was patient',
     reflection_text: 'I noticed my reaction to feedback',
-  } as unknown;
+  };
 
   test('reports changes and does not write when dryRun=true', async () => {
-    const getEveningReflection = jest.fn().mockResolvedValue(legacyRecord);
-    const setEveningReflection = jest.fn().mockResolvedValue(undefined);
+    const getEveningReflection = jest
+      .fn<(date: string) => Promise<unknown>>()
+      .mockResolvedValue(legacyRecord);
+    const setEveningReflection = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
 
     type Proto = {
       getEveningReflection?: (date: string) => Promise<unknown>;
@@ -23,7 +29,7 @@ describe('normalizeReflections (dryRun)', () => {
     const origSet = proto.setEveningReflection;
 
     proto.getEveningReflection = getEveningReflection as unknown as (
-      date: string
+      date: string,
     ) => Promise<unknown>;
     proto.setEveningReflection = setEveningReflection as unknown as (rec: unknown) => Promise<void>;
 

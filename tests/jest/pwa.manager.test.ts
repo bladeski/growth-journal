@@ -1,4 +1,4 @@
-import { PWAManager } from '../../src/utils/pwa.ts';
+import { PWAManager } from '../../src/utils/PwaManager.ts';
 
 describe('PWAManager ignore persistence', () => {
   beforeEach(() => {
@@ -18,10 +18,10 @@ describe('PWAManager ignore persistence', () => {
     new PWAManager();
 
     // Simulate beforeinstallprompt event being fired
-    const ev = new Event('beforeinstallprompt');
+    const ev = new Event('beforeinstallprompt') as Event & { preventDefault: () => void };
     // attach a preventDefault since the manager calls it
-  // attach a preventDefault shim for the test event
-  (ev as any).preventDefault = () => {};
+    // attach a preventDefault shim for the test event
+    ev.preventDefault = () => {};
     window.dispatchEvent(ev);
 
     // The showInstallButton should have wired up ignore button to persist

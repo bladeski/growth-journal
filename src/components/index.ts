@@ -24,6 +24,6 @@ export {
   CheckinHeader,
   MessageComponent,
   Card,
-  ReflectionTips
-  ,SettingsComponent
+  ReflectionTips,
+  SettingsComponent,
 };

@@ -2,6 +2,11 @@ import { BaseComponent } from '../Base/BaseComponent.ts';
 import template from 'bundle-text:./Settings.pug';
 import styles from 'bundle-text:./Settings.css';
 import IndexedDbDataService from '../../data/IndexedDbDataService.ts';
+import { CheckinHeader } from '../CheckinHeader/CheckinHeader.ts';
+import { PWAManager } from '../../utils/PwaManager.ts';
+import { IGrowthJournalWindow } from '../../interfaces/IGrowthJournalWindow.ts';
+
+const GrowthJournalWindow = window as IGrowthJournalWindow;
 
 export class SettingsComponent extends BaseComponent {
   constructor() {
@@ -10,13 +15,13 @@ export class SettingsComponent extends BaseComponent {
 
   protected async onMount(): Promise<void> {
     // configure the shared checkin-header for consistent appearance
-    const header = this.shadowRoot?.querySelector('#settings-header') as any;
+    const header = this.shadowRoot?.querySelector('#settings-header') as CheckinHeader;
     if (header && typeof header.updateHeader === 'function') {
       header.updateHeader({
         title: 'Settings',
         description: 'App settings and data management',
         coreValue: '',
-        intention: ''
+        intention: '',
       });
 
       header.addEventListener('cancel', () => {
@@ -30,7 +35,10 @@ export class SettingsComponent extends BaseComponent {
     const fileNameSpan = this.shadowRoot?.querySelector('#import-file-name') as HTMLElement | null;
     if (fileInput && fileNameSpan) {
       fileInput.addEventListener('change', () => {
-        const f = fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].name : 'No file chosen';
+        const f =
+          fileInput.files && fileInput.files.length > 0
+            ? fileInput.files[0].name
+            : 'No file chosen';
         fileNameSpan.textContent = f;
       });
     }
@@ -39,14 +47,15 @@ export class SettingsComponent extends BaseComponent {
     const installBtn = this.shadowRoot?.querySelector('#install-pwa') as HTMLButtonElement | null;
     const installStatus = this.shadowRoot?.querySelector('#install-status') as HTMLElement | null;
     if (installBtn) {
-      const deferred = (window as any).__deferredPwaPrompt as BeforeInstallPromptEvent | undefined;
+      const deferred = GrowthJournalWindow.__deferredPwaPrompt;
       if (deferred) {
         installStatus && (installStatus.textContent = 'Install available');
         installBtn.addEventListener('click', async () => {
           try {
             deferred.prompt();
             const choice = await deferred.userChoice;
-            if (choice.outcome === 'accepted') installStatus && (installStatus.textContent = 'Installed');
+            if (choice.outcome === 'accepted')
+              installStatus && (installStatus.textContent = 'Installed');
             else installStatus && (installStatus.textContent = 'Dismissed');
           } catch (e) {
             installStatus && (installStatus.textContent = 'Install failed');
@@ -55,8 +64,9 @@ export class SettingsComponent extends BaseComponent {
       } else {
         // Try to reuse the global install button in the page (#install-button) which PWAManager sets up
         const globalInstall = document.getElementById('install-button') as HTMLButtonElement | null;
+
         if (globalInstall) {
-          if ( (window as any).PWAManager && (window as any).PWAManager.isPWA && (window as any).PWAManager.isPWA() ) {
+          if (PWAManager.isPWA()) {
             installStatus && (installStatus.textContent = 'Already installed');
             installBtn.disabled = true;
           } else {
@@ -74,7 +84,7 @@ export class SettingsComponent extends BaseComponent {
   exportDb(): void {
     // uses global helper exposed by IndexedDbDataService
     try {
-      (window as unknown as Window & { exportGrowthDb?: () => Promise<void> }).exportGrowthDb?.();
+      GrowthJournalWindow.exportGrowthDb?.();
       this.showMessage('Export started (download should begin shortly)');
     } catch (e) {
       this.showMessage('Export failed');
@@ -89,10 +99,7 @@ export class SettingsComponent extends BaseComponent {
     }
     const file = input.files[0];
     try {
-      const importer = window as unknown as Window & {
-        importGrowthDb?: (jsonOrFile: Record<string, unknown[]> | File) => Promise<void>;
-      };
-      await importer.importGrowthDb?.(file);
+      await GrowthJournalWindow.importGrowthDb?.(file);
       this.showMessage('Import completed');
     } catch (e) {
       console.error(e);
@@ -142,7 +149,7 @@ export class SettingsComponent extends BaseComponent {
     const installBtn = this.shadowRoot?.querySelector('#install-pwa') as HTMLButtonElement | null;
 
     try {
-      const deferred = (window as any).__deferredPwaPrompt as BeforeInstallPromptEvent | undefined;
+      const deferred = GrowthJournalWindow.__deferredPwaPrompt;
       if (deferred) {
         installStatus && (installStatus.textContent = 'Prompting...');
         try {
@@ -164,7 +171,7 @@ export class SettingsComponent extends BaseComponent {
       const globalInstall = document.getElementById('install-button') as HTMLButtonElement | null;
       if (globalInstall) {
         // If app is already installed, reflect that
-        if ((window as any).PWAManager && (window as any).PWAManager.isPWA && (window as any).PWAManager.isPWA()) {
+        if (PWAManager.isPWA()) {
           installStatus && (installStatus.textContent = 'Already installed');
           if (installBtn) installBtn.disabled = true;
           return;
