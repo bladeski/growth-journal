@@ -9,6 +9,13 @@ yarn-error.log
 # Build output
 dist/
 
+# Test artifacts
+test-results/
+downloads/
+.playwright/
+playwright-report/
+.last-run.json
+
 # Environment files
 .env
 
