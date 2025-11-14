@@ -37,13 +37,15 @@
   font-size: var(--font-size-md);
 }
 
-.metrics-section:last-child, .reflection-section:last-child {
+.metrics-section:last-child,
+.reflection-section:last-child {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0;
 }
 
-.metrics-section h3, .reflection-section h3 {
+.metrics-section h3,
+.reflection-section h3 {
   color: var(--color-text);
   margin-bottom: var(--spacing-lg);
   font-size: var(--heading-3);
@@ -108,7 +110,7 @@
   .reflection-container {
     padding: var(--spacing-md);
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }

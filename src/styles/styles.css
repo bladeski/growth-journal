@@ -1,7 +1,8 @@
-@import url("vars.css");
-@import url("base.css");
+@import url('vars.css');
+@import url('base.css');
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100vh;
@@ -55,7 +56,7 @@ body {
   border: none;
   padding: 12px 20px;
   border-radius: 28px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
   font-weight: 600;
   cursor: pointer;
   pointer-events: auto;
@@ -69,7 +70,7 @@ body {
 /* Ignore button inside container */
 .button-ignore,
 #install-ignore {
-  background: rgba(0,0,0,0.06);
+  background: rgba(0, 0, 0, 0.06);
   border: 0;
   padding: 8px 10px;
   border-radius: 18px;

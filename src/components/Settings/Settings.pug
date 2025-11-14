@@ -1,0 +1,34 @@
+.settings-page
+  checkin-header#settings-header(
+    data-prop:title="Settings"
+    data-prop:description="Backup app data and manage installation."
+  )
+  .dashboard-content
+    .settings-grid
+      card-component.backups
+        span(slot="title") Backups
+        .card-body
+          span Export or import a JSON backup of your journal data.
+          .controls
+            button#export-db.btn(data-action="click:exportDb") Export Backup
+            label.btn.file-label(for="import-file") Choose file
+            input#import-file(type="file" accept="application/json" aria-label="Import backup file")
+            button#import-db.btn(data-action="click:importDb") Import Backup
+
+      card-component.data-management
+        span(slot="title") Data Management
+        .card-body
+          span Clear all journal data (this will delete all entries). Use with caution.
+          .controls
+            button#clear-db.btn.danger(data-action="click:clearDb") Clear All Data
+
+      card-component.app-management
+        span(slot="title") App
+        .card-body
+          span Manage app cache and PWA installation.
+          .controls
+            button#clear-cache.btn(data-action="click:clearCache") Clear Cache
+              button#install-pwa.btn(data-action="click:installPwa") Install App
+              span.install-status#install-status
+
+    .settings-message#settings-message

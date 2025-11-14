@@ -1,20 +1,20 @@
 module.exports = {
-  // use jsdom environment for DOM APIs
-  testEnvironment: 'jest-environment-jsdom',
+  // Use the ts-jest ESM preset so TypeScript files under 'type: module' are handled.
+  preset: 'ts-jest/presets/default-esm',
+  testEnvironment: 'jsdom',
+  // Treat TypeScript files as ESM and instruct ts-jest to emit ESM so imports
+  // like `import ... from` work when package.json has "type": "module".
+  extensionsToTreatAsEsm: ['.ts'],
   transform: {
-    '^.+\\.ts$': [
-      'ts-jest',
-      {
-        tsconfig: {
-          target: 'ES2020',
-          module: 'ESNext',
-          esModuleInterop: true
-        },
-        useESM: true
-      }
-    ]
+    '^.+\\.(ts|tsx)$': ['ts-jest']
   },
-  moduleFileExtensions: ['ts', 'js', 'json', 'node'],
-  testMatch: ['**/__tests__/**/*.test.+(ts|js)'],
-  extensionsToTreatAsEsm: ['.ts']
+  moduleNameMapper: {
+    '^bundle-text:(.*)$': '<rootDir>/tests/__mocks__/textMock.mjs',
+    '\\.(css|pug)$': '<rootDir>/tests/__mocks__/fileMock.mjs',
+    '^@bladeski/logger$': '<rootDir>/__mocks__/@bladeski/logger.js'
+  },
+  testMatch: ['<rootDir>/tests/jest/**/*.test.+(ts|js)'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  collectCoverage: true,
+  coverageDirectory: 'coverage'
 };

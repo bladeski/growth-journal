@@ -6,6 +6,7 @@
 export class PWAManager {
   private deferredPrompt: BeforeInstallPromptEvent | null = null;
   private isOnline: boolean = navigator.onLine;
+  private installDismissed: boolean = false;
 
   constructor() {
     this.init();
@@ -16,7 +17,8 @@ export class PWAManager {
     try {
       const dismissed = localStorage.getItem('pwa-install-dismissed');
       if (dismissed === '1') {
-        // leave install container hidden; PWAManager will not show it
+        // remember that user dismissed install so we don't show the container
+        this.installDismissed = true;
       }
     } catch (e) {
       // ignore storage errors
@@ -38,7 +40,7 @@ export class PWAManager {
         // for the worker source (src/sw.ts). Register as a module so TS/ESM code works.
         const swUrl = new URL('../sw.ts', import.meta.url);
         const registration = await navigator.serviceWorker.register(swUrl.toString(), {
-          type: 'module',
+          type: 'module'
         });
         console.log('Service Worker registered successfully:', registration);
         // Diagnostic: log registration worker states to help debug 'active: null' cases
@@ -48,7 +50,7 @@ export class PWAManager {
             installing: registration.installing,
             waiting: registration.waiting,
             scope: registration.scope,
-            updateViaCache: registration.updateViaCache,
+            updateViaCache: registration.updateViaCache
           });
         } catch (e) {
           // ignore logging errors
@@ -94,6 +96,9 @@ export class PWAManager {
    * Show install button when PWA can be installed
    */
   private showInstallButton(): void {
+    // If the user previously dismissed the install prompt, don't show it again
+    if (this.installDismissed) return;
+
     const container = document.querySelector('.install-container') as HTMLElement | null;
     if (!container) return;
     console.log('PWAManager: showing install container');
@@ -122,6 +127,7 @@ export class PWAManager {
         // Optionally persist dismissal to localStorage
         try {
           localStorage.setItem('pwa-install-dismissed', '1');
+          this.installDismissed = true;
         } catch (e) {
           // ignore storage errors
         }
@@ -139,6 +145,18 @@ export class PWAManager {
 
       if (choiceResult.outcome === 'accepted') {
         console.log('User accepted the install prompt');
+        // Hide the install UI after acceptance
+        const container = document.querySelector('.install-container') as HTMLElement | null;
+        if (container) {
+          container.style.display = 'none';
+        }
+        // Persist dismissal so the UI stays hidden on reload
+        try {
+          localStorage.setItem('pwa-install-dismissed', '1');
+          this.installDismissed = true;
+        } catch (e) {
+          // ignore
+        }
       } else {
         console.log('User dismissed the install prompt');
       }
@@ -147,6 +165,11 @@ export class PWAManager {
       const installBtn = document.getElementById('install-button');
       if (installBtn) {
         installBtn.style.display = 'none';
+      }
+      // Also hide the ignore button if present
+      const ignoreBtn = document.getElementById('install-ignore');
+      if (ignoreBtn) {
+        ignoreBtn.style.display = 'none';
       }
     }
   }
@@ -174,9 +197,20 @@ export class PWAManager {
     window.addEventListener('appinstalled', () => {
       console.log('PWA was installed');
       // Hide install button or show success message
+      const container = document.querySelector('.install-container') as HTMLElement | null;
+      if (container) {
+        container.style.display = 'none';
+      }
       const installBtn = document.getElementById('install-button');
-      if (installBtn) {
-        installBtn.style.display = 'none';
+      if (installBtn) installBtn.style.display = 'none';
+      const ignoreBtn = document.getElementById('install-ignore');
+      if (ignoreBtn) ignoreBtn.style.display = 'none';
+      // Persist dismissal so the UI remains hidden after installation
+      try {
+        localStorage.setItem('pwa-install-dismissed', '1');
+        this.installDismissed = true;
+      } catch (e) {
+        // ignore
       }
     });
   }

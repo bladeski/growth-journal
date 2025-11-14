@@ -14,16 +14,15 @@
         .summary-item
           .summary-label Morning Intention
           .summary-status#morning-status Not set
-          button.edit-btn#edit-morning(data-action="click:editMorningCheckin") Edit
+          a.btn.edit-btn#edit-morning(data-href="#/morning") Edit
         .summary-item
           .summary-label Midday Reflection
           .summary-status#midday-status Not set
-          button.edit-btn#edit-midday(data-action="click:editMiddayCheckin") Edit
+          a.btn.edit-btn#edit-midday(data-href="#/midday") Edit
         .summary-item
           .summary-label Evening Integration
           .summary-status#evening-status Not set
-          button.edit-btn#edit-evening(data-action="click:editEveningCheckin") Edit
-
+          a.btn.edit-btn#edit-evening(data-href="#/evening") Edit
       .quick-nav
         h4 Quick Navigation
         button.nav-btn(data-action="click:goToToday") Today

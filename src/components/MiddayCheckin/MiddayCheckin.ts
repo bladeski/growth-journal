@@ -1,14 +1,15 @@
-import { BaseFormComponent } from '../BaseFormComponent';
-import IndexedDbDataService from '../../data/IndexedDbDataService';
-import type { IMiddayCheckinData } from '../../interfaces';
-import type { MiddayCheckinProps, MiddayCheckinEvents } from '../../models';
+import { BaseFormComponent } from '../Base/BaseFormComponent.ts';
+import IndexedDbDataService from '../../data/IndexedDbDataService.ts';
+import type { IMiddayCheckinData } from '../../interfaces/index.ts';
+import type { IMiddayCheckinProps } from './interfaces/IMiddayCheckinProps.ts';
+import type { IMiddayCheckinEvents } from './interfaces/IMiddayCheckinEvents.ts';
 import styles from 'bundle-text:./MiddayCheckin.css';
 import templateHtml from 'bundle-text:./MiddayCheckin.pug';
 import { LoggingService } from '@bladeski/logger';
 
 const logger = LoggingService.getInstance();
 
-export class MiddayCheckin extends BaseFormComponent<MiddayCheckinProps, MiddayCheckinEvents> {
+export class MiddayCheckin extends BaseFormComponent<IMiddayCheckinProps, IMiddayCheckinEvents> {
   private hasExistingCheckin = false;
   private existingData: IMiddayCheckinData | null = null;
   private targetDate: string | null = null;
@@ -19,7 +20,7 @@ export class MiddayCheckin extends BaseFormComponent<MiddayCheckinProps, MiddayC
   private readonly fieldMappings = [
     { selector: '#defensive-moment', propName: 'defensive_moment' },
     { selector: '#initial-thought', propName: 'initial_thought' },
-    { selector: '#healthier-reframe', propName: 'healthier_reframe' },
+    { selector: '#healthier-reframe', propName: 'healthier_reframe' }
   ];
 
   constructor() {
@@ -37,9 +38,9 @@ export class MiddayCheckin extends BaseFormComponent<MiddayCheckinProps, MiddayC
         daySpecificQuestion: '',
         coreValue: '',
         coreValueLower: '',
-        intention: '',
+        intention: ''
       },
-      [styles],
+      [styles]
     );
 
     // Load today's checkin/questions on mount
@@ -52,7 +53,7 @@ export class MiddayCheckin extends BaseFormComponent<MiddayCheckinProps, MiddayC
     this.updateHeaderValues('#midday-header', {
       title: 'Midday Reflection',
       coreValue: this.props.coreValue,
-      intention: this.props.intention,
+      intention: this.props.intention
     });
     this.updateTipsContent();
   }
@@ -68,7 +69,9 @@ export class MiddayCheckin extends BaseFormComponent<MiddayCheckinProps, MiddayC
     if (listItems.length < 5) return;
 
     // Update specific list items with the core value
-    const coreValue = this.props.coreValueLower || this.props.coreValue.toLowerCase();
+    const coreValue =
+      this.props.coreValueLower ||
+      (this.props.coreValue ? String(this.props.coreValue).toLowerCase() : '');
 
     // Second item: "Your intention for today is about {coreValue}"
     listItems[1].textContent = `Your intention for today is about ${coreValue}`;
@@ -121,7 +124,7 @@ export class MiddayCheckin extends BaseFormComponent<MiddayCheckinProps, MiddayC
         description: `Pause and reflect on ${this.formatDate(when)}`,
         coreValue: this.props.coreValue,
         intention: this.props.intention,
-        metadata: `<div class="date-label">${this.formatDate(when)}</div>`,
+        metadata: `<div class="date-label">${this.formatDate(when)}</div>`
       });
     } catch (error) {
       logger.error('Error loading midday check-in', { error, date });
@@ -130,9 +133,9 @@ export class MiddayCheckin extends BaseFormComponent<MiddayCheckinProps, MiddayC
 
   async handleSubmit(event: Event): Promise<void> {
     const dataBuilder = (): IMiddayCheckinData => ({
-      defensive_moment: this.props.defensive_moment,
-      initial_thought: this.props.initial_thought,
-      healthier_reframe: this.props.healthier_reframe,
+      defensive_moment: this.props.defensive_moment || '',
+      initial_thought: this.props.initial_thought || '',
+      healthier_reframe: this.props.healthier_reframe || ''
     });
 
     const apiCall = async (data: IMiddayCheckinData) => {
@@ -143,7 +146,7 @@ export class MiddayCheckin extends BaseFormComponent<MiddayCheckinProps, MiddayC
         // For historic dates, include check_date in the midday checkin data
         const dateAwareData = {
           ...data,
-          check_date: this.targetDate,
+          check_date: this.targetDate
         } as unknown as IMiddayCheckinData & { check_date: string };
         const result = await idb.setMiddayCheckin(dateAwareData);
         this.hasExistingCheckin = true;
@@ -170,7 +173,7 @@ export class MiddayCheckin extends BaseFormComponent<MiddayCheckinProps, MiddayC
       dataBuilder,
       apiCall,
       'Midday reflection saved successfully!',
-      'midday check-in',
+      'midday check-in'
     );
   }
 
@@ -195,7 +198,7 @@ export class MiddayCheckin extends BaseFormComponent<MiddayCheckinProps, MiddayC
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric',
+      day: 'numeric'
     });
   }
 }

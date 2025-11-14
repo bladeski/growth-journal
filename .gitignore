@@ -11,6 +11,7 @@ dist/
 
 # Test artifacts
 test-results/
+test-downloads/
 downloads/
 .playwright/
 playwright-report/

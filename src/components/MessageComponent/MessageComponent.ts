@@ -1,14 +1,18 @@
-import { BaseComponent } from '../BaseComponent';
-import type { MessageComponentProps, MessageComponentEvents } from '../../models';
+import { BaseComponent } from '../Base/BaseComponent.ts';
+import type { IMessageComponentProps } from './interfaces/IMessageComponentProps.ts';
+import type { IMessageComponentEvents } from './interfaces/IMessageComponentEvents.ts';
 import styles from 'bundle-text:./MessageComponent.css';
 import templateHtml from 'bundle-text:./MessageComponent.pug';
 
-export class MessageComponent extends BaseComponent<MessageComponentProps, MessageComponentEvents> {
+export class MessageComponent extends BaseComponent<
+  IMessageComponentProps,
+  IMessageComponentEvents
+> {
   static observedAttributes = [
     'data-prop:message',
     'data-prop:type',
     'data-prop:role',
-    'data-prop:aria-live',
+    'data-prop:aria-live'
   ];
 
   constructor() {
@@ -18,9 +22,9 @@ export class MessageComponent extends BaseComponent<MessageComponentProps, Messa
         message: '',
         type: 'info',
         role: '',
-        ariaLive: '',
+        ariaLive: ''
       },
-      [styles],
+      [styles]
     );
   }
 

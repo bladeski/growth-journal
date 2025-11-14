@@ -1,5 +1,8 @@
 const CACHE_NAME = 'growth-journal-v1';
-const urlsToCache = ['/', '/index.html', '/index.js', '/styles/styles.css', '/manifest.json'];
+const urlsToCache = ['/', '/index.html', '/manifest.json'];
+
+// Asset extensions we care to pre-cache when discovered in HTML
+const ASSET_EXT = /\.(?:js|css|png|jpg|jpeg|svg|webmanifest|woff2|woff|ttf|json)$/i;
 
 // Install event - cache resources
 self.addEventListener('install', (event: ExtendableEvent) => {
@@ -22,23 +25,61 @@ self.addEventListener('install', (event: ExtendableEvent) => {
     (async () => {
       const cache = await caches.open(CACHE_NAME);
       console.log('Opened cache', CACHE_NAME, 'base:', scopeBase);
+
+      // Try to pre-cache the basic list first
       try {
         await cache.addAll(normalizedUrls);
-        console.log('All assets cached successfully');
+        console.log('Basic assets cached successfully');
       } catch (err) {
-        // addAll failed for at least one request - try to add items individually
-        console.warn('cache.addAll failed, falling back to per-item add', err);
+        console.warn('cache.addAll failed for basic assets, will attempt best-effort adds', err);
         for (const url of normalizedUrls) {
           try {
             await cache.add(url);
-            console.log('Cached', url);
           } catch (e) {
-            // Log and continue - do not fail the install because missing a non-critical asset
             console.warn('Failed to cache', url, e);
           }
         }
       }
-    })(),
+
+      // Attempt to discover additional assets referenced by index.html (app shell)
+      try {
+        const indexUrl = normalizedUrls.find((u) => u.endsWith('/index.html')) ||
+          new URL('index.html', scopeBase).toString();
+        const resp = await fetch(indexUrl);
+        if (resp && resp.ok) {
+          const text = await resp.text();
+          const urls = new Set<string>();
+          const attrRe = /(?:href|src)=["']([^"']+)["']/gi;
+          let m: RegExpExecArray | null;
+          while ((m = attrRe.exec(text))) {
+            const raw = m[1];
+            // ignore absolute external URLs
+            try {
+              const u = new URL(raw, indexUrl);
+              if (u.origin !== self.location.origin) continue;
+              // only cache assets with known extensions or in-scope HTML
+              if (ASSET_EXT.test(u.pathname) || u.pathname.endsWith('.html') || u.pathname.endsWith('manifest.json')) {
+                urls.add(u.toString());
+              }
+            } catch (e) {
+              // skip malformed urls
+            }
+          }
+
+          // Add discovered assets to cache (best-effort)
+          for (const u of Array.from(urls)) {
+            try {
+              await cache.add(u);
+              console.log('Pre-cached discovered asset', u);
+            } catch (e) {
+              // ignore failures for optional assets
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to fetch/parse index.html for asset discovery', e);
+      }
+    })()
   );
 
   // Immediately activate the new service worker instead of waiting
@@ -46,44 +87,66 @@ self.addEventListener('install', (event: ExtendableEvent) => {
   if (typeof swSelf.skipWaiting === 'function') swSelf.skipWaiting();
 });
 
-// Fetch event - serve cached content when offline
+// Fetch event - network-first for navigations, stale-while-revalidate for assets
 self.addEventListener('fetch', (event: FetchEvent) => {
   const req = event.request;
+
+  // Only handle GET same-origin requests
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
 
   // Determine if this is a navigation/HTML request
   const accept = req.headers && req.headers.get && req.headers.get('accept');
   const isNavigation = req.mode === 'navigate' || (accept && accept.includes('text/html'));
 
   if (isNavigation) {
-    // Network-first for navigations so the app shell updates to latest version
+    // Network-first for navigations so the app shell updates to latest version.
+    // Fallback to cached index.html when offline.
     event.respondWith(
       fetch(req)
         .then((networkResponse) => {
           try {
             const copy = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
           } catch (e) {
             // ignore cache write errors
           }
           return networkResponse;
         })
-        .catch(() =>
-          caches
-            .match('/index.html')
-            .then(
-              (cached) =>
-                cached ||
-                caches
-                  .match(req)
-                  .then((response) => response || new Response('Not found', { status: 404 })),
-            ),
-        ),
+        .catch(() => caches.match('/index.html').then((cached) => cached || new Response('Offline', { status: 503 })))
     );
     return;
   }
 
-  // Cache-first for other requests (assets)
-  event.respondWith(caches.match(req).then((response) => response || fetch(req)));
+  // Stale-while-revalidate for other GET assets: respond from cache if available,
+  // and fetch in background to update the cache.
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      const networkFetch = fetch(req)
+        .then((networkResponse) => {
+          // Update cache asynchronously
+          try {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+          } catch (e) {
+            // ignore
+          }
+          return networkResponse;
+        })
+        .catch(() => undefined);
+
+      // If cached response exists, return it immediately and update cache in background
+      if (cached) {
+        // Kick off network update but don't wait for it
+        networkFetch;
+        return cached;
+      }
+
+      // No cache - await network
+      return networkFetch.then((resp) => resp || new Response('Not found', { status: 404 }));
+    })
+  );
 });
 
 // Activate event - clean up old caches
@@ -96,9 +159,9 @@ self.addEventListener('activate', (event: ExtendableEvent) => {
             console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
-        }),
+        })
       );
-    }),
+    })
   );
   // Claim clients immediately so the new SW controls pages without a navigation
   const swSelf2: any = self;
@@ -134,18 +197,18 @@ self.addEventListener('message', (event: MessageEvent<SwMessage>) => {
     } else if (event.source && 'postMessage' in event.source) {
       (event.source as { postMessage?: (data: unknown) => void }).postMessage?.({
         type: msg.type + ':response',
-        payload,
+        payload
       });
     }
   };
 
   // map message types to store names and operations
   const mapGetAll: Record<string, string> = {
-    'IDB:GetGrowthIntentions': 'intentions',
+    'IDB:GetGrowthIntentions': 'intentions'
   };
 
   const mapSetAll: Record<string, string> = {
-    'IDB:SetGrowthIntentions': 'intentions',
+    'IDB:SetGrowthIntentions': 'intentions'
   };
 
   const mapAdd: Record<string, string> = {
@@ -154,7 +217,7 @@ self.addEventListener('message', (event: MessageEvent<SwMessage>) => {
     'IDB:AddMiddayCheckin': 'midday',
     'IDB:AddEveningReflection': 'evening',
     'IDB:AddWeeklyReview': 'weekly',
-    'IDB:AddMonthlyReview': 'monthly',
+    'IDB:AddMonthlyReview': 'monthly'
   };
 
   const mapGetByDate: Record<string, string> = {
@@ -164,7 +227,7 @@ self.addEventListener('message', (event: MessageEvent<SwMessage>) => {
     'IDB:GetMiddayCheckin': 'midday',
     'IDB:GetEveningReflection': 'evening',
     'IDB:GetWeeklyReview': 'weekly',
-    'IDB:GetMonthlyReview': 'monthly',
+    'IDB:GetMonthlyReview': 'monthly'
   };
 
   // Handle getAll
@@ -223,6 +286,41 @@ self.addEventListener('message', (event: MessageEvent<SwMessage>) => {
       .catch((err) => respond({ success: false, error: String(err) }));
     return;
   }
+
+  // Export all stores as a backup
+  if (msg.type === 'IDB:ExportAll') {
+    openDB()
+      .then((db) =>
+        Promise.all(
+          ['intentions', 'morning', 'midday', 'evening', 'weekly', 'monthly'].map((s) =>
+            readAllFromStore(db, s).then((items) => ({ store: s, items }))
+          )
+        )
+      )
+      .then((results) => {
+        const payload: Record<string, unknown[]> = {};
+        for (const r of results) payload[r.store] = r.items || [];
+        respond({ success: true, items: payload });
+      })
+      .catch((err) => respond({ success: false, error: String(err) }));
+    return;
+  }
+
+  // Import all stores from payload { storeName: [items] }
+  if (msg.type === 'IDB:ImportAll') {
+    const payload = (msg.payload as Record<string, unknown[]>) || {};
+    openDB()
+      .then((db) =>
+        Promise.all(
+          Object.keys(payload).map((storeName) =>
+            writeAllToStore(db, storeName, Array.isArray(payload[storeName]) ? (payload[storeName] as Record<string, unknown>[]) : [])
+          )
+        )
+      )
+      .then(() => respond({ success: true }))
+      .catch((err) => respond({ success: false, error: String(err) }));
+    return;
+  }
 });
 
 function openDB(): Promise<IDBDatabase> {
@@ -260,7 +358,7 @@ function readAllFromStore(db: IDBDatabase, storeName: string): Promise<Record<st
 function writeAllToStore(
   db: IDBDatabase,
   storeName: string,
-  items: Record<string, unknown>[],
+  items: Record<string, unknown>[]
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(storeName, 'readwrite');
@@ -279,7 +377,7 @@ function writeAllToStore(
 function getAllByDate(
   db: IDBDatabase,
   storeName: string,
-  date: string,
+  date: string
 ): Promise<Record<string, unknown>[]> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(storeName, 'readonly');
@@ -295,7 +393,7 @@ function getAllByDate(
             const d = typeof obj.date === 'string' ? obj.date : undefined;
             const w = typeof obj.week_of === 'string' ? obj.week_of : undefined;
             return d === date || w === date;
-          }),
+          })
         );
       };
       req.onerror = () => reject(req.error);
@@ -311,7 +409,7 @@ function getAllByDate(
 function addToStore(
   db: IDBDatabase,
   storeName: string,
-  item: Record<string, unknown>,
+  item: Record<string, unknown>
 ): Promise<IDBValidKey | undefined> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(storeName, 'readwrite');
@@ -344,7 +442,21 @@ function addToStore(
       // ignore assignment errors and proceed to add
     }
 
-    const req = store.add(item as unknown);
+    // Use put for time-keyed stores so saving an entry for the same date will
+    // update (upsert) the existing record instead of failing on duplicate keys.
+    // For other stores (like intentions) keep add() to preserve auto-increment behavior.
+    let req: IDBRequest;
+    try {
+      const timeStores = new Set(['morning', 'midday', 'evening', 'weekly', 'monthly']);
+      if (timeStores.has(storeName)) {
+        req = store.put(item as unknown);
+      } else {
+        req = store.add(item as unknown);
+      }
+    } catch (e) {
+      reject(e);
+      return;
+    }
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });

@@ -38,12 +38,12 @@
   /* 24px */
 
   /* color palette */
-  --primary-colour-rgb: 163, 200, 137;   /* #A3C889 */
+  --primary-colour-rgb: 163, 200, 137; /* #A3C889 */
   --secondary-colour-rgb: 224, 219, 166; /* #E0DBA6 */
-  --accent-colour-rgb: 44, 110, 111;      /* #2C6E6F */
-  --background-colour-rgb: 255, 252, 243;/* #FFFCF3 */
-  --text-colour-rgb: 56, 56, 56;       /* #383838 */
-  
+  --accent-colour-rgb: 44, 110, 111; /* #2C6E6F */
+  --background-colour-rgb: 255, 252, 243; /* #FFFCF3 */
+  --text-colour-rgb: 56, 56, 56; /* #383838 */
+
   /* RGB design tokens */
   --color-primary-rgb: var(--primary-colour-rgb);
   --color-primary-contrast-rgb: 255, 255, 255; /* #FFFFFF */
@@ -55,10 +55,10 @@
   --color-muted-rgb: 108, 117, 125; /* #6C757D */
   --color-border-rgb: 229, 229, 227; /* #E5E5E3 */
 
-  --color-info-rgb: 90, 156, 168;     /* #5A9CA8 */
+  --color-info-rgb: 90, 156, 168; /* #5A9CA8 */
   --color-success-rgb: 107, 163, 104; /* #6BA368 */
-  --color-warning-rgb: 217, 164, 65;  /* #D9A443 */
-  --color-danger-rgb: 199, 92, 92;    /* #C75C5C */
+  --color-warning-rgb: 217, 164, 65; /* #D9A443 */
+  --color-danger-rgb: 199, 92, 92; /* #C75C5C */
 
   --color-primary: rgb(var(--color-primary-rgb));
   --color-primary-contrast: rgb(var(--color-primary-contrast-rgb));
@@ -77,19 +77,19 @@
 
   /* extended color variants */
   --color-primary-light: rgba(var(--color-primary-rgb), 0.1);
-  --color-primary-dark: rgb(134, 158, 107);  /* Darker sage green */
+  --color-primary-dark: rgb(134, 158, 107); /* Darker sage green */
   --color-secondary-light: rgba(var(--color-secondary-rgb), 0.1);
   --color-secondary-dark: rgb(186, 173, 133); /* Darker warm sand */
   --color-accent-light: rgba(var(--color-accent-rgb), 0.1);
-  --color-accent-dark: rgb(35, 88, 89);      /* Darker deep teal */
+  --color-accent-dark: rgb(35, 88, 89); /* Darker deep teal */
   --color-info-light: rgba(var(--color-info-rgb), 0.1);
-  --color-info-dark: rgb(72, 125, 134);     /* Darker muted teal */
+  --color-info-dark: rgb(72, 125, 134); /* Darker muted teal */
   --color-success-light: rgba(var(--color-success-rgb), 0.1);
-  --color-success-dark: rgb(86, 130, 83);   /* Darker sage green */
+  --color-success-dark: rgb(86, 130, 83); /* Darker sage green */
   --color-warning-light: rgba(var(--color-warning-rgb), 0.1);
-  --color-warning-dark: rgb(174, 131, 52);  /* Darker warm yellow */
+  --color-warning-dark: rgb(174, 131, 52); /* Darker warm yellow */
   --color-danger-light: rgba(var(--color-danger-rgb), 0.1);
-  --color-danger-dark: rgb(159, 74, 74);    /* Darker muted red */
+  --color-danger-dark: rgb(159, 74, 74); /* Darker muted red */
   --color-text-secondary: rgb(108, 117, 125);
   --color-background: var(--color-bg);
 
@@ -109,10 +109,10 @@
   /* shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 15px 25px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.05);
   /* control card shadows centrally; set to 'none' to remove shadow from cards */
-  --card-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
 
   /* form styling */
   --form-border: 1px solid rgba(var(--color-border-rgb), 0.9);
@@ -188,4 +188,3 @@
   --checkin-tips-width: 250px;
   --checkin-body-gap: var(--spacing-lg);
 }
-

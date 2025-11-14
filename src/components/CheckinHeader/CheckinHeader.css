@@ -111,7 +111,6 @@ h2,
   display: none;
 }
 
-
 .week-info,
 .month-info,
 .metadata-container {
@@ -157,4 +156,3 @@ h2,
     font-size: var(--font-size-xl);
   }
 }
-

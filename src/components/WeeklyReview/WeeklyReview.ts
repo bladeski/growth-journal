@@ -1,14 +1,14 @@
-import { BaseFormComponent } from '../BaseFormComponent';
-import IndexedDbDataService from '../../data/IndexedDbDataService';
-import type { IWeeklyReviewData } from '../../interfaces';
-import type { WeeklyReviewProps, WeeklyReviewEvents } from '../../models';
+import { BaseFormComponent } from '../Base/BaseFormComponent.ts';
+import IndexedDbDataService from '../../data/IndexedDbDataService.ts';
+import { IWeeklyReviewData } from '../../interfaces/IWeeklyReviewData.ts';
 import styles from 'bundle-text:./WeeklyReview.css';
 import templateHtml from 'bundle-text:./WeeklyReview.pug';
 import { LoggingService } from '@bladeski/logger';
-
+import { IWeeklyReviewProps } from './interfaces/IWeeklyReviewProps.ts';
+import { IWeeklyReviewEvents } from './interfaces/IWeeklyReviewEvents.ts';
 const logger = LoggingService.getInstance();
 
-export class WeeklyReview extends BaseFormComponent<WeeklyReviewProps, WeeklyReviewEvents> {
+export class WeeklyReview extends BaseFormComponent<IWeeklyReviewProps, IWeeklyReviewEvents> {
   private hasExistingReview = false;
   private currentWeekStart = '';
   private _renderTimeout: number | null = null;
@@ -16,7 +16,7 @@ export class WeeklyReview extends BaseFormComponent<WeeklyReviewProps, WeeklyRev
   private readonly fieldMappings = [
     { selector: '#skill-focused', propName: 'skill_focused_on' },
     { selector: '#empathy-rating', propName: 'empathy_self_rating' },
-    { selector: '.rating-value', propName: 'empathy_self_rating' },
+    { selector: '.rating-value', propName: 'empathy_self_rating' }
   ];
 
   constructor() {
@@ -43,9 +43,9 @@ export class WeeklyReview extends BaseFormComponent<WeeklyReviewProps, WeeklyRev
         successMessage: '',
         isLoading: false,
         submitButtonText: 'Save Weekly Review',
-        loadingClass: '',
+        loadingClass: ''
       },
-      [styles],
+      [styles]
     );
 
     this.currentWeekStart = weekStartString;
@@ -60,7 +60,7 @@ export class WeeklyReview extends BaseFormComponent<WeeklyReviewProps, WeeklyRev
       this.updateHeaderValues('#weekly-header', {
         title: 'Weekly Review',
         description: 'Reflect on your growth and patterns from this week',
-        metadata: `Week of: <strong>${this.props.week_of}</strong>`,
+        metadata: `Week of: <strong>${this.props.week_of}</strong>`
       });
     }, 0);
   }
@@ -141,14 +141,14 @@ export class WeeklyReview extends BaseFormComponent<WeeklyReviewProps, WeeklyRev
     this.clearMessages();
 
     const data: IWeeklyReviewData = {
-      week_of: this.props.week_of,
+      week_of: this.props.week_of || '',
       skill_focused_on: this.props.skill_focused_on,
       situation_handled_better: this.props.situation_handled_better,
       situation_old_patterns: this.props.situation_old_patterns,
       what_triggered_me: this.props.what_triggered_me,
       try_differently_next_week: this.props.try_differently_next_week,
       accountability_partner_feedback: this.props.accountability_partner_feedback,
-      empathy_self_rating: parseInt(this.props.empathy_self_rating),
+      empathy_self_rating: parseInt(this.props.empathy_self_rating || '')
     };
 
     try {

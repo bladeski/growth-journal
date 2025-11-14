@@ -1,19 +1,40 @@
 import { LoggingService } from '@bladeski/logger';
-import './components/index';
-import { PWAManager } from './utils/pwa';
-import GrowthIntentions from './data/GrowthIntentions';
-import IndexedDbDataService from './data/IndexedDbDataService';
-import { ILoggingConfigurationOptions } from '@bladeski/logger/dist/interfaces';
+import { PWAManager } from './utils/pwa.ts';
+import GrowthIntentions from './data/GrowthIntentions.ts';
+import IndexedDbDataService from './data/IndexedDbDataService.ts';
+// Register web components (side-effect import)
+import './components/index.ts';
+// Minimal local logging configuration type to avoid requiring @bladeski/logger type files
+interface ILoggingConfigurationOptions {
+  applicationName: string;
+  enableConsoleCore?: boolean;
+  enableLocalStorageCore?: boolean;
+}
+
+function setupWelcomeMessage() {
+  const welcomeSection = document.querySelector('.welcome-section');
+  if (welcomeSection) {
+    const statusMessage = document.createElement('p');
+    statusMessage.className = 'pwa-status';
+
+    if (pwaManager.getOnlineStatus()) {
+      statusMessage.textContent = '✅ Ready to capture your growth journey!';
+    } else {
+      statusMessage.textContent = '📱 Offline mode - your entries will sync later';
+    }
+
+    welcomeSection.appendChild(statusMessage);
+  }
+}
 
 // Initialize PWA functionality
 const pwaManager = new PWAManager();
-
 // App initialization
 function initializeApp() {
   const options: ILoggingConfigurationOptions = {
     applicationName: 'growth-journal',
     enableConsoleCore: true,
-    enableLocalStorageCore: true,
+    enableLocalStorageCore: true
   };
   LoggingService.initialize(options);
   const logger = LoggingService.getInstance();
@@ -33,22 +54,21 @@ function initializeApp() {
 
   // Make app globally available for debugging
   (window as unknown as { app?: GrowthJournalApp }).app = app;
-}
 
-function setupWelcomeMessage() {
-  const welcomeSection = document.querySelector('.welcome-section');
-  if (welcomeSection) {
-    const statusMessage = document.createElement('p');
-    statusMessage.className = 'pwa-status';
-
-    if (pwaManager.getOnlineStatus()) {
-      statusMessage.textContent = '✅ Ready to capture your growth journey!';
-    } else {
-      statusMessage.textContent = '📱 Offline mode - your entries will sync later';
+  // Basic hash routing: map location.hash to app views
+  const handleHashRoute = () => {
+    try {
+      const raw = location.hash || '#/';
+      const route = raw.replace(/^#\/?/, '').split(/[\/?#]/)[0];
+      (app as GrowthJournalApp).navigateTo(route || '');
+    } catch (e) {
+      // swallow routing errors
     }
+  };
 
-    welcomeSection.appendChild(statusMessage);
-  }
+  // Route on startup and on hash changes
+  handleHashRoute();
+  window.addEventListener('hashchange', handleHashRoute);
 }
 
 async function seedIntentionsIfNeeded(): Promise<void> {
@@ -91,6 +111,7 @@ class GrowthJournalApp {
   private weeklyReview: HTMLElement | null = null;
   private monthlyReflection: HTMLElement | null = null;
   private personalGrowth: HTMLElement | null = null;
+  private settingsComponent: HTMLElement | null = null;
   private currentView:
     | 'dashboard'
     | 'morning'
@@ -98,9 +119,10 @@ class GrowthJournalApp {
     | 'evening'
     | 'weekly'
     | 'monthly'
-    | 'growth' = 'dashboard';
+    | 'growth'
+    | 'settings' = 'dashboard';
   private navigationHistory: Array<
-    'dashboard' | 'morning' | 'midday' | 'evening' | 'weekly' | 'monthly' | 'growth'
+    'dashboard' | 'morning' | 'midday' | 'evening' | 'weekly' | 'monthly' | 'growth' | 'settings'
   > = [];
   private logger: LoggingService = LoggingService.getInstance();
 
@@ -109,6 +131,7 @@ class GrowthJournalApp {
     this.dashboard = document.getElementById('dashboard');
 
     this.setupEventListeners();
+    // Show dashboard by default
     this.showDashboard();
   }
 
@@ -199,6 +222,29 @@ class GrowthJournalApp {
     this.monthlyReflection = null;
     this.removeComponent(this.personalGrowth);
     this.personalGrowth = null;
+    this.removeComponent(this.settingsComponent);
+    this.settingsComponent = null;
+  }
+
+  private showSettings(skipHistory = false): void {
+    if (!skipHistory) {
+      this.navigationHistory.push(this.currentView);
+    }
+    this.currentView = 'settings';
+    this.hideAllViews();
+    if (!this.settingsComponent) {
+      this.settingsComponent = this.createAndAppend('app-settings', 'app-settings');
+      // Allow the settings component to signal close/navigation if it emits 'close' or 'navigate-back'
+      this.settingsComponent.addEventListener('close', () => this.showDashboard());
+      this.settingsComponent.addEventListener('navigate-back', () => this.goBack());
+    }
+    this.settingsComponent.style.display = 'block';
+    // Ensure the URL reflects the current view
+    try {
+      if (location.hash !== '#/settings') location.hash = '#/settings';
+    } catch (e) {
+      // ignore in environments where location isn't writable
+    }
   }
 
   private createAndAppend(tagName: string, id?: string): HTMLElement {
@@ -220,6 +266,13 @@ class GrowthJournalApp {
     if (this.dashboard) {
       this.dashboard.style.display = 'block';
     }
+    // Ensure the URL reflects the dashboard view
+    try {
+      if (location.hash !== '#/' && location.hash !== '' && location.hash !== '#/dashboard') location.hash = '#/';
+      else if (location.hash === '' ) location.hash = '#/';
+    } catch (e) {
+      // ignore in environments where location isn't writable
+    }
   }
 
   private showMorningCheckin(date?: string, skipHistory = false): void {
@@ -231,7 +284,7 @@ class GrowthJournalApp {
     if (!skipHistory) {
       this.logger.info('Pushing to history before showing morning checkin', {
         current: this.currentView,
-        historyLength: this.navigationHistory.length,
+        historyLength: this.navigationHistory.length
       });
       this.navigationHistory.push(this.currentView);
     }
@@ -255,6 +308,12 @@ class GrowthJournalApp {
     if (date && this.isDateSettable(this.morningCheckin)) {
       this.morningCheckin.setDate(date);
     }
+    // Reflect the morning view in the URL
+    try {
+      if (location.hash !== '#/morning') location.hash = '#/morning';
+    } catch (e) {
+      // ignore
+    }
   }
 
   private showMiddayCheckin(date?: string, skipHistory = false): void {
@@ -276,6 +335,11 @@ class GrowthJournalApp {
     this.middayCheckin.style.display = 'block';
     if (date && this.isDateSettable(this.middayCheckin)) {
       this.middayCheckin.setDate(date);
+    }
+    try {
+      if (location.hash !== '#/midday') location.hash = '#/midday';
+    } catch (e) {
+      // ignore
     }
   }
 
@@ -299,6 +363,11 @@ class GrowthJournalApp {
     if (date && this.isDateSettable(this.eveningCheckin)) {
       this.eveningCheckin.setDate(date);
     }
+    try {
+      if (location.hash !== '#/evening') location.hash = '#/evening';
+    } catch (e) {
+      // ignore
+    }
   }
 
   private showWeeklyReview(skipHistory = false): void {
@@ -318,6 +387,11 @@ class GrowthJournalApp {
       this.weeklyReview.addEventListener('cancel', () => this.showDashboard());
     }
     this.weeklyReview.style.display = 'block';
+    try {
+      if (location.hash !== '#/weekly') location.hash = '#/weekly';
+    } catch (e) {
+      // ignore
+    }
   }
 
   private showMonthlyReflection(skipHistory = false): void {
@@ -337,6 +411,11 @@ class GrowthJournalApp {
       this.monthlyReflection.addEventListener('cancel', () => this.showDashboard());
     }
     this.monthlyReflection.style.display = 'block';
+    try {
+      if (location.hash !== '#/monthly') location.hash = '#/monthly';
+    } catch (e) {
+      // ignore
+    }
   }
 
   private showPersonalGrowth(skipHistory = false): void {
@@ -375,6 +454,11 @@ class GrowthJournalApp {
       });
     }
     this.personalGrowth.style.display = 'block';
+    try {
+      if (location.hash !== '#/growth') location.hash = '#/growth';
+    } catch (e) {
+      // ignore
+    }
   }
 
   private goBack(): void {
@@ -382,7 +466,7 @@ class GrowthJournalApp {
     this.logger.info('Going back', {
       previousView,
       currentView: this.currentView,
-      remainingHistory: this.navigationHistory.length,
+      remainingHistory: this.navigationHistory.length
     });
 
     if (!previousView) {
@@ -403,6 +487,9 @@ class GrowthJournalApp {
         break;
       case 'growth':
         this.showPersonalGrowth(true);
+        break;
+      case 'settings':
+        this.showSettings(true);
         break;
       case 'morning':
         this.showMorningCheckin(undefined, true);
@@ -427,6 +514,39 @@ class GrowthJournalApp {
   // Public method to navigate back to dashboard
   public goToDashboard(): void {
     this.showDashboard();
+  }
+
+  // Public navigation entry for hash routing
+  public navigateTo(route?: string): void {
+    switch ((route || '').toLowerCase()) {
+      case 'settings':
+        this.showSettings();
+        break;
+      case 'morning':
+        this.showMorningCheckin();
+        break;
+      case 'midday':
+        this.showMiddayCheckin();
+        break;
+      case 'evening':
+        this.showEveningCheckin();
+        break;
+      case 'weekly':
+        this.showWeeklyReview();
+        break;
+      case 'monthly':
+        this.showMonthlyReflection();
+        break;
+      case 'growth':
+        this.showPersonalGrowth();
+        break;
+      case 'analytics':
+        this.logger.info('Analytics view requested (via hash)');
+        alert('Analytics feature coming soon!');
+        break;
+      default:
+        this.showDashboard();
+    }
   }
 }
 

@@ -1,0 +1,180 @@
+.settings-page {
+	min-height: 100vh;
+	background: var(--color-bg);
+}
+
+/* Ensure the shared checkin-header has spacing below it on the Settings page */
+.settings-page checkin-header {
+  display: block;
+  margin-bottom: var(--space-xl);
+}
+
+.app-header {
+	width: 100%;
+	margin: 0;
+	margin-bottom: var(--space-xl);
+	padding: 0;
+	background: var(--color-surface);
+	box-shadow: var(--shadow-md);
+	position: relative;
+	left: 0;
+	right: 0;
+}
+
+.header-content {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: calc(var(--space-md) * 1.25) var(--space-lg);
+}
+
+.app-title {
+	display: flex;
+	align-items: center;
+	gap: var(--space-md);
+}
+
+.app-logo {
+	width: var(--space-2xl);
+	height: var(--space-2xl);
+	object-fit: contain;
+}
+
+.app-header h1 {
+	color: var(--color-primary);
+	margin: 0;
+	font-size: var(--heading-1);
+	font-weight: 800;
+}
+
+.dashboard-content {
+	padding: 0 var(--space-xl) var(--space-xl);
+}
+
+.settings-grid {
+	column-count: 2;
+	column-gap: var(--space-lg);
+	max-width: 1400px;
+	margin: 0 auto var(--space-xl);
+}
+
+card-component.backups,
+card-component.data-management,
+card-component.app-management {
+	display: inline-block;
+	width: 100%;
+	break-inside: avoid;
+}
+
+card-component .card-body {
+	padding: var(--space-md);
+	/* ensure long content wraps inside cards instead of overflowing */
+	overflow-wrap: anywhere;
+	word-break: break-word;
+}
+
+.controls {
+	display: flex;
+	gap: var(--space-md);
+	align-items: center;
+	margin-top: var(--space-sm);
+	flex-wrap: wrap;
+}
+
+.install-status {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  margin-left: var(--space-sm);
+}
+
+.controls input[type="file"] {
+	/* visually hide native file input but keep it accessible; show a styled label/button instead */
+	position: relative;
+	display: inline-block;
+	max-width: 100%;
+	overflow: hidden;
+	vertical-align: middle;
+}
+
+/* hide the native file picker button in most browsers while keeping the input accessible */
+.controls input[type="file"]::-webkit-file-upload-button {
+	visibility: hidden;
+}
+.controls input[type="file"]::file-selector-button {
+	visibility: hidden;
+}
+
+/* styled replacement for the file input: use a label that looks like other buttons */
+/* .controls .file-label {
+	display: inline-block;
+	padding: var(--space-sm) var(--space-md);
+	border-radius: var(--radius-sm);
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	color: var(--color-text);
+	cursor: pointer;
+} */
+
+/* primary style variant if needed */
+/* .controls .file-label.primary {
+	background: var(--color-primary);
+	color: var(--color-surface);
+	border-color: var(--color-primary);
+} */
+
+/* selected filename text next to the button */
+.controls .file-name {
+	margin-left: var(--space-md);
+	color: var(--color-text);
+	font-size: var(--font-size-md);
+	vertical-align: middle;
+	max-width: 360px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+
+.btn {
+	padding: var(--space-sm) var(--space-md);
+	border-radius: var(--radius-sm);
+}
+
+.btn.danger {
+	background: var(--color-danger);
+	color: var(--color-white);
+}
+
+#settings-message {
+	margin-top: var(--space-md);
+	color: var(--color-muted);
+	text-align: left;
+}
+
+@media (max-width: 900px) {
+	.settings-grid {
+		column-count: 1;
+		padding: 0 var(--space-lg);
+	}
+
+	.header-content {
+		flex-direction: column;
+		gap: var(--space-lg);
+		padding: var(--space-lg);
+		align-items: flex-start;
+	}
+
+	.app-title {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.app-logo {
+		width: 40px;
+		height: 40px;
+	}
+
+	.app-header h1 {
+		font-size: var(--heading-2);
+	}
+}

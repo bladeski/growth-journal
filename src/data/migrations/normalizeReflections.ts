@@ -1,5 +1,5 @@
-import IndexedDbDataService from '../IndexedDbDataService';
-import type { IEveningCheckinData } from '../../interfaces/index';
+import IndexedDbDataService from '../IndexedDbDataService.ts';
+import type { IEveningCheckinData } from '../../interfaces/index.ts';
 
 export type NormalizeOptions = {
   daysBack?: number; // how many days back to scan (default 3650)
@@ -40,10 +40,10 @@ export async function normalizeReflections(options: NormalizeOptions = {}) {
     if (!rec) continue;
     checked++;
     const before: Partial<IEveningCheckinData> = {
-      ...(rec as IEveningCheckinData),
+      ...(rec as IEveningCheckinData)
     };
     const after: Partial<IEveningCheckinData> = {
-      ...(rec as IEveningCheckinData),
+      ...(rec as IEveningCheckinData)
     };
 
     // Normalize small_win -> small_wins
@@ -88,7 +88,7 @@ export async function normalizeReflections(options: NormalizeOptions = {}) {
     checked,
     updated,
     dryRun,
-    changes,
+    changes
   } as const;
 }
 

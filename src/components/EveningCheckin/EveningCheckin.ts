@@ -1,15 +1,16 @@
-import { BaseFormComponent } from '../BaseFormComponent';
-import type { FieldMapping } from '../BaseFormComponent';
-import IndexedDbDataService from '../../data/IndexedDbDataService';
-import type { IEveningCheckinData } from '../../interfaces';
-import type { EveningCheckinProps, EveningCheckinEvents } from '../../models';
+import { BaseFormComponent } from '../Base/BaseFormComponent.ts';
+import type { FieldMapping } from '../Base/BaseFormComponent.ts';
+import IndexedDbDataService from '../../data/IndexedDbDataService.ts';
+import type { IEveningCheckinData } from '../../interfaces/index.ts';
+import type { IEveningCheckinProps } from './interfaces/IEveningCheckinProps.ts';
 import styles from 'bundle-text:./EveningCheckin.css';
 import templateHtml from 'bundle-text:./EveningCheckin.pug';
 import { LoggingService } from '@bladeski/logger';
+import type { IEveningCheckinEvents } from './interfaces/IEveningCheckinEvents.ts';
 
 const logger = LoggingService.getInstance();
 
-export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, EveningCheckinEvents> {
+export class EveningCheckin extends BaseFormComponent<IEveningCheckinProps, IEveningCheckinEvents> {
   private hasExistingCheckin = false;
   private existingData: IEveningCheckinData | null = null;
   private targetDate: string | null = null;
@@ -19,7 +20,7 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
     { selector: '#defensive-moments', propName: 'defensive_moments' },
     { selector: '#better-response', propName: 'better_response' },
     { selector: '#empathy-practice', propName: 'empathy_practice' },
-    { selector: '#small-win', propName: 'small_win' },
+    { selector: '#small-win', propName: 'small_win' }
   ];
 
   constructor() {
@@ -42,9 +43,9 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
         smallWinQuestion: 'One small win I want to celebrate',
         coreValue: '',
         coreValueLower: '',
-        intention: '',
+        intention: ''
       },
-      [styles],
+      [styles]
     );
 
     // Load today's questions and reflection on mount
@@ -58,7 +59,7 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
       title: 'Evening Integration',
       description: 'Reflect on your day and integrate your learnings',
       coreValue: this.props.coreValue,
-      intention: this.props.intention,
+      intention: this.props.intention
     });
     this.updateTipsContent();
   }
@@ -74,7 +75,7 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
     if (listItems.length < 5) return;
 
     // Update specific list items with the core value
-    const coreValue = this.props.coreValueLower || this.props.coreValue.toLowerCase();
+    const coreValue = this.props.coreValueLower || this.props.coreValue?.toLowerCase();
     if (!coreValue) return;
 
     // First item: "End your day by acknowledging your growth in {coreValue}"
@@ -115,7 +116,7 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
         qObj?.empathy_practice || 'How did I practice empathy today?';
       this.props.smallWinQuestion = qObj?.small_win || 'One small win I want to celebrate';
       this.props.coreValue = qObj?.core_value || this.props.coreValue;
-      this.props.coreValueLower = this.props.coreValue.toLowerCase();
+      this.props.coreValueLower = this.props.coreValue?.toLowerCase();
       this.props.intention = qObj?.intention || this.props.intention;
 
       // Then try loading an existing evening reflection for the date
@@ -128,7 +129,7 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
           defensive_moments: d.defensive_moments,
           better_response: d.better_response,
           empathy_practice: d.empathy_practice,
-          small_win: d.small_win,
+          small_win: d.small_win
         };
         this.props.what_went_well = d.what_went_well || '';
         this.props.defensive_moments = d.defensive_moments || '';
@@ -144,7 +145,7 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
         description: `Reflect and integrate your learnings from ${this.formatDate(when)}`,
         coreValue: this.props.coreValue,
         intention: this.props.intention,
-        metadata: `<div class="date-label">${this.formatDate(when)}</div>`,
+        metadata: `<div class="date-label">${this.formatDate(when)}</div>`
       });
 
       this.render();
@@ -158,7 +159,7 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
       const data = {
         what_went_well: this.props.what_went_well,
         empathy_practice: this.props.empathy_practice,
-        small_win: this.props.small_win,
+        small_win: this.props.small_win
       };
       return !data.what_went_well?.trim() ||
         !data.empathy_practice?.trim() ||
@@ -168,11 +169,11 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
     };
 
     const dataBuilder = (): IEveningCheckinData => ({
-      what_went_well: this.props.what_went_well,
-      defensive_moments: this.props.defensive_moments,
-      better_response: this.props.better_response,
-      empathy_practice: this.props.empathy_practice,
-      small_win: this.props.small_win,
+      what_went_well: this.props.what_went_well || '',
+      defensive_moments: this.props.defensive_moments || '',
+      better_response: this.props.better_response || '',
+      empathy_practice: this.props.empathy_practice || '',
+      small_win: this.props.small_win || ''
     });
 
     const apiCall = async (data: IEveningCheckinData) => {
@@ -197,7 +198,7 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
       dataBuilder,
       apiCall,
       'Evening reflection saved successfully!',
-      'evening check-in',
+      'evening check-in'
     );
 
     // Update tracking state after successful submission
@@ -208,10 +209,10 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
         defensive_moments: this.props.defensive_moments,
         better_response: this.props.better_response,
         empathy_practice: this.props.empathy_practice,
-        small_win: this.props.small_win,
+        small_win: this.props.small_win
       };
       const eventData: IEveningCheckinData = {
-        ...this.existingData,
+        ...this.existingData
       } as IEveningCheckinData;
       this.emit('submit', eventData);
     }
@@ -245,7 +246,7 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
         qObj?.empathy_practice || 'How did I practice empathy today?';
       this.props.smallWinQuestion = qObj?.small_win || 'One small win I want to celebrate';
       this.props.coreValue = qObj?.core_value || this.props.coreValue;
-      this.props.coreValueLower = this.props.coreValue.toLowerCase();
+      this.props.coreValueLower = this.props.coreValue?.toLowerCase();
       this.props.intention = qObj?.intention || this.props.intention;
 
       if (date === today) {
@@ -282,7 +283,7 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
         description: `Reflect and integrate your learnings from ${this.formatDate(date)}`,
         coreValue: this.props.coreValue,
         intention: this.props.intention,
-        metadata: `<div class="date-label">${this.formatDate(date)}</div>`,
+        metadata: `<div class="date-label">${this.formatDate(date)}</div>`
       });
 
       this.render();
@@ -303,7 +304,7 @@ export class EveningCheckin extends BaseFormComponent<EveningCheckinProps, Eveni
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric',
+      day: 'numeric'
     });
   }
 }

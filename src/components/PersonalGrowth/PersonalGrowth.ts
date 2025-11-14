@@ -1,20 +1,21 @@
-import { BaseComponent } from '../BaseComponent';
-import IndexedDbDataService from '../../data/IndexedDbDataService';
+import { BaseComponent } from '../Base/BaseComponent.ts';
+import IndexedDbDataService from '../../data/IndexedDbDataService.ts';
 import template from 'bundle-text:./PersonalGrowth.pug';
 import styles from 'bundle-text:./PersonalGrowth.css';
-import { CheckinHeader } from '../CheckinHeader/CheckinHeader';
-import { MessageComponent } from '../MessageComponent/MessageComponent';
-import type { PersonalGrowthProps, PersonalGrowthEvents } from '../../models';
+import { CheckinHeader } from '../CheckinHeader/CheckinHeader.ts';
+import { MessageComponent } from '../MessageComponent/MessageComponent.ts';
+import type { IPersonalGrowthProps } from './interfaces/IPersonalGrowthProps.ts';
 import type {
   IGrowthIntentionData,
   IMiddayCheckinData,
-  IEveningCheckinData,
-} from '../../interfaces';
+  IEveningCheckinData
+} from '../../interfaces/index.ts';
 import { LoggingService } from '@bladeski/logger';
+import type { IPersonalGrowthEvents } from './interfaces/IPersonalGrowthEvents.ts';
 
 const logger = LoggingService.getInstance();
 
-export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalGrowthEvents> {
+export class PersonalGrowth extends BaseComponent<IPersonalGrowthProps, IPersonalGrowthEvents> {
   private selectedDate: string;
   private intentionData: Partial<IGrowthIntentionData> = {};
   private middayData: Partial<IMiddayCheckinData> = {};
@@ -26,6 +27,7 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
   private listenersSetup = false; // Flag to prevent duplicate event listeners
   private _mountTimeout: number | null = null;
   private _messageTimeout: number | null = null;
+  private _hasSavedMorning = false;
 
   constructor() {
     const templateFn = () => template;
@@ -56,7 +58,7 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
       header.setAttribute('data-prop:title', 'Personal Growth Journal');
       header.setAttribute('data-prop:date', this.selectedDate);
 
-      header.addEventListener('close', () => {
+      header.addEventListener('cancel', () => {
         this.handleClose();
       });
 
@@ -218,6 +220,24 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
         logger.warning('Failed to load evening data/questions from IDB', { err });
       }
 
+      // Check if there's a saved morning checkin for this date (actual submitted checkin)
+      try {
+        const idb2 = new IndexedDbDataService();
+        const morningRec = await idb2.getMorningCheckin(date);
+        this._hasSavedMorning = !!morningRec;
+      } catch (e) {
+        this._hasSavedMorning = false;
+      }
+
+      // Debug: log the loaded payloads so we can see why entries may appear present
+      // eslint-disable-next-line no-console
+      console.debug('[DEBUG] PersonalGrowth loadDataForDate:', {
+        date,
+        intentionData: this.intentionData,
+        middayData: this.middayData,
+        reflectionData: this.reflectionData
+      });
+
       // Update header with contextual metadata once intention data is loaded
       this.updateHeaderContent();
 
@@ -231,11 +251,28 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
 
   private hasAnyData(obj: Record<string, unknown> | undefined): boolean {
     if (!obj) return false;
-    return Object.values(obj).some((v) => v !== undefined && v !== null && String(v).trim() !== '');
+
+    const isMeaningful = (v: unknown): boolean => {
+      if (v === null || v === undefined) return false;
+      if (typeof v === 'string') return v.trim() !== '';
+      if (typeof v === 'number') return true;
+      if (Array.isArray(v)) return v.length > 0 && v.some(isMeaningful);
+      if (typeof v === 'object') {
+        // check object has any meaningful nested field
+        const r = v as Record<string, unknown>;
+        return Object.keys(r).some((k) => isMeaningful(r[k]));
+      }
+      return false;
+    };
+
+    return Object.values(obj).some(isMeaningful);
   }
 
   private displayEntries(): void {
-    const hasIntention = this.hasAnyData(this.intentionData);
+    // Consider the morning 'Complete' only if a saved morning checkin exists.
+    // The presence of intention/template data alone does not imply the user
+    // submitted the morning checkin for that date.
+    const hasIntention = !!this._hasSavedMorning;
     const hasMidday = this.hasAnyData(this.middayData);
     const hasReflection = this.hasAnyData(this.reflectionData);
     const hasMetrics = this.progressData && Object.keys(this.progressData).length > 0;
@@ -312,11 +349,11 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
     this.setText('#morning-intention-display', this.intentionData.intention || '—');
     this.setText(
       '#micro-practice-display',
-      this.formatMicroPractice(this.intentionData.focus) || '—',
+      this.formatMicroPractice(this.intentionData.focus) || '—'
     );
     this.setText(
       '#affirmation-display',
-      String(((this.intentionData as Record<string, unknown>).affirmation as string) || '—'),
+      String(((this.intentionData as Record<string, unknown>).affirmation as string) || '—')
     );
   }
 
@@ -330,7 +367,7 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
         'Review your morning intention, midday reflection and evening integration entries.',
       coreValue: this.intentionData.core_value || '',
       intention: this.intentionData.intention || '',
-      metadata: metadataHtml,
+      metadata: metadataHtml
     });
   }
 
@@ -347,24 +384,24 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
     this.setText('#reflection-date', date);
     this.setText(
       '#what-went-well-question',
-      this.dynamicQuestions.what_went_well || 'What went well today?',
+      this.dynamicQuestions.what_went_well || 'What went well today?'
     );
     this.setText('#what-went-well-display', this.reflectionData.what_went_well || '—');
     this.setText(
       '#defensive-moments-question',
       this.dynamicQuestions.defensive_moments ||
-        'When did I feel defensive, superior or dismissive?',
+        'When did I feel defensive, superior or dismissive?'
     );
     this.setText('#defensive-moments-display', this.reflectionData.defensive_moments || '—');
     this.setText('#better-response-display', this.reflectionData.better_response || '—');
     this.setText(
       '#empathy-practice-question',
-      this.dynamicQuestions.empathy_practice || 'How did I practice empathy today?',
+      this.dynamicQuestions.empathy_practice || 'How did I practice empathy today?'
     );
     this.setText('#empathy-practice-display', this.reflectionData.empathy_practice || '—');
     this.setText(
       '#small-win-question',
-      this.dynamicQuestions.small_win || 'One small win I want to celebrate',
+      this.dynamicQuestions.small_win || 'One small win I want to celebrate'
     );
     this.setText('#small-win-display', this.reflectionData.small_win || '—');
   }
@@ -377,7 +414,7 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
       this.dynamicQuestions.what_went_well,
       this.dynamicQuestions.defensive_moments,
       this.dynamicQuestions.empathy_practice,
-      this.dynamicQuestions.small_win,
+      this.dynamicQuestions.small_win
     ].filter(Boolean);
     const promptSet = new Set(questionPrompts.map((p) => (p || '').trim()));
     Object.keys(data).forEach((key) => {
@@ -396,13 +433,13 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
     this.setText('#empathy-moments-display', String(this.progressData.empathy_moments || 0));
     this.setText(
       '#defensive-reactions-display',
-      String(this.progressData.defensive_reactions || 0),
+      String(this.progressData.defensive_reactions || 0)
     );
     this.setText('#vulnerability-display', String(this.progressData.vulnerability_shared || 0));
     this.setText('#empathy-rating-display', `${this.progressData.self_rating_empathy || 5}/10`);
     this.setText(
       '#responsibility-rating-display',
-      `${this.progressData.self_rating_responsibility || 5}/10`,
+      `${this.progressData.self_rating_responsibility || 5}/10`
     );
   }
 
@@ -420,7 +457,7 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric',
+      day: 'numeric'
     });
   }
 
@@ -432,7 +469,7 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
       ask_question: 'Ask a clarifying question instead of defending',
       acknowledge_feelings: "Acknowledge the other person's feelings first",
       say_sorry: "Apologize when I'm wrong",
-      share_vulnerability: 'Share a moment of vulnerability',
+      share_vulnerability: 'Share a moment of vulnerability'
     };
 
     return practices[value] || value;
@@ -481,7 +518,7 @@ export class PersonalGrowth extends BaseComponent<PersonalGrowthProps, PersonalG
       reflection: this.reflectionData,
       progress: this.progressData,
       dynamicQuestions: this.dynamicQuestions,
-      date: this.selectedDate,
+      date: this.selectedDate
     };
   }
 

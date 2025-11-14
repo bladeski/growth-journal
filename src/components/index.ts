@@ -1,15 +1,16 @@
-import { BaseComponent } from './BaseComponent';
-import { DashboardComponent } from './Dashboard/Dashboard';
-import { MorningCheckin } from './MorningCheckin/MorningCheckin';
-import { MiddayCheckin } from './MiddayCheckin/MiddayCheckin';
-import { EveningCheckin } from './EveningCheckin/EveningCheckin';
-import { WeeklyReview } from './WeeklyReview/WeeklyReview';
-import { MonthlyReflection } from './MonthlyReflection/MonthlyReflection';
-import { PersonalGrowth } from './PersonalGrowth/PersonalGrowth';
-import { CheckinHeader } from './CheckinHeader/CheckinHeader';
-import { MessageComponent } from './MessageComponent/MessageComponent';
-import { Card } from './Card/Card';
-import { ReflectionTips } from './ReflectionTips/ReflectionTips';
+import { BaseComponent } from './Base/BaseComponent.ts';
+import { DashboardComponent } from './Dashboard/Dashboard.ts';
+import { MorningCheckin } from './MorningCheckin/MorningCheckin.ts';
+import { MiddayCheckin } from './MiddayCheckin/MiddayCheckin.ts';
+import { EveningCheckin } from './EveningCheckin/EveningCheckin.ts';
+import { WeeklyReview } from './WeeklyReview/WeeklyReview.ts';
+import { MonthlyReflection } from './MonthlyReflection/MonthlyReflection.ts';
+import { PersonalGrowth } from './PersonalGrowth/PersonalGrowth.ts';
+import { CheckinHeader } from './CheckinHeader/CheckinHeader.ts';
+import { MessageComponent } from './MessageComponent/MessageComponent.ts';
+import { Card } from './Card/Card.ts';
+import { ReflectionTips } from './ReflectionTips/ReflectionTips.ts';
+import { SettingsComponent } from './Settings/Settings.ts';
 
 export {
   BaseComponent,
@@ -23,5 +24,6 @@ export {
   CheckinHeader,
   MessageComponent,
   Card,
-  ReflectionTips,
+  ReflectionTips
+  ,SettingsComponent
 };

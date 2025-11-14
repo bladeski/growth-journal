@@ -1,11 +1,12 @@
-import { BaseComponent } from '../BaseComponent';
-import type { DashboardEvents, DashboardProps } from '../../models';
-import type { IDashboardAnalytics } from '../../interfaces';
+import { BaseComponent } from '../Base/BaseComponent.ts';
+import type { IDashboardAnalytics } from '../../interfaces/IDashboardAnalytics.ts';
 import styles from 'bundle-text:./Dashboard.css';
 import templateHtml from 'bundle-text:./Dashboard.pug';
-import IndexedDbDataService from '../../data/IndexedDbDataService';
+import IndexedDbDataService from '../../data/IndexedDbDataService.ts';
+import type { IDashboardProps } from './interfaces/IDashboardProps.ts';
+import type { IDashboardEvents } from './interfaces/IDashboardEvents.ts';
 
-export class DashboardComponent extends BaseComponent<DashboardProps, DashboardEvents> {
+export class DashboardComponent extends BaseComponent<IDashboardProps, IDashboardEvents> {
   constructor() {
     super(
       () => templateHtml,
@@ -24,14 +25,29 @@ export class DashboardComponent extends BaseComponent<DashboardProps, DashboardE
         hasRecentActivity: false,
         recentActivity: { morning: [], evening: [] },
         isLoading: true,
-        completionPercentage: 0,
+        completionPercentage: 0
       },
-      [styles],
+      [styles]
     );
   }
 
   connectedCallback(): void {
     super.connectedCallback();
+    // Temporary debug marker: helps confirm the component mounted in the browser
+    try {
+      // visible light-DOM marker so it's obvious without inspecting shadowRoot
+      const dbg = document.createElement('div');
+      dbg.textContent = 'DASHBOARD MOUNTED (debug)';
+      dbg.style.cssText =
+        'padding:6px;background:#fffbdd;border:1px solid #ffd966;color:#333;font-weight:600;margin:6px 0';
+      this.appendChild(dbg);
+      // console marker
+      // eslint-disable-next-line no-console
+      console.log('[DEBUG] growth-dashboard connected');
+    } catch (e) {
+      // ignore host DOM debug failures
+    }
+
     this.loadDashboardData();
   }
 
@@ -48,7 +64,7 @@ export class DashboardComponent extends BaseComponent<DashboardProps, DashboardE
 
     // Update header progress bar
     const headerProgressFill = this.shadowRoot.querySelector(
-      '.header-progress-fill',
+      '.header-progress-fill'
     ) as HTMLElement;
     if (headerProgressFill) {
       headerProgressFill.style.width = `${this.props.completionPercentage}%`;
@@ -92,7 +108,6 @@ export class DashboardComponent extends BaseComponent<DashboardProps, DashboardE
         const strong = document.createElement('strong');
         strong.textContent = 'Practice: ';
         const span = document.createElement('span');
-        // support canonicalized field name `intention` (fallback to legacy key)
         span.textContent = item.intention || '';
 
         insightText.appendChild(strong);
@@ -124,7 +139,7 @@ export class DashboardComponent extends BaseComponent<DashboardProps, DashboardE
         const strong = document.createElement('strong');
         strong.textContent = 'Win: ';
         const span = document.createElement('span');
-        span.textContent = String(item.small_win || '');
+        span.textContent = item.small_win || '';
 
         insightText.appendChild(strong);
         insightText.appendChild(span);
@@ -167,12 +182,20 @@ export class DashboardComponent extends BaseComponent<DashboardProps, DashboardE
     try {
       const idb = new IndexedDbDataService();
       const analytics = (await idb.getDashboardAnalytics()) as IDashboardAnalytics | undefined;
+      // Debug: log the raw analytics payload so we can inspect why statuses may
+      // be reported as completed unexpectedly (useful while diagnosing SW/IDB data).
+      // eslint-disable-next-line no-console
+      console.debug('[DEBUG] getDashboardAnalytics ->', analytics);
 
       const todayStatus = analytics?.today_status || {
         morning_completed: false,
         midday_completed: false,
-        evening_completed: false,
+        evening_completed: false
       };
+
+      // Debug: show the todayStatus mapping applied to the dashboard
+      // eslint-disable-next-line no-console
+      console.debug('[DEBUG] todayStatus resolved ->', todayStatus);
 
       this.props.morningCompleted = !!todayStatus.morning_completed;
       this.props.middayCompleted = !!todayStatus.midday_completed;

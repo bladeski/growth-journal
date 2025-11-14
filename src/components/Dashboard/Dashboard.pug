@@ -5,10 +5,9 @@
         img.app-logo(src="../../images/logo.svg" alt="Growth Journal Logo")
         h1 Growth Journal
       .header-actions
-        button.btn-primary(data-action="click:viewAnalytics") Analytics
-        button.btn-secondary(data-action="click:openPersonalGrowth") Growth Journal
-        button.btn-secondary(data-action="click:newWeeklyReview") Weekly
-        button.btn-secondary(data-action="click:newMonthlyReflection") Monthly
+        a.btn-primary(data-href="#/growth") Growth Journal
+        a.btn-secondary(data-href="#/analytics") Analytics
+        a.btn-secondary(data-href="#/settings") Settings
     .header-progress-bar
       .header-progress-fill(data-progress="{{completionPercentage}}")
   
@@ -17,15 +16,15 @@
       card-component.today-progress
         span(slot="title") Today's Check-ins
         .checkin-status
-          .checkin-item.morning-item(class="{{morningCompleted ? 'completed' : ''}}" data-action="click:newMorningCheckin")
+          a.btn.checkin-item.morning-item(data-href="#/morning")
             .checkin-label Morning Intentions
             .checkin-status-text {{morningStatusText}}
           
-          .checkin-item.midday-item(class="{{middayCompleted ? 'completed' : ''}}" data-action="click:newMiddayCheckin")
+          a.btn.checkin-item.midday-item(data-href="#/midday")
             .checkin-label Midday Reflection
             .checkin-status-text {{middayStatusText}}
           
-          .checkin-item.evening-item(class="{{eveningCompleted ? 'completed' : ''}}" data-action="click:newEveningCheckin")
+          a.btn.checkin-item.evening-item(data-href="#/evening")
             .checkin-label Evening Integration
             .checkin-status-text {{eveningStatusText}}
       
@@ -55,10 +54,10 @@
               .period-label This Week
               .period-right
                 .period-count {{weeklyCount}} weekly reviews
-                button.btn-secondary(data-action="click:newWeeklyReview") Add Weekly Review
+                a.btn-secondary(data-href="#/weekly") Add Weekly Review
           
             .periodic-item
               .period-label This Month
               .period-right
                 .period-count {{monthlyCount}} monthly reflections
-                button.btn-secondary(data-action="click:newMonthlyReflection") Add Monthly Reflection
+                a.btn-secondary(data-href="#/monthly") Add Monthly Reflection

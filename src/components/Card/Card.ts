@@ -1,9 +1,10 @@
-import { BaseComponent } from '../BaseComponent';
+import { BaseComponent } from '../Base/BaseComponent.ts';
 import template from 'bundle-text:./Card.pug';
 import styles from 'bundle-text:./Card.css';
-import { CardEvents, CardProps } from '../../models';
+import { ICardProps } from './interfaces/ICardProps.ts';
+import { ICardEvents } from './interfaces/ICardEvents.ts';
 
-export class Card extends BaseComponent<CardProps, CardEvents> {
+export class Card extends BaseComponent<ICardProps, ICardEvents> {
   static observedAttributes = ['data-prop:variant'];
 
   constructor() {

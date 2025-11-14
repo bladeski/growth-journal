@@ -1,4 +1,4 @@
-import { IEveningCheckinData } from './IEveningCheckinData';
+import { IEveningCheckinData } from './IEveningCheckinData.ts';
 
 export interface IGrowthIntentionData {
   core_value: string;

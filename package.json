@@ -14,6 +14,9 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,scss,pug,json,md}\"",
     "clean": "rm -rf .parcel-cache dist",
     "test": "jest",
+    "test:unit": "jest tests/jest",
+    "test:e2e": "playwright test tests/playwright",
+    "test:playwright": "playwright test",
     "test:ci": "jest --runInBand --reporters=default"
   },
   "dependencies": {
@@ -24,6 +27,7 @@
     "@parcel/transformer-inline-string": "2.16.0",
     "@parcel/transformer-pug": "^2.16.0",
     "@parcel/transformer-webmanifest": "2.16.0",
+    "@playwright/test": "^1.56.1",
     "@types/jest": "^29.5.4",
     "@types/pug": "^2.0.10",
     "@types/serviceworker": "^0.0.167",

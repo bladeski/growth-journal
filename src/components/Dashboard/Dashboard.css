@@ -70,8 +70,12 @@
 }
 
 @keyframes progress-shine {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .quick-actions {
@@ -132,53 +136,53 @@ card-component.periodic-checkins {
   .dashboard-grid {
     column-count: 1;
   }
-  
+
   .dashboard-content {
     padding: 0 var(--space-lg) var(--space-lg);
   }
-  
+
   .header-content {
     flex-direction: column;
     gap: var(--space-lg);
     padding: var(--space-lg);
     align-items: flex-start;
   }
-  
+
   .app-title {
     width: 100%;
     justify-content: center;
   }
-  
+
   .app-logo {
     width: 40px;
     height: 40px;
   }
-  
+
   .app-header h1 {
     font-size: var(--heading-2);
   }
-  
+
   .header-actions {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .header-actions button {
     flex: 1;
     font-size: var(--font-size-xs);
     padding: var(--space-sm);
   }
-  
+
   .activity-stats {
     flex-direction: column;
     gap: var(--space-md);
   }
-  
+
   .checkin-status {
     grid-template-columns: 1fr;
     gap: var(--space-md);
   }
-  
+
   .checkin-item {
     padding: var(--space-md);
   }

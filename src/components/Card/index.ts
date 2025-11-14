@@ -1,2 +1,1 @@
-export { Card } from './Card';
-export type { CardProps, CardEvents } from './Card';
+export { Card } from './Card.ts';

@@ -1,7 +1,9 @@
-import { PropTypes } from '../models';
+import type { IPropTypes } from '../components/Base/interfaces/IPropTypes.ts';
 
-export interface IBaseComponent<TProps extends PropTypes = Record<string, never>, TEvents = unknown>
-  extends HTMLElement {
+export interface IBaseComponent<
+  TProps extends IPropTypes = Record<string, never>,
+  TEvents = unknown
+> extends HTMLElement {
   /** Strongly typed props */
   props: TProps;
 
@@ -24,7 +26,7 @@ export interface IBaseComponent<TProps extends PropTypes = Record<string, never>
   attributeChangedCallback(
     name: keyof TProps & string,
     oldValue: string | null,
-    newValue: string | null,
+    newValue: string | null
   ): void;
 
   /**

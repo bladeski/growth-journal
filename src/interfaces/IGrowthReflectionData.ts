@@ -1,4 +1,4 @@
-import type { IProgressMetrics } from './IProgressMetrics';
+import type { IProgressMetrics } from './IProgressMetrics.ts';
 
 export interface IGrowthReflectionData {
   id?: number;

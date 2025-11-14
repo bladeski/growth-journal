@@ -1,16 +1,17 @@
-import { BaseComponent } from '../BaseComponent';
-import type { CheckinHeaderProps, CheckinHeaderEvents } from '../../models';
+import { BaseComponent } from '../Base/BaseComponent.ts';
 import styles from 'bundle-text:./CheckinHeader.css';
 import templateHtml from 'bundle-text:./CheckinHeader.pug';
+import { ICheckinHeaderProps } from './interfaces/ICheckinHeaderProps.ts';
+import { ICheckinHeaderEvents } from './interfaces/ICheckinHeaderEvents.ts';
 
-export class CheckinHeader extends BaseComponent<CheckinHeaderProps, CheckinHeaderEvents> {
+export class CheckinHeader extends BaseComponent<ICheckinHeaderProps, ICheckinHeaderEvents> {
   static observedAttributes = [
     'data-prop:title',
     'data-prop:description',
     'data-prop:show-daily-focus',
     'data-prop:core-value',
     'data-prop:intention',
-    'data-prop:metadata',
+    'data-prop:metadata'
   ];
 
   constructor() {
@@ -22,9 +23,9 @@ export class CheckinHeader extends BaseComponent<CheckinHeaderProps, CheckinHead
         showDailyFocus: false,
         coreValue: '',
         intention: '',
-        metadata: '',
+        metadata: ''
       },
-      [styles],
+      [styles]
     );
   }
 
@@ -33,7 +34,7 @@ export class CheckinHeader extends BaseComponent<CheckinHeaderProps, CheckinHead
   }
 
   // Public method to update header content
-  updateHeader(props: Partial<CheckinHeaderProps>): void {
+  updateHeader(props: Partial<ICheckinHeaderProps>): void {
     Object.assign(this.props, props);
     this.render();
     this.updateVisibility();

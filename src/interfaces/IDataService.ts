@@ -1,12 +1,12 @@
-import { IDashboardAnalytics } from './IDashboardAnalytics';
-import { IEveningCheckinData } from './IEveningCheckinData';
-import { IEveningQuestionsData } from './IEveningQuestionsData';
-import { IGrowthIntentionData } from './IGrowthIntentionData';
-import { IMiddayCheckinData } from './IMiddayCheckinData';
-import { IMiddayQuestionsData } from './IMiddayQuestionsData';
-import { IMonthlyReflectionData } from './IMonthlyReflectionData';
-import { IMorningCheckinData } from './IMorningCheckinData';
-import { IWeeklyReviewData } from './IWeeklyReviewData';
+import { IDashboardAnalytics } from './IDashboardAnalytics.ts';
+import { IEveningCheckinData } from './IEveningCheckinData.ts';
+import { IEveningQuestionsData } from './IEveningQuestionsData.ts';
+import { IGrowthIntentionData } from './IGrowthIntentionData.ts';
+import { IMiddayCheckinData } from './IMiddayCheckinData.ts';
+import { IMiddayQuestionsData } from './IMiddayQuestionsData.ts';
+import { IMonthlyReflectionData } from './IMonthlyReflectionData.ts';
+import { IMorningCheckinData } from './IMorningCheckinData.ts';
+import { IWeeklyReviewData } from './IWeeklyReviewData.ts';
 
 export interface IDataService {
   getDashboardAnalytics(): Promise<IDashboardAnalytics>;

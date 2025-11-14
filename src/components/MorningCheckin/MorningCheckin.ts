@@ -1,21 +1,22 @@
-import { BaseFormComponent } from '../BaseFormComponent';
-import type { IMorningCheckinData } from '../../interfaces';
-import type { MorningCheckinProps, MorningCheckinEvents } from '../../models';
+import { BaseFormComponent } from '../Base/BaseFormComponent.ts';
+import type { IMorningCheckinData } from '../../interfaces/index.ts';
+import type { IMorningCheckinProps } from './interfaces/IMorningCheckinProps.ts';
+import type { IMorningCheckinEvents } from './interfaces/IMorningCheckinEvents.ts';
 import styles from 'bundle-text:./MorningCheckin.css';
 import templateHtml from 'bundle-text:./MorningCheckin.pug';
 import { LoggingService } from '@bladeski/logger';
-import IndexedDbDataService from '../../data/IndexedDbDataService';
+import IndexedDbDataService from '../../data/IndexedDbDataService.ts';
 
 const logger = LoggingService.getInstance();
 
-export class MorningCheckin extends BaseFormComponent<MorningCheckinProps, MorningCheckinEvents> {
+export class MorningCheckin extends BaseFormComponent<IMorningCheckinProps, IMorningCheckinEvents> {
   private hasExistingCheckin = false;
   private existingData: IMorningCheckinData | null = null;
   private targetDate: string | null = null;
 
   private readonly fieldMappings = [
     { selector: '#practice-intention', propName: 'intention' },
-    { selector: '#core-value', propName: 'core_value' },
+    { selector: '#core-value', propName: 'core_value' }
   ];
 
   constructor() {
@@ -28,9 +29,9 @@ export class MorningCheckin extends BaseFormComponent<MorningCheckinProps, Morni
         successMessage: '',
         isLoading: false,
         submitButtonText: 'Save Morning Intentions',
-        loadingClass: '',
+        loadingClass: ''
       },
-      [styles],
+      [styles]
     );
 
     // Load today's checkin (or prefill) on creation
@@ -42,7 +43,7 @@ export class MorningCheckin extends BaseFormComponent<MorningCheckinProps, Morni
     this.updateFormValues(this.fieldMappings);
     this.updateHeaderValues('#morning-header', {
       title: 'Morning Intentions',
-      description: 'Set your intentions and focus for the day ahead',
+      description: 'Set your intentions and focus for the day ahead'
     });
   }
 
@@ -65,7 +66,7 @@ export class MorningCheckin extends BaseFormComponent<MorningCheckinProps, Morni
         this.hasExistingCheckin = true;
         this.existingData = {
           intention: existing.intention,
-          core_value: existing.core_value,
+          core_value: existing.core_value
         };
         this.props.intention = existing.intention || '';
         this.props.core_value = existing.core_value || '';
@@ -75,12 +76,12 @@ export class MorningCheckin extends BaseFormComponent<MorningCheckinProps, Morni
         try {
           const growthPrefill = await idb.getGrowthIntention(when);
           if (growthPrefill) {
-            this.props.intention = growthPrefill.intention || '';
-            this.props.core_value = growthPrefill.core_value || '';
+            this.props.intention = String(growthPrefill.intention || '');
+            this.props.core_value = String(growthPrefill.core_value || '');
             this.updateFormValues(this.fieldMappings);
             this.hasExistingCheckin = !!(
-              (this.props.intention && this.props.intention.trim()) ||
-              (this.props.core_value && this.props.core_value.trim())
+              (this.props.intention && String(this.props.intention).trim()) ||
+              (this.props.core_value && String(this.props.core_value).trim())
             );
           }
         } catch (growthError) {
@@ -92,7 +93,7 @@ export class MorningCheckin extends BaseFormComponent<MorningCheckinProps, Morni
       this.updateHeaderValues('#morning-header', {
         title: 'Morning Intentions',
         description: `Set your intentions and focus for ${this.formatDate(when)}`,
-        metadata: `<div class="date-label">${this.formatDate(when)}</div>`,
+        metadata: `<div class="date-label">${this.formatDate(when)}</div>`
       });
     } catch (error) {
       logger.error('Error loading morning check-in', { error, date });
@@ -103,7 +104,7 @@ export class MorningCheckin extends BaseFormComponent<MorningCheckinProps, Morni
     const validator = () => {
       const data = {
         practice_intention: this.props.intention,
-        core_value: this.props.core_value,
+        core_value: this.props.core_value
       };
 
       if (!data.practice_intention?.trim() || !data.core_value?.trim()) {
@@ -113,8 +114,8 @@ export class MorningCheckin extends BaseFormComponent<MorningCheckinProps, Morni
     };
 
     const dataBuilder = (): IMorningCheckinData => ({
-      intention: this.props.intention,
-      core_value: this.props.core_value,
+      intention: String(this.props.intention || ''),
+      core_value: String(this.props.core_value || '')
     });
 
     const apiCall = async (data: IMorningCheckinData) => {
@@ -127,7 +128,7 @@ export class MorningCheckin extends BaseFormComponent<MorningCheckinProps, Morni
           entry_date: this.targetDate,
           morning_intention: data.intention,
           core_value: data.core_value,
-          date: this.targetDate,
+          date: this.targetDate
         } as Record<string, unknown>;
         result = await idb.addGrowthIntention(intentionData);
       } else {
@@ -148,7 +149,7 @@ export class MorningCheckin extends BaseFormComponent<MorningCheckinProps, Morni
       dataBuilder,
       apiCall,
       'Morning intentions saved successfully!',
-      'morning check-in',
+      'morning check-in'
     );
   }
 
@@ -173,7 +174,7 @@ export class MorningCheckin extends BaseFormComponent<MorningCheckinProps, Morni
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric',
+      day: 'numeric'
     });
   }
 }

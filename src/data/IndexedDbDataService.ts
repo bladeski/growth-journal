@@ -9,7 +9,8 @@ import type {
   IMonthlyReflectionData,
   IDataService,
   IEveningQuestionsData,
-} from '../interfaces/index';
+} from '../interfaces/index.ts';
+import { createMessageChannel } from '../utils/MessageChannelWrapper.ts';
 
 type IdbResponse<T> = { success: true; items?: T } | { success: false; error: string };
 
@@ -54,7 +55,7 @@ export class IndexedDbDataService implements IDataService {
     if (!sw) return { success: false, error: 'No active service worker' };
 
     return await new Promise<IdbResponse<TResult>>((resolve) => {
-      const channel = new MessageChannel();
+  const channel = createMessageChannel();
       let responded = false;
       const timeout = setTimeout(() => {
         if (!responded) resolve({ success: false, error: 'Service worker response timeout' });
@@ -98,7 +99,28 @@ export class IndexedDbDataService implements IDataService {
     if (!resp.success) return null;
     const dayOfMonth = new Date(date)?.getDate() - 1;
     const items = (resp as { success: true; items?: IGrowthIntentionData[] }).items || [];
-    return items.length > 0 && items[dayOfMonth] ? items[dayOfMonth] : null;
+    const raw = items.length > 0 && items[dayOfMonth] ? items[dayOfMonth] : null;
+    if (!raw) return null;
+
+    // Defensive normalization: ensure commonly-used fields are strings so components
+    // don't receive unexpected object shapes (some older records may store structured
+    // values in these fields).
+    const asString = (v: unknown) => (typeof v === 'string' ? v : undefined);
+    const r = raw as unknown as Record<string, unknown>;
+
+    const normalized: IGrowthIntentionData = {
+      core_value: asString(r.core_value) || '',
+      intention: asString(r.intention) || asString(r.morning_intention) || '',
+      reflection: asString(r.reflection) || '',
+      midday_question: asString(r.midday_question) || '',
+      evening_questions:
+        (r.evening_questions as IGrowthIntentionData['evening_questions']) ||
+        ({} as IGrowthIntentionData['evening_questions']),
+      week_theme: asString(r.week_theme) || '',
+      focus: asString(r.focus) || '',
+    };
+
+    return normalized;
   }
 
   async getMorningIntention(date: string): Promise<IGrowthIntentionData[]> {
@@ -261,6 +283,22 @@ export class IndexedDbDataService implements IDataService {
       this.getEveningReflection(todayKey),
     ]);
 
+    // Helper: consider an object "meaningful" if it has any non-empty string
+    // properties. Some service-worker responses may return an empty object which
+    // should not be treated as a completed check-in.
+    const hasMeaningfulFields = (o: unknown): boolean => {
+      if (!o || typeof o !== 'object') return false;
+      try {
+        const r = o as Record<string, unknown>;
+        return Object.keys(r).some((k) => {
+          const v = r[k];
+          return v !== null && v !== undefined && !(typeof v === 'string' && v.trim() === '');
+        });
+      } catch (e) {
+        return false;
+      }
+    };
+
     // Recent counts
     const recentChecks = await Promise.all(
       recentDates.map(async (d) => ({
@@ -344,9 +382,9 @@ export class IndexedDbDataService implements IDataService {
 
     const analytics: IDashboardAnalytics = {
       today_status: {
-        morning_completed: !!morningToday,
-        midday_completed: !!middayToday,
-        evening_completed: !!eveningToday,
+        morning_completed: hasMeaningfulFields(morningToday),
+        midday_completed: hasMeaningfulFields(middayToday),
+        evening_completed: hasMeaningfulFields(eveningToday),
       },
       counts,
       recent_activity,
@@ -354,6 +392,77 @@ export class IndexedDbDataService implements IDataService {
 
     return analytics;
   }
+
+  /**
+   * Export entire DB as an object mapping storeName -> items[]
+   */
+  async exportDatabase(): Promise<Record<string, unknown[]> | null> {
+    const resp = await IndexedDbDataService.postMessage<Record<string, unknown[]>>('IDB:ExportAll');
+    if (!resp.success) return null;
+    return (resp as { success: true; items?: Record<string, unknown[]> }).items || null;
+  }
+
+  /**
+   * Import entire DB from an object mapping storeName -> items[]
+   */
+  async importDatabase(data: Record<string, unknown[]>): Promise<boolean> {
+    const resp = await IndexedDbDataService.postMessage('IDB:ImportAll', data);
+    return resp.success;
+  }
 }
 
 export default IndexedDbDataService;
+
+// Expose simple global helpers for quick backup/restore from console or UI
+declare global {
+  interface Window {
+    exportGrowthDb?: () => Promise<void>;
+    importGrowthDb?: (jsonOrFile: Record<string, unknown[]> | File) => Promise<void>;
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.exportGrowthDb = async () => {
+    try {
+      const svc = new IndexedDbDataService();
+      const data = await svc.exportDatabase();
+      if (!data) {
+        console.warn('Export returned no data');
+        return;
+      }
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `growth-journal-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error('Export failed', e);
+    }
+  };
+
+  window.importGrowthDb = async (jsonOrFile: Record<string, unknown[]> | File) => {
+    try {
+      const svc = new IndexedDbDataService();
+      let data: Record<string, unknown[]> | null = null;
+      if (jsonOrFile instanceof File) {
+        const txt = await jsonOrFile.text();
+        data = JSON.parse(txt) as Record<string, unknown[]>;
+      } else {
+        data = jsonOrFile as Record<string, unknown[]>;
+      }
+      if (!data) {
+        console.warn('No data provided for import');
+        return;
+      }
+      const ok = await svc.importDatabase(data);
+      if (ok) console.log('Import succeeded');
+      else console.warn('Import failed');
+    } catch (e) {
+      console.error('Import failed', e);
+    }
+  };
+}
