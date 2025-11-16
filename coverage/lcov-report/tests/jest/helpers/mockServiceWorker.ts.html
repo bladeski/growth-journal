@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">70.58% </span>
+                <span class="strong">71.42% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>24/34</span>
+                <span class='fraction'>25/35</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">60% </span>
+                <span class="strong">54.54% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/10</span>
+                <span class='fraction'>6/11</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">76.66% </span>
+                <span class="strong">77.41% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>23/30</span>
+                <span class='fraction'>24/31</span>
             </div>
         
             
@@ -160,7 +160,18 @@
 <a name='L95'></a><a href='#L95'>95</a>
 <a name='L96'></a><a href='#L96'>96</a>
 <a name='L97'></a><a href='#L97'>97</a>
-<a name='L98'></a><a href='#L98'>98</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -195,6 +206,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -213,6 +225,7 @@
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">45x</span>
 <span class="cline-any cline-yes">45x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -240,6 +253,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -257,7 +273,10 @@
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/*
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/ban-types */
+/*
  * Lightweight mock for navigator.serviceWorker used in Jest tests.
  * It provides a `controller` with a `postMessage` method that accepts a
  * message and an array of transferable ports. The provided `responder`
@@ -272,10 +291,11 @@ export type IdbResponse&lt;T = unknown&gt; =
   | { success: false; error: string };
 &nbsp;
 export function installMockServiceWorker(
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   responder: (type: string, payload: unknown) =&gt; IdbResponse | Promise&lt;IdbResponse&gt;,
 ) {
   // Provide a lightweight MessageChannel/MessagePort polyfill for jest/node
-  if (typeof (global as any).MessageChannel === 'undefined') {
+  if (typeof (global as unknown as Record&lt;string, unknown&gt;).MessageChannel === 'undefined') {
     class FakePort {
       private _onmessage: ((ev: { data: unknown }) =&gt; void) | null = null;
 <span class="fstat-no" title="function not covered" >      postMessage(</span>data: unknown) {
@@ -292,39 +312,41 @@ export function installMockServiceWorker(
       }
     }
 &nbsp;
-    (global as any).MessageChannel = class {
-      port1: any;
-      port2: any;
+    // Provide a minimal MessageChannel polyfill for tests. Use Record types to avoid `any`.
+    (global as unknown as Record&lt;string, unknown&gt;).MessageChannel = class {
+      port1: FakePort;
+      port2: FakePort;
       constructor() {
         this.port1 = new FakePort();
         this.port2 = new FakePort();
         // connect ports so postMessage on one triggers onmessage on the other
         this.port1.postMessage = <span class="fstat-no" title="function not covered" >(d</span>: unknown) =&gt;
-<span class="cstat-no" title="statement not covered" >          setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.port2._onmessage?.({ data: d }),</span> 0);</span>
+<span class="cstat-no" title="statement not covered" >          setTimeout(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.port2['_onmessage']?.({ data: d }),</span> 0);</span>
         this.port2.postMessage = (d: unknown) =&gt;
-          setTimeout(() =&gt; this.port1._onmessage?.({ data: d }), 0);
+          setTimeout(() =&gt; this.port1['_onmessage']?.({ data: d }), 0);
       }
-    } as any;
+    } as unknown as { new (): { port1: FakePort; port2: FakePort } };
   }
   // Create a mock ServiceWorker-like object
   const mockSW = {
-    postMessage(msg: any, transfer?: any[]) {
+    postMessage(msg: Record&lt;string, unknown&gt;, transfer?: unknown[]) {
       // the code under test sends a MessagePort as the first transferable
-      const port = transfer &amp;&amp; transfer[0];
+      const port =
+        (transfer &amp;&amp; (transfer[0] as { postMessage?: (m: unknown) =&gt; void })) || <span class="branch-2 cbranch-no" title="branch not covered" >undefined;</span>
       <span class="missing-if-branch" title="if path not taken" >I</span>if (!port || typeof port.postMessage !== 'function') <span class="cstat-no" title="statement not covered" >return;</span>
 &nbsp;
       // respond asynchronously to simulate real SW
       Promise.resolve()
         .then(async () =&gt; {
           try {
-            const r = await responder(msg?.type, msg?.payload);
+            const r = await responder(msg?.type as string, msg?.payload);
             // reply in the shape expected by the consumer: { payload: IdbResponse }
-            port.postMessage({ payload: r });
-          } catch (e: any) {
-<span class="cstat-no" title="statement not covered" >            port.postMessage({ payload: { success: false, error: String(e) } });</span>
+            port.postMessage?.({ payload: r });
+          } catch (e) {
+<span class="cstat-no" title="statement not covered" >            port.postMessage?.({ payload: { success: false, error: String(e) } });</span>
           }
         })
-        .catch(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >port.postMessage({ payload: { success: false, error: String(e) } }))</span>;
+        .catch(<span class="fstat-no" title="function not covered" >(e</span>) =&gt; <span class="cstat-no" title="statement not covered" >port.postMessage?.({ payload: { success: false, error: String(e) } }))</span>;
     },
   } as unknown as ServiceWorker;
 &nbsp;
@@ -336,22 +358,27 @@ export function installMockServiceWorker(
   } as unknown as ServiceWorkerRegistration;
 &nbsp;
   // Install onto global navigator
-  const nav = (global as any).navigator || (<span class="branch-1 cbranch-no" title="branch not covered" >global as any).window?.navigator;</span>
+  const g = global as unknown as Record&lt;string, unknown&gt;;
+  const nav =
+    (g.navigator as Record&lt;string, unknown&gt;) ||
+    ((<span class="branch-1 cbranch-no" title="branch not covered" >g.window as Record&lt;string, unknown&gt;)?.navigator as Record&lt;string, unknown&gt; | undefined);</span>
   <span class="missing-if-branch" title="if path not taken" >I</span>if (!nav) {
     // In some jest environments navigator exists on global
-    (<span class="cstat-no" title="statement not covered" >global as any).navigator = {};</span>
+    (<span class="cstat-no" title="statement not covered" >g.navigator as Record&lt;string, unknown&gt;) = {};</span>
   }
 &nbsp;
-  const prev = (global as any).navigator.serviceWorker;
+  const prev = (g.navigator as Record&lt;string, unknown&gt;)?.serviceWorker;
 &nbsp;
-  (global as any).navigator.serviceWorker = {
+  (g.navigator as Record&lt;string, unknown&gt;).serviceWorker = {
     controller: mockSW,
     ready: Promise.resolve(registration),
-  } as any;
+  } as unknown as ServiceWorker;
 &nbsp;
   return function uninstall() {
     // restore previous value (could be undefined)
-    (global as any).navigator.serviceWorker = prev;
+    (g.navigator as Record&lt;string, unknown&gt;).serviceWorker = prev as unknown as
+      | ServiceWorker
+      | undefined;
   };
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -361,7 +388,7 @@ export function installMockServiceWorker(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-14T22:41:45.550Z
+                at 2025-11-16T22:17:09.068Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

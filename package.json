@@ -15,9 +15,10 @@
     "clean": "rm -rf .parcel-cache dist",
     "test": "jest",
     "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/jest",
+    "test:unit:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/jest --runInBand",
     "test:e2e": "playwright test tests/playwright",
     "test:playwright": "playwright test",
-    "test:ci": "jest --runInBand --reporters=default"
+    "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --reporters=default"
   },
   "dependencies": {
     "@bladeski/logger": "^1.0.3"

@@ -15,6 +15,8 @@ module.exports = {
     '^@bladeski/logger$': '<rootDir>/__mocks__/@bladeski/logger.js',
   },
   testMatch: ['<rootDir>/tests/jest/**/*.test.ts'],
+  // Load test-environment helpers (TextEncoder/TextDecoder shim)
+  setupFilesAfterEnv: ['<rootDir>/tests/jest/setupTests.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   collectCoverage: true,
   coverageDirectory: 'coverage',

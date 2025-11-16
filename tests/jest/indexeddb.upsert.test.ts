@@ -8,7 +8,7 @@ describe('IndexedDbDataService upsert behavior', () => {
 
   test('setMorningCheckin updates existing record via SW put', async () => {
     // mock SW to capture add/put requests and simulate success
-    const uninstall = installMockServiceWorker(async (msgType: string, payload: unknown) => {
+    const uninstall = installMockServiceWorker(async (msgType: string) => {
       if (msgType === 'IDB:AddMorningCheckin') return { success: true };
       if (msgType === 'IDB:GetMorningCheckin')
         return { success: true, items: [{ intention: 'x', core_value: 'y' }] };
