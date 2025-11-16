@@ -3,8 +3,12 @@ import { installMockServiceWorker } from '../helpers/mockServiceWorker';
 
 describe('IndexedDbDataService.getDashboardAnalytics', () => {
   afterEach(() => {
-    if ((global as any).navigator && (global as any).navigator.serviceWorker) {
-      (global as any).navigator.serviceWorker = undefined;
+    const g = global as unknown as Record<string, unknown>;
+    if (
+      (g.navigator as Record<string, unknown>) &&
+      (g.navigator as Record<string, unknown>).serviceWorker
+    ) {
+      (g.navigator as Record<string, unknown>).serviceWorker = undefined;
     }
   });
 
@@ -26,7 +30,9 @@ describe('IndexedDbDataService.getDashboardAnalytics', () => {
       // Return presence-only arrays for GetMorningCheckin/GetMiddayCheckin/GetEveningReflection
       if (type === 'IDB:GetMorningCheckin') {
         const date = payload as string;
-        if (morningSet.has(date)) return { success: true, items: [{ date, check_date: date, intention: 'x' }] };
+        if (morningSet.has(date)) {
+          return { success: true, items: [{ date, check_date: date, intention: 'x' }] };
+        }
         return { success: true, items: [] };
       }
       if (type === 'IDB:GetMiddayCheckin') {
@@ -36,12 +42,16 @@ describe('IndexedDbDataService.getDashboardAnalytics', () => {
       }
       if (type === 'IDB:GetEveningReflection') {
         const date = payload as string;
-        if (eveningSet.has(date)) return { success: true, items: [{ date, check_date: date, summary: 'ok' }] };
+        if (eveningSet.has(date)) {
+          return { success: true, items: [{ date, check_date: date, summary: 'ok' }] };
+        }
         return { success: true, items: [] };
       }
 
       // Weekly/monthly reviews return nothing
-      if (type === 'IDB:GetWeeklyReview' || type === 'IDB:GetMonthlyReview') return { success: true, items: [] };
+      if (type === 'IDB:GetWeeklyReview' || type === 'IDB:GetMonthlyReview') {
+        return { success: true, items: [] };
+      }
 
       return { success: false, error: 'unexpected' };
     });

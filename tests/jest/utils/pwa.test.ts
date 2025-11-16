@@ -48,22 +48,7 @@ describe('PWAManager.isPWA', () => {
     }
   }
 
-  function restoreProp<T extends object, K extends string | number | symbol>(
-    obj: T,
-    prop: K,
-    original: any,
-  ) {
-    try {
-      Object.defineProperty(obj, prop as string, { value: original, configurable: true });
-    } catch {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (obj as any)[prop] = original;
-      } catch {
-        // ignore
-      }
-    }
-  }
+  // No restore helper required: afterEach restores global originals.
 
   test('returns true when display-mode is standalone', () => {
     // assign test doubles using robust helper

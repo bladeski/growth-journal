@@ -4,9 +4,13 @@ import { installMockServiceWorker } from '../helpers/mockServiceWorker';
 describe('IndexedDbDataService (unit)', () => {
   afterEach(() => {
     // Ensure we clean navigator.serviceWorker between tests
-    if ((global as any).navigator && (global as any).navigator.serviceWorker) {
+    const g = global as unknown as Record<string, unknown>;
+    if (
+      (g.navigator as Record<string, unknown>) &&
+      (g.navigator as Record<string, unknown>).serviceWorker
+    ) {
       // attempt to clear
-      (global as any).navigator.serviceWorker = undefined;
+      (g.navigator as Record<string, unknown>).serviceWorker = undefined;
     }
   });
 
@@ -48,10 +52,10 @@ describe('IndexedDbDataService (unit)', () => {
     });
 
     const svc = new IndexedDbDataService();
-  // choose a date where dayOfMonth resolves to index 0 (first day of month)
-  const d = new Date();
-  d.setDate(1);
-  const date = d.toISOString().slice(0, 10);
+    // choose a date where dayOfMonth resolves to index 0 (first day of month)
+    const d = new Date();
+    d.setDate(1);
+    const date = d.toISOString().slice(0, 10);
     const gi = await svc.getGrowthIntention(date);
     expect(gi).not.toBeNull();
     // normalized fields should be strings (or empty) not objects
@@ -73,7 +77,7 @@ describe('IndexedDbDataService (unit)', () => {
 
     const svc = new IndexedDbDataService();
     const res = await svc.exportDatabase();
-    expect(res).toEqual(payload as any);
+    expect(res).toEqual(payload as unknown);
 
     uninstall();
   });
@@ -93,8 +97,9 @@ describe('IndexedDbDataService (unit)', () => {
 
   test('exportDatabase returns null when no service worker present', async () => {
     // Ensure no service worker
-    (global as any).navigator = (global as any).navigator || {};
-    (global as any).navigator.serviceWorker = undefined;
+    const g = global as unknown as Record<string, unknown>;
+    (g.navigator as Record<string, unknown>) = (g.navigator as Record<string, unknown>) || {};
+    (g.navigator as Record<string, unknown>).serviceWorker = undefined;
 
     const svc = new IndexedDbDataService();
     const res = await svc.exportDatabase();
