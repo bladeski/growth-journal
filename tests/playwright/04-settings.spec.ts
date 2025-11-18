@@ -7,7 +7,9 @@ const APP_URL = process.env.APP_URL || 'http://localhost:3000/#/settings';
 test('settings export/import/clear flows', async ({ page }) => {
   await page.goto(APP_URL);
   await page.waitForLoadState('networkidle');
-  await expect(page.locator('#export-db')).toBeVisible({ timeout: 15000 });
+  // Wait for the settings content (or the export button) to be available
+  await page.waitForSelector('#export-db', { timeout: 20000 });
+  await expect(page.locator('#export-db')).toBeVisible({ timeout: 20000 });
 
   const downloadsDir = path.join(process.cwd(), 'downloads');
   if (!fs.existsSync(downloadsDir)) fs.mkdirSync(downloadsDir);
