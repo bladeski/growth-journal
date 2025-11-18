@@ -46,3 +46,10 @@ jobs:
         with:
           name: playwright-html-report
           path: playwright-html-report
+
+      - name: Upload Playwright test-results (traces & artifacts)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: test-results

@@ -4,11 +4,14 @@ import path from 'path';
 export default defineConfig({
   testDir: './tests',
   outputDir: path.join(process.cwd(), 'test-results'),
+  retries: 1,
   use: {
     headless: true,
     viewport: { width: 1280, height: 800 },
     actionTimeout: 10000,
     navigationTimeout: 20000,
+    // Capture trace on first retry to help diagnose CI failures
+    trace: 'on-first-retry',
     // Accept downloads by default
     contextOptions: {
       acceptDownloads: true,
