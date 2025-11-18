@@ -10,8 +10,9 @@ export default defineConfig({
     viewport: { width: 1280, height: 800 },
     actionTimeout: 10000,
     navigationTimeout: 20000,
-    // Capture trace on first retry to help diagnose CI failures
-    trace: 'on-first-retry',
+    // Capture trace for every test run in CI to ensure artifacts are available
+    // (use 'on' so traces exist even when retries don't occur).
+    trace: 'on',
     // Accept downloads by default
     contextOptions: {
       acceptDownloads: true,
