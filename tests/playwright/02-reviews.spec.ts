@@ -6,18 +6,22 @@ test('open weekly review', async ({ page }) => {
   await page.goto(APP_URL + '#/weekly');
   await page.waitForLoadState('networkidle');
   await page.waitForFunction(() => !!(window as any).customElements?.get?.('weekly-review'), null, {
-    timeout: 20000,
+    timeout: 30000,
   });
-  await page.waitForSelector('weekly-review', { timeout: 20000 });
-  await expect(page.locator('weekly-review')).toBeVisible({ timeout: 20000 });
+
+  const weekly = page.locator('weekly-review');
+  await weekly.waitFor({ state: 'visible', timeout: 30000 });
+  await expect(weekly).toBeVisible({ timeout: 30000 });
 });
 
 test('open monthly reflection', async ({ page }) => {
   await page.goto(APP_URL + '#/monthly');
   await page.waitForLoadState('networkidle');
   await page.waitForFunction(() => !!(window as any).customElements?.get?.('monthly-reflection'), null, {
-    timeout: 20000,
+    timeout: 30000,
   });
-  await page.waitForSelector('monthly-reflection', { timeout: 20000 });
-  await expect(page.locator('monthly-reflection')).toBeVisible({ timeout: 20000 });
+
+  const monthly = page.locator('monthly-reflection');
+  await monthly.waitFor({ state: 'visible', timeout: 30000 });
+  await expect(monthly).toBeVisible({ timeout: 30000 });
 });

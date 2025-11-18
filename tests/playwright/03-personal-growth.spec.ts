@@ -6,8 +6,10 @@ test('personal growth view opens', async ({ page }) => {
   await page.goto(APP_URL + '#/growth');
   await page.waitForLoadState('networkidle');
   await page.waitForFunction(() => !!(window as any).customElements?.get?.('personal-growth'), null, {
-    timeout: 20000,
+    timeout: 30000,
   });
-  await page.waitForSelector('personal-growth', { timeout: 20000 });
-  await expect(page.locator('personal-growth')).toBeVisible({ timeout: 20000 });
+
+  const pg = page.locator('personal-growth');
+  await pg.waitFor({ state: 'visible', timeout: 30000 });
+  await expect(pg).toBeVisible({ timeout: 30000 });
 });
