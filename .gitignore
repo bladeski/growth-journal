@@ -14,8 +14,9 @@ test-results/
 test-downloads/
 downloads/
 .playwright/
-playwright-report/
+playwright*report/
 .last-run.json
+artifacts*/
 
 # Environment files
 .env
