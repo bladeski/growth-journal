@@ -16,8 +16,10 @@ module.exports = {
   },
   testMatch: ['<rootDir>/tests/jest/**/*.test.ts'],
   // Load test-environment helpers (TextEncoder/TextDecoder shim)
-  // Use the CommonJS shim in CI or environments where Jest doesn't treat TS setup files as ESM.
-  setupFilesAfterEnv: ['<rootDir>/tests/jest/setupTests.cjs', '<rootDir>/tests/jest/setupTests.ts'],
+  // Only load the CommonJS shim here because Jest requires setup files to be loadable
+  // via `require()` and they are not transformed by ts-jest. The TypeScript shim
+  // should not be listed here (it would cause "import" syntax errors in CI).
+  setupFilesAfterEnv: ['<rootDir>/tests/jest/setupTests.cjs'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   collectCoverage: true,
   coverageDirectory: 'coverage',
