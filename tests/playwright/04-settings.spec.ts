@@ -8,6 +8,10 @@ test('settings export/import/clear flows', async ({ page }) => {
   await page.goto(APP_URL);
   await page.waitForLoadState('networkidle');
 
+  // Ensure navigation finished and settings component is defined/registered
+  await page.waitForURL('**/#/settings', { timeout: 30000 });
+  await page.evaluate(() => customElements.whenDefined('app-settings'));
+
   // Scope all selectors to the rendered settings component (shadow DOM)
   const settings = page.locator('app-settings');
   await settings.waitFor({ state: 'attached', timeout: 30000 });
