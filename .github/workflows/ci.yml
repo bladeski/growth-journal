@@ -45,10 +45,13 @@ jobs:
           # wait for server to be ready
           npx wait-on http://127.0.0.1:3000 --timeout 30000
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
       - name: Run Playwright E2E tests (with traces)
         run: |
-          # Playwright config should already be set to capture traces and write to `test-results`
-          npx playwright test --config=playwright.config.ts --reporter=list
+          # Run Playwright only against the playright test dir to avoid picking up Jest tests
+          npx playwright test tests/playwright --config=playwright.config.ts --reporter=list
 
       - name: Upload Playwright HTML report
         uses: actions/upload-artifact@v4
