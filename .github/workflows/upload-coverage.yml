@@ -23,6 +23,13 @@ jobs:
       - name: Run unit tests (coverage)
         run: yarn test:unit:ci
 
+      - name: Normalize lcov paths
+        run: |
+          if [ -f coverage/lcov.info ]; then
+            perl -pe 's{\\}{/}g' coverage/lcov.info > coverage/lcov_fixed.info
+            mv coverage/lcov_fixed.info coverage/lcov.info
+          fi
+
       - name: Upload coverage to Codecov
         if: always()
         uses: codecov/codecov-action@v4
