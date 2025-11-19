@@ -23,3 +23,41 @@ jobs:
 
       - name: Run unit tests
         run: yarn test:unit:ci
+
+  e2e:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies (yarn)
+        run: yarn install --frozen-lockfile
+
+      - name: Start dev server
+        run: |
+          # start dev server in background on port 3000
+          yarn dev &
+          # wait for server to be ready
+          npx wait-on http://127.0.0.1:3000 --timeout 30000
+
+      - name: Run Playwright E2E tests (with traces)
+        run: |
+          # Playwright config should already be set to capture traces and write to `test-results`
+          npx playwright test --config=playwright.config.ts --reporter=list
+
+      - name: Upload Playwright HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-html-report
+          path: playwright-report
+
+      - name: Upload Playwright test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: test-results
