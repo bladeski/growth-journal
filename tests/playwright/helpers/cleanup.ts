@@ -14,4 +14,9 @@ export function cleanupRootDirs() {
   } catch (e) {
     // ignore
   }
+  // Do not remove Playwright's configured `playwright-artifacts` output directory here.
+  // Playwright may create temporary `.playwright-artifacts-*` folders inside that directory
+  // while packaging traces; removing it during the run can cause ENOENT when Playwright
+  // attempts to open zipped trace files. The CI workflow will collect artifacts after
+  // the job completes.
 }

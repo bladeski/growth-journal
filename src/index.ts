@@ -131,8 +131,6 @@ class GrowthJournalApp {
     this.dashboard = document.getElementById('dashboard');
 
     this.setupEventListeners();
-    // Show dashboard by default
-    this.showDashboard();
   }
 
   private setupEventListeners(): void {
