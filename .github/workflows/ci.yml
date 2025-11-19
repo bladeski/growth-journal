@@ -96,36 +96,8 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Publish Playwright HTML report to GitHub Pages
-        if: success() && steps.report-check.outputs.exists == 'true'
-        run: |
-          mkdir -p public/playwright-report
-          cp -r playwright-html-report/* public/playwright-report/ || true
-
-      - name: Upload Pages artifact
-        if: success() && steps.report-check.outputs.exists == 'true'
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: public/playwright-report
-
-      - name: Deploy Pages
-        if: success() && steps.report-check.outputs.exists == 'true'
-        uses: actions/deploy-pages@v1
-
-      - name: Comment PR with report link
-        if: ${{ github.event_name == 'pull_request' && steps.report-check.outputs.exists == 'true' }}
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const pr = context.payload.pull_request && context.payload.pull_request.number;
-            if (!pr) {
-              core.info('No pull_request context - skipping comment');
-              return;
-            }
-            const pagesUrl = `https://${context.repo.owner}.github.io/${context.repo.repo}/playwright-report/`;
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const body = `Playwright report: ${pagesUrl}\n\nArtifacts & run details: ${runUrl}`;
-            await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: pr, body });
+      # Pages / deploy / PR comment steps removed temporarily to avoid runner setup abort
+      # These can be re-enabled after resolving the runner's deprecated action detection
 
       - name: Upload Playwright HTML report
         if: always()
