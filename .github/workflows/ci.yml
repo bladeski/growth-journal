@@ -59,6 +59,18 @@ jobs:
           # Run Playwright only against the playright test dir to avoid picking up Jest tests
           npx playwright test tests/playwright --config=playwright.config.ts --reporter=list --workers=1 --timeout=120000
 
+      - name: Debug: list artifact directories
+        if: always()
+        run: |
+          echo '=== LS: workspace root ==='
+          ls -la || true
+          echo '=== LS: playwright-artifacts ==='
+          ls -la playwright-artifacts || true
+          echo '=== LS: .playwright-artifacts-* ==='
+          ls -la .playwright-artifacts-* || true
+          echo '=== LS: playwright-html-report ==='
+          ls -la playwright-html-report || true
+
       - name: Collect Playwright artifacts
         if: always()
         run: |
