@@ -1,6 +1,6 @@
 {
   "name": "growth-journal",
-  "version": "0.0.14",
+  "version": "0.0.16",
   "description": "A Progressive Web App for daily growth journaling and reflection.",
   "type": "module",
   "scripts": {
