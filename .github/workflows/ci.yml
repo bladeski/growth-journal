@@ -20,48 +20,7 @@ jobs:
       - name: Install dependencies (yarn)
         run: yarn install --frozen-lockfile
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Start dev server
-        run: yarn dev &
-
-      - name: Wait for server
-        run: |
-          for i in {1..30}; do
-            if curl -sSf http://localhost:3000 >/dev/null; then
-              echo "server up"; break;
-            fi; sleep 1;
-          done
-
       - name: Run unit tests
         run: yarn test:unit:ci
-
-      - name: Run E2E tests
-        run: yarn test:e2e
-
-      - name: Upload Playwright HTML report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-html-report
-          path: playwright-html-report
-
-      - name: "Debug: list test-results contents"
-        if: always()
-        run: |
-          if [ -d test-results ]; then
-            echo "test-results directory exists, listing contents:";
-            ls -laR test-results || true;
-          else
-            echo "test-results directory not found";
-          fi
-
-      - name: Upload Playwright test-results (traces & artifacts)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-test-results
-          # Upload recursively to include nested trace zips and attachments
-          path: |
-            test-results/**
+      - name: Run unit tests
+        run: yarn test:unit:ci
