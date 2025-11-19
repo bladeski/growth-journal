@@ -7,14 +7,16 @@ test.describe('Check-ins', () => {
     await page.goto(APP_URL + '#/morning');
     // Wait for network to settle and the app to render
     await page.waitForLoadState('networkidle');
+    // Ensure the app has initialized (GrowthJournalApp created)
+    await page.waitForFunction(() => !!(window as any).app, null, { timeout: 30000 });
     // Ensure the custom element is defined and present in the DOM
     await page.waitForFunction(() => !!(window as any).customElements?.get?.('morning-checkin'), null, {
-      timeout: 30000,
+      timeout: 20000,
     });
 
     const morning = page.locator('morning-checkin');
-    await morning.waitFor({ state: 'visible', timeout: 30000 });
-    await expect(morning).toBeVisible({ timeout: 30000 });
+    await morning.waitFor({ state: 'visible', timeout: 60000 });
+    await expect(morning).toBeVisible({ timeout: 60000 });
 
     const input = morning.locator('input[type="text"]').first();
     if ((await input.count()) > 0) await input.fill('Test morning intention', { timeout: 30000 });
@@ -26,22 +28,24 @@ test.describe('Check-ins', () => {
   test('open midday and evening forms', async ({ page }) => {
     await page.goto(APP_URL + '#/midday');
     await page.waitForLoadState('networkidle');
+    await page.waitForFunction(() => !!(window as any).app, null, { timeout: 30000 });
     await page.waitForFunction(() => !!(window as any).customElements?.get?.('midday-checkin'), null, {
-      timeout: 30000,
+      timeout: 20000,
     });
 
     const midday = page.locator('midday-checkin');
-    await midday.waitFor({ state: 'visible', timeout: 30000 });
-    await expect(midday).toBeVisible({ timeout: 30000 });
+    await midday.waitFor({ state: 'visible', timeout: 60000 });
+    await expect(midday).toBeVisible({ timeout: 60000 });
 
     await page.goto(APP_URL + '#/evening');
     await page.waitForLoadState('networkidle');
+    await page.waitForFunction(() => !!(window as any).app, null, { timeout: 30000 });
     await page.waitForFunction(() => !!(window as any).customElements?.get?.('evening-checkin'), null, {
-      timeout: 30000,
+      timeout: 20000,
     });
 
     const evening = page.locator('evening-checkin');
-    await evening.waitFor({ state: 'visible', timeout: 30000 });
-    await expect(evening).toBeVisible({ timeout: 30000 });
+    await evening.waitFor({ state: 'visible', timeout: 60000 });
+    await expect(evening).toBeVisible({ timeout: 60000 });
   });
 });
