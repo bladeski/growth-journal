@@ -59,13 +59,29 @@ jobs:
           # Run Playwright only against the playright test dir to avoid picking up Jest tests
           npx playwright test tests/playwright --config=playwright.config.ts --reporter=list --workers=1 --timeout=120000
 
+      - name: Collect Playwright artifacts
+        if: always()
+        run: |
+          mkdir -p test-results || true
+          # copy any Playwright temporary artifact folders into test-results so upload sees them
+          shopt -s nullglob || true
+          for d in .playwright-artifacts-*; do
+            cp -r "$d" test-results/ || true
+          done
+          # also make sure the HTML report is in an uploadable location
+          if [ -d "playwright-report" ]; then
+            cp -r playwright-report test-results/playwright-report || true
+          fi
+
       - name: Upload Playwright HTML report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-html-report
           path: playwright-report
 
       - name: Upload Playwright test-results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-test-results
