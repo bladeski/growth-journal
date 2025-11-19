@@ -3,7 +3,8 @@ import path from 'path';
 
 export default defineConfig({
   testDir: './tests',
-  outputDir: path.join(process.cwd(), 'test-results'),
+  // Store Playwright artifacts in a dedicated folder to avoid accidental cleanup
+  outputDir: path.join(process.cwd(), 'playwright-artifacts'),
   retries: 1,
   timeout: 120_000,
   workers: 1,

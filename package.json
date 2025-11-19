@@ -15,7 +15,8 @@
     "clean": "rm -rf .parcel-cache dist",
     "test": "jest",
     "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/jest",
-    "test:unit:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/jest --runInBand",
+    "test:unit:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/jest --runInBand --coverage --coverageReporters=lcov --coverageDirectory=coverage",
+    "coverage:open": "npx http-server coverage/lcov-report -p 8081 --silent",
     "test:e2e": "playwright test tests/playwright",
     "test:playwright": "playwright test",
     "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --reporters=default"

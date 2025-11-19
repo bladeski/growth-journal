@@ -14,7 +14,7 @@ test-results/
 test-downloads/
 downloads/
 .playwright/
-playwright*report/
+playwright-*/
 .last-run.json
 artifacts*/
 

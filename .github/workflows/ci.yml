@@ -21,8 +21,16 @@ jobs:
       - name: Run linter
         run: yarn lint
 
-      - name: Run unit tests
+      - name: Run unit tests (coverage)
         run: yarn test:unit:ci
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/lcov.info
+          fail_ci_if_error: true
 
   e2e:
     needs: test
@@ -59,17 +67,7 @@ jobs:
           # Run Playwright only against the playright test dir to avoid picking up Jest tests
           npx playwright test tests/playwright --config=playwright.config.ts --reporter=list --workers=1 --timeout=120000
 
-      - name: Debug: list artifact directories
-        if: always()
-        run: |
-          echo '=== LS: workspace root ==='
-          ls -la || true
-          echo '=== LS: playwright-artifacts ==='
-          ls -la playwright-artifacts || true
-          echo '=== LS: .playwright-artifacts-* ==='
-          ls -la .playwright-artifacts-* || true
-          echo '=== LS: playwright-html-report ==='
-          ls -la playwright-html-report || true
+      # debug listing removed - keep CI output cleaner
 
       - name: Collect Playwright artifacts
         if: always()
@@ -88,6 +86,18 @@ jobs:
           if [ -d "playwright-html-report" ]; then
             cp -r playwright-html-report test-results/playwright-html-report || true
           fi
+
+      - name: Set PLAYWRIGHT_REPORT_EXISTS
+        id: report-check
+        run: |
+          if [ -d "playwright-html-report" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Pages / deploy / PR comment steps removed temporarily to avoid runner setup abort
+      # These can be re-enabled after resolving the runner's deprecated action detection
 
       - name: Upload Playwright HTML report
         if: always()
