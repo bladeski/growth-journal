@@ -87,26 +87,33 @@ jobs:
             cp -r playwright-html-report test-results/playwright-html-report || true
           fi
 
-      - name: Publish Playwright HTML report to GitHub Pages
-        if: success()
+      - name: Set PLAYWRIGHT_REPORT_EXISTS
+        id: report-check
         run: |
-          mkdir -p public/playwright-report
           if [ -d "playwright-html-report" ]; then
-            cp -r playwright-html-report/* public/playwright-report/ || true
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Publish Playwright HTML report to GitHub Pages
+        if: success() && steps.report-check.outputs.exists == 'true'
+        run: |
+          mkdir -p public/playwright-report
+          cp -r playwright-html-report/* public/playwright-report/ || true
+
       - name: Upload Pages artifact
-        if: success()
+        if: success() && steps.report-check.outputs.exists == 'true'
         uses: actions/upload-pages-artifact@v1
         with:
           path: public/playwright-report
 
       - name: Deploy Pages
-        if: success()
+        if: success() && steps.report-check.outputs.exists == 'true'
         uses: actions/deploy-pages@v1
 
       - name: Comment PR with report link
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && steps.report-check.outputs.exists == 'true' }}
         uses: actions/github-script@v6
         with:
           script: |
