@@ -2,6 +2,7 @@
 
 Growth Journal is a Progressive Web App (PWA) for daily growth journaling and reflection. It's built with TypeScript and Web Components, bundled with Parcel, and designed to work offline using a Service Worker and IndexedDB.
 
+<!-- CI trigger: tiny edit to rerun workflow -->
 Quick start
 
 1. Install dependencies
