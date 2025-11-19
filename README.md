@@ -96,6 +96,8 @@ Playwright tests expect the dev server to be running (the CI workflow starts the
 
 - **Unit test coverage:** The CI run uploads coverage to Codecov. You can view the project coverage and per-PR coverage diffs at the Codecov dashboard linked in the badge above. Locally run `npm run test:unit:ci` and open `coverage/lcov-report/index.html` to inspect a local HTML report.
 
+Note: if this repository is private or your Codecov account requires an upload token, add a `CODECOV_TOKEN` secret to the repository (Settings → Secrets → Actions) so the `codecov` action can upload coverage.
+
 - **Playwright HTML report & traces:** The Playwright HTML report is published to GitHub Pages at `/playwright-report/` after a successful E2E CI run (badge above points there). You can also download Playwright trace `.zip` artifacts from any Actions run and view them locally with `npx playwright show-trace path/to/trace.zip`.
 
 ## Contributing
