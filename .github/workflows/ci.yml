@@ -21,8 +21,15 @@ jobs:
       - name: Run linter
         run: yarn lint
 
-      - name: Run unit tests
+      - name: Run unit tests (coverage)
         run: yarn test:unit:ci
+
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage/lcov.info
+          fail_ci_if_error: true
 
   e2e:
     needs: test
@@ -59,7 +66,7 @@ jobs:
           # Run Playwright only against the playright test dir to avoid picking up Jest tests
           npx playwright test tests/playwright --config=playwright.config.ts --reporter=list --workers=1 --timeout=120000
 
-      - name: Debug: list artifact directories
+      - name: Debug list artifact directories
         if: always()
         run: |
           echo '=== LS: workspace root ==='
@@ -88,6 +95,24 @@ jobs:
           if [ -d "playwright-html-report" ]; then
             cp -r playwright-html-report test-results/playwright-html-report || true
           fi
+
+      - name: Publish Playwright HTML report to GitHub Pages
+        if: success()
+        run: |
+          mkdir -p public/playwright-report
+          if [ -d "playwright-html-report" ]; then
+            cp -r playwright-html-report/* public/playwright-report/ || true
+          fi
+
+      - name: Upload Pages artifact
+        if: success()
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: public/playwright-report
+
+      - name: Deploy Pages
+        if: success()
+        uses: actions/deploy-pages@v1
 
       - name: Upload Playwright HTML report
         if: always()
