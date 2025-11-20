@@ -188,3 +188,31 @@
   --checkin-tips-width: 250px;
   --checkin-body-gap: var(--spacing-lg);
 }
+
+/* Dark theme overrides applied when `body` has class `dark-theme` */
+body.dark-theme {
+  --color-bg-rgb: 18, 20, 23; /* very dark background */
+  --color-text-rgb: 230, 230, 230; /* light text */
+  --color-surface-rgb: 28, 30, 34; /* surface cards */
+  --color-border-rgb: 54, 57, 63; /* subtle borders */
+  --color-muted-rgb: 150, 160, 170;
+  --color-primary-rgb: 120, 150, 100; /* slightly muted primary for dark */
+  --color-secondary-rgb: 200, 195, 150;
+
+  /* derived colors (will be recalculated via existing var usages) */
+  --color-bg: rgb(var(--color-bg-rgb));
+  --color-surface: rgb(var(--color-surface-rgb));
+  --color-text: rgb(var(--color-text-rgb));
+  --color-border: rgb(var(--color-border-rgb));
+  --color-muted: rgb(var(--color-muted-rgb));
+
+  --bg-overlay-light: rgba(255, 255, 255, 0.02);
+  --bg-overlay-medium: rgba(255, 255, 255, 0.06);
+  --bg-surface-gradient-start: rgba(255, 255, 255, 0.02);
+  --bg-surface-gradient-end: rgba(255, 255, 255, 0.04);
+  --bg-surface-white: rgba(255, 255, 255, 0.02);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.6);
+  --shadow-md: 0 3px 6px rgba(0,0,0,0.6);
+  --card-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}

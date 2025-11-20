@@ -79,6 +79,56 @@ export class SettingsComponent extends BaseComponent {
         }
       }
     }
+
+    // Theme selection: system / light / dark
+    const themeSelect = this.shadowRoot?.querySelector('#theme-select') as HTMLSelectElement | null;
+    const THEME_KEY = 'gj_theme_preference';
+
+    const applyTheme = (pref: string) => {
+      const body = document.body;
+      if (pref === 'system') {
+        // remove explicit theme class and follow prefers-color-scheme
+        body.classList.remove('dark-theme');
+      } else if (pref === 'dark') {
+        body.classList.add('dark-theme');
+      } else {
+        body.classList.remove('dark-theme');
+      }
+    };
+
+    const loadPreference = () => localStorage.getItem(THEME_KEY) || 'system';
+    const savePreference = (v: string) => localStorage.setItem(THEME_KEY, v);
+
+    const onSystemChange = (e: MediaQueryListEvent) => {
+      const pref = loadPreference();
+      if (pref === 'system') applyTheme(pref);
+    };
+
+    if (themeSelect) {
+      // set initial value
+      const pref = loadPreference();
+      themeSelect.value = pref;
+      applyTheme(pref === 'system' ? 'system' : pref);
+
+      themeSelect.addEventListener('change', (ev) => {
+        const v = (ev.target as HTMLSelectElement).value;
+        savePreference(v);
+        applyTheme(v);
+        this.showMessage('Theme preference saved');
+      });
+
+      // Listen to system preference changes when system mode selected
+      try {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        if (mq && typeof mq.addEventListener === 'function') {
+          mq.addEventListener('change', onSystemChange);
+        } else if ((mq as any) && typeof (mq as any).addListener === 'function') {
+          (mq as any).addListener(onSystemChange);
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
   }
 
   exportDb(): void {

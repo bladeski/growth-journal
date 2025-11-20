@@ -31,4 +31,15 @@
               button#install-pwa.btn(data-action="click:installPwa") Install App
               span.install-status#install-status
 
+      card-component.appearance
+        span(slot="title") Appearance
+        .card-body
+          span Choose app theme preference.
+          .controls
+            label(for="theme-select") Theme
+            select#theme-select(data-action="change:changeTheme")
+              option(value="system") System
+              option(value="light") Light
+              option(value="dark") Dark
+
     .settings-message#settings-message
