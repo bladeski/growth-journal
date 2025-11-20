@@ -4,11 +4,12 @@
   "description": "A Progressive Web App for daily growth journaling and reflection.",
   "type": "module",
   "scripts": {
-    "dev": "parcel src/index.pug --port 3000",
+    "dev": "parcel src/index.pug --port 3000 --dist-dir dev-dist",
     "build": "parcel build src/index.pug --public-url ./",
     "release": "standard-version",
     "build:pwa": "npm run build && npm run copy-pwa-files",
     "copy-pwa-files": "powershell -Command \"Copy-Item src/manifest.json dist/; Copy-Item src/sw.ts dist/sw.js; if (Test-Path src/icons) { Copy-Item -Recurse src/icons dist/ }\"",
+    "copy-pwa-files:dev": "powershell -Command \"Copy-Item src/manifest.json dev-dist/; Copy-Item src/sw.ts dev-dist/sw.js; if (Test-Path src/icons) { Copy-Item -Recurse src/icons dev-dist/ }\"",
     "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,scss,pug,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,scss,pug,json,md}\"",
