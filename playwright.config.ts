@@ -23,5 +23,5 @@ export default defineConfig({
   },
   // Write test results to `test-results` and keep the HTML report
   // in a sibling folder to avoid Playwright clearing the results dir.
-  reporter: [['list'], ['html', { outputFolder: 'dist/playwright-html-report' }]],
+  reporter: [['list'], ['html', { outputFolder: 'dist/playwright-report' }]],
 });
