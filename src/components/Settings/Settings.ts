@@ -6,11 +6,38 @@ import { CheckinHeader } from '../CheckinHeader/CheckinHeader.ts';
 import { PWAManager } from '../../utils/PwaManager.ts';
 import { IGrowthJournalWindow } from '../../interfaces/IGrowthJournalWindow.ts';
 
+const THEME_KEY = 'gj_theme_preference';
+
 const GrowthJournalWindow = window as IGrowthJournalWindow;
 
 export class SettingsComponent extends BaseComponent {
   constructor() {
     super(() => template, {}, [styles]);
+  }
+
+  changeTheme(ev: Event): void {
+    const v = (ev.target as HTMLSelectElement).value;
+    localStorage.setItem(THEME_KEY, v);
+    this.applyThemePref(v);
+    this.showMessage('Theme preference saved');
+  }
+
+  applyThemePref(pref: string): void {
+    const body = document.body;
+    if (pref === 'system') {
+      // respect system setting; add class if system prefers dark
+      try {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        if (mq && mq.matches) body.classList.add('dark-theme');
+        else body.classList.remove('dark-theme');
+      } catch (e) {
+        body.classList.remove('dark-theme');
+      }
+    } else if (pref === 'dark') {
+      body.classList.add('dark-theme');
+    } else {
+      body.classList.remove('dark-theme');
+    }
   }
 
   protected async onMount(): Promise<void> {
@@ -82,46 +109,23 @@ export class SettingsComponent extends BaseComponent {
 
     // Theme selection: system / light / dark
     const themeSelect = this.shadowRoot?.querySelector('#theme-select') as HTMLSelectElement | null;
-    const THEME_KEY = 'gj_theme_preference';
-
-    const applyTheme = (pref: string) => {
-      const body = document.body;
-      if (pref === 'system') {
-        // remove explicit theme class and follow prefers-color-scheme
-        body.classList.remove('dark-theme');
-      } else if (pref === 'dark') {
-        body.classList.add('dark-theme');
-      } else {
-        body.classList.remove('dark-theme');
-      }
-    };
-
-    const loadPreference = () => localStorage.getItem(THEME_KEY) || 'system';
-    const savePreference = (v: string) => localStorage.setItem(THEME_KEY, v);
 
     const onSystemChange = (e: MediaQueryListEvent) => {
-      const pref = loadPreference();
-      if (pref === 'system') applyTheme(pref);
+      const pref = localStorage.getItem(THEME_KEY) || 'system';
+      if (pref === 'system') this.applyThemePref('system');
     };
 
     if (themeSelect) {
       // set initial value
-      const pref = loadPreference();
+      const pref = localStorage.getItem(THEME_KEY) || 'system';
       themeSelect.value = pref;
-      applyTheme(pref === 'system' ? 'system' : pref);
-
-      themeSelect.addEventListener('change', (ev) => {
-        const v = (ev.target as HTMLSelectElement).value;
-        savePreference(v);
-        applyTheme(v);
-        this.showMessage('Theme preference saved');
-      });
+      this.applyThemePref(pref);
 
       // Listen to system preference changes when system mode selected
       try {
         const mq = window.matchMedia('(prefers-color-scheme: dark)');
         if (mq && typeof mq.addEventListener === 'function') {
-          mq.addEventListener('change', onSystemChange);
+          mq.addEventListener('change', onSystemChange as EventListener);
         } else if ((mq as any) && typeof (mq as any).addListener === 'function') {
           (mq as any).addListener(onSystemChange);
         }
