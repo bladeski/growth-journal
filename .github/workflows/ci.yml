@@ -24,14 +24,6 @@ jobs:
       - name: Run unit tests (coverage)
         run: yarn test:unit:ci
 
-      - name: Upload coverage to Codecov
-        if: always()
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage/lcov.info
-          fail_ci_if_error: true
-
   e2e:
     needs: test
     runs-on: ubuntu-latest
