@@ -17,6 +17,7 @@ downloads/
 playwright-*/
 .last-run.json
 artifacts*/
+coverage/
 
 # Environment files
 .env

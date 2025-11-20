@@ -30,6 +30,15 @@ jobs:
             mv coverage/lcov_fixed.info coverage/lcov.info
           fi
 
+      - name: Print normalized SF lines
+        run: |
+          echo "First 20 SF: entries after normalization:";
+          if [ -f coverage/lcov.info ]; then
+            grep '^SF:' coverage/lcov.info | sed -n '1,20p' || true
+          else
+            echo "coverage/lcov.info not found"
+          fi
+
       - name: Refresh coverage file timestamps and diagnostics
         run: |
           echo "Refreshing mtimes for coverage files to avoid Codecov age check..."
@@ -48,5 +57,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage/lcov.info
+          files: |
+            coverage/lcov.info
+            coverage/coverage-final.json
           fail_ci_if_error: false
