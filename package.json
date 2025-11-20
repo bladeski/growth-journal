@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "parcel src/index.pug --port 3000",
-    "build": "parcel build src/index.pug --public-url ./",
+    "build": "parcel build src/index.pug",
     "release": "standard-version",
     "build:pwa": "npm run build && npm run copy-pwa-files",
     "copy-pwa-files": "powershell -Command \"Copy-Item src/manifest.json dist/; Copy-Item src/sw.ts dist/sw.js; if (Test-Path src/icons) { Copy-Item -Recurse src/icons dist/ }\"",
@@ -20,6 +20,11 @@
     "test:e2e": "playwright test tests/playwright",
     "test:playwright": "playwright test",
     "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --reporters=default"
+  },
+  "targets": {
+    "default": {
+      "publicUrl": "./"
+    }
   },
   "dependencies": {
     "@bladeski/logger": "^1.0.3"
