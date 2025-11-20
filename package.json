@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "parcel src/index.pug --port 3000",
-    "build": "parcel build src/index.pug --public-url ./growth-journal",
+    "build": "parcel build src/index.pug --public-url /growth-journal/",
     "release": "standard-version",
     "build:pwa": "npm run build && npm run copy-pwa-files",
     "copy-pwa-files": "powershell -Command \"Copy-Item src/manifest.json dist/; Copy-Item src/sw.ts dist/sw.js; if (Test-Path src/icons) { Copy-Item -Recurse src/icons dist/ }\"",
