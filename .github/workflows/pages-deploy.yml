@@ -4,6 +4,11 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  id-token: write
+  contents: write
+  pages: write
+  
 jobs:
   deploy-playwright-report:
     runs-on: ubuntu-latest
