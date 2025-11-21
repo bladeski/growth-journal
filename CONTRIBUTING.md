@@ -1,3 +1,8 @@
+## Contribution Guidelines
+
+- Use Conventional Commit style in Pull Request titles (e.g. `feat(settings): add theme selector`).
+- When merging, prefer a merge commit or conventional PR title that communicates the change type. The repository uses `standard-version` to generate changelogs and version bumps.
+- For breaking changes include `BREAKING CHANGE:` in the PR description or use `BREAKING CHANGE` in the title to trigger a major release.
 # Contributing to Growth Journal
 
 Thanks for your interest in improving the Growth Journal project! This document outlines a minimal contribution workflow so changes can be reviewed and merged cleanly.
