@@ -2,6 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
+  /* prefer light color-scheme by default; components may flip to dark via data-theme */
+  color-scheme: light;
   /* typography */
   --font-family-heading: 'Merriweather', serif;
   --font-family-body: 'Inter', sans-serif;
@@ -38,60 +40,56 @@
   /* 24px */
 
   /* color palette */
-  --primary-colour-rgb: 163, 200, 137; /* #A3C889 */
-  --secondary-colour-rgb: 224, 219, 166; /* #E0DBA6 */
-  --accent-colour-rgb: 44, 110, 111; /* #2C6E6F */
-  --background-colour-rgb: 255, 252, 243; /* #FFFCF3 */
-  --text-colour-rgb: 56, 56, 56; /* #383838 */
+  --theme-primary-colour-rgb: 163, 200, 137; /* #A3C889 */
+  --theme-secondary-colour-rgb: 224, 219, 166; /* #E0DBA6 */
+  --theme-accent-colour-rgb: 44, 110, 111; /* #2C6E6F */
+  --theme-light-colour-rgb: 255, 252, 243; /* #FFFCF3 */
+  --theme-lighter-colour-rgb: 255, 253, 250; /* #FFFDFA */
+  --theme-dark-colour-rgb: 56, 56, 56; /* #383838 */
+  --theme-darker-colour-rgb: 44, 44, 44; /* #2C2C2C */
 
-  /* RGB design tokens */
-  --color-primary-rgb: var(--primary-colour-rgb);
-  --color-primary-contrast-rgb: 255, 255, 255; /* #FFFFFF */
-  --color-secondary-rgb: var(--secondary-colour-rgb);
-  --color-accent-rgb: var(--accent-colour-rgb);
-  --color-bg-rgb: var(--background-colour-rgb);
-  --color-surface-rgb: 255, 255, 255; /* #FFFFFF */
-  --color-text-rgb: var(--text-colour-rgb);
-  --color-muted-rgb: 108, 117, 125; /* #6C757D */
-  --color-border-rgb: 229, 229, 227; /* #E5E5E3 */
+  --theme-info-colour-rgb: 90, 156, 168; /* #5A9CA8 */
+  --theme-success-colour-rgb: 107, 163, 104; /* #6BA368 */
+  --theme-warning-colour-rgb: 217, 164, 65; /* #D9A443 */
+  --theme-danger-colour-rgb: 199, 92, 92; /* #C75C5C */
 
-  --color-info-rgb: 90, 156, 168; /* #5A9CA8 */
-  --color-success-rgb: 107, 163, 104; /* #6BA368 */
-  --color-warning-rgb: 217, 164, 65; /* #D9A443 */
-  --color-danger-rgb: 199, 92, 92; /* #C75C5C */
+  --color-primary: rgb(var(--theme-primary-colour-rgb));
+  --color-primary-contrast: rgb(var(--theme-darker-colour-rgb));
+  --color-secondary: rgb(var(--theme-secondary-colour-rgb));
+  --color-secondary-contrast: rgb(var(--theme-dark-colour-rgb));
+  --color-accent: rgb(var(--theme-accent-colour-rgb));
+  --color-accent-contrast: rgb(var(--theme-lighter-colour-rgb));
+  --color-light: rgb(var(--theme-light-colour-rgb));
+  --color-lighter: rgb(var(--theme-lighter-colour-rgb));
+  --color-dark: rgb(var(--theme-dark-colour-rgb));
+  --color-darker: rgb(var(--theme-darker-colour-rgb));
 
-  --color-primary: rgb(var(--color-primary-rgb));
-  --color-primary-contrast: rgb(var(--color-primary-contrast-rgb));
-  --color-secondary: rgb(var(--color-secondary-rgb));
-  --color-accent: rgb(var(--color-accent-rgb));
-  --color-bg: rgb(var(--color-bg-rgb));
-  --color-surface: rgb(var(--color-surface-rgb));
-  --color-text: rgb(var(--color-text-rgb));
-  --color-muted: rgb(var(--color-muted-rgb));
-  --color-border: rgb(var(--color-border-rgb));
+  --color-bg: light-dark(rgb(var(--theme-light-colour-rgb)), rgb(var(--theme-dark-colour-rgb)));
+  --color-surface: light-dark(rgb(var(--theme-lighter-colour-rgb)), rgb(var(--theme-darker-colour-rgb)));
+  --color-text: light-dark(rgb(var(--theme-dark-colour-rgb)), rgb(var(--theme-light-colour-rgb)));
+  --color-border: light-dark(rgba(var(--theme-dark-colour-rgb), 0.6), rgba(var(--theme-light-colour-rgb), 0.6));
 
-  --color-info: rgb(var(--color-info-rgb));
-  --color-success: rgb(var(--color-success-rgb));
-  --color-warning: rgb(var(--color-warning-rgb));
-  --color-danger: rgb(var(--color-danger-rgb));
+  --color-info: rgb(var(--theme-info-colour-rgb));
+  --color-success: rgb(var(--theme-success-colour-rgb));
+  --color-warning: rgb(var(--theme-warning-colour-rgb));
+  --color-danger: rgb(var(--theme-danger-colour-rgb));
 
   /* extended color variants */
-  --color-primary-light: rgba(var(--color-primary-rgb), 0.1);
-  --color-primary-dark: rgb(134, 158, 107); /* Darker sage green */
-  --color-secondary-light: rgba(var(--color-secondary-rgb), 0.1);
-  --color-secondary-dark: rgb(186, 173, 133); /* Darker warm sand */
-  --color-accent-light: rgba(var(--color-accent-rgb), 0.1);
-  --color-accent-dark: rgb(35, 88, 89); /* Darker deep teal */
-  --color-info-light: rgba(var(--color-info-rgb), 0.1);
-  --color-info-dark: rgb(72, 125, 134); /* Darker muted teal */
-  --color-success-light: rgba(var(--color-success-rgb), 0.1);
-  --color-success-dark: rgb(86, 130, 83); /* Darker sage green */
-  --color-warning-light: rgba(var(--color-warning-rgb), 0.1);
-  --color-warning-dark: rgb(174, 131, 52); /* Darker warm yellow */
-  --color-danger-light: rgba(var(--color-danger-rgb), 0.1);
-  --color-danger-dark: rgb(159, 74, 74); /* Darker muted red */
-  --color-text-secondary: rgb(108, 117, 125);
-  --color-background: var(--color-bg);
+  --color-primary-light: color-mix(in srgb, var(--color-primary), var(--color-bg));
+  --color-primary-dark: color-mix(in srgb, var(--color-primary), var(--color-text));
+  --color-secondary-light: color-mix(in srgb, var(--color-secondary), var(--color-bg));
+  --color-secondary-dark: color-mix(in srgb, var(--color-secondary), var(--color-text));
+  --color-accent-light: color-mix(in srgb, var(--color-accent), var(--color-bg));
+  --color-accent-dark: color-mix(in srgb, var(--color-accent), var(--color-text));
+  --color-info-light: color-mix(in srgb, var(--color-info), var(--color-bg));
+  --color-info-dark: color-mix(in srgb, var(--color-info), var(--color-text));
+  --color-success-light: color-mix(in srgb, var(--color-success), var(--color-bg));
+  --color-success-dark: color-mix(in srgb, var(--color-success), var(--color-text));
+  --color-warning-light: color-mix(in srgb, var(--color-warning), var(--color-bg));
+  --color-warning-dark: color-mix(in srgb, var(--color-warning), var(--color-text));
+  --color-danger-light: color-mix(in srgb, var(--color-danger), var(--color-bg));
+  --color-danger-dark: color-mix(in srgb, var(--color-danger), var(--color-text));
+  --color-text-secondary: color-mix(in srgb, var(--color-text) 75%, var(--color-bg) 25%);
 
   /* radii & border */
   --radius-sm: 2px;
@@ -99,7 +97,7 @@
   --radius-lg: 6px;
   --radius-squircle: 200px;
   --border-width: 1px;
-  --focus-ring: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
+  --focus-ring: 0 0 0 3px rgba(var(--theme-primary-colour-rgb), 0.15);
 
   /* border radius aliases */
   --border-radius: var(--radius-md);
@@ -118,49 +116,13 @@
   --form-border: 1px solid rgba(var(--color-border-rgb), 0.9);
   --form-shadow: var(--card-shadow);
 
-  /* common color aliases */
-  --color-white: #ffffff;
-  --color-black: #000000;
-  --color-transparent: transparent;
-
   /* common rgba values */
-  --bg-overlay-light: rgba(0, 0, 0, 0.02);
-  --bg-overlay-medium: rgba(0, 0, 0, 0.1);
-  --bg-subtle-white: rgba(255, 255, 255, 0.3);
-  --bg-surface-gradient-start: rgba(255, 255, 255, 0.9);
-  --bg-surface-gradient-end: rgba(255, 255, 255, 0.7);
-  --bg-surface-white: rgba(255, 255, 255, 0.95);
-
-  /* neutral grays for UI elements */
-  --color-gray-50: #f8f9fa;
-  --color-gray-100: #f0f0f0;
-  --color-gray-200: #e9ecef;
-  --color-gray-300: #e0e0e0;
-  --color-gray-400: #ddd;
-  --color-gray-500: #6c757d;
-  --color-gray-600: #495057;
-  --color-gray-700: #34495e;
-  --color-gray-800: #2c3e50;
-
-  /* legacy blue (for PersonalGrowth component) - consider migrating to primary */
-  --color-blue: #3498db;
-  --color-blue-hover: #229954;
-  --color-blue-light: rgba(52, 152, 219, 0.1);
-
-  /* success variants */
-  --color-success-bg: #d5edda;
-  --color-success-text: #155724;
-  --color-success-border: #c3e6cb;
-  --color-success-green: #27ae60;
-
-  /* danger variants */
-  --color-danger-bg: #f8d7da;
-  --color-danger-text: #721c24;
-  --color-danger-border: #f5c6cb;
-
-  /* neutral variants */
-  --color-neutral: #95a5a6;
-  --color-neutral-dark: #7f8c8d;
+  --bg-overlay-light: light-dark(rgba(0,0,0,0.02), rgba(255,255,255,0.02));
+  --bg-overlay-medium: light-dark(rgba(0,0,0,0.1), rgba(255,255,255,0.06));
+  --bg-subtle-white: light-dark(rgba(255,255,255,0.3), rgba(0,0,0,0.06));
+  --bg-surface-gradient-start: light-dark(rgba(255,255,255,0.9), rgba(255,255,255,0.02));
+  --bg-surface-gradient-end: light-dark(rgba(255,255,255,0.7), rgba(255,255,255,0.04));
+  --bg-surface-white: light-dark(rgba(255,255,255,0.95), rgba(255,255,255,0.02));
 
   --button-height: 40px;
 
@@ -189,30 +151,5 @@
   --checkin-body-gap: var(--spacing-lg);
 }
 
-/* Dark theme overrides applied when `body` has class `dark-theme` */
-body.dark-theme {
-  --color-bg-rgb: 18, 20, 23; /* very dark background */
-  --color-text-rgb: 230, 230, 230; /* light text */
-  --color-surface-rgb: 28, 30, 34; /* surface cards */
-  --color-border-rgb: 54, 57, 63; /* subtle borders */
-  --color-muted-rgb: 150, 160, 170;
-  --color-primary-rgb: 120, 150, 100; /* slightly muted primary for dark */
-  --color-secondary-rgb: 200, 195, 150;
-
-  /* derived colors (will be recalculated via existing var usages) */
-  --color-bg: rgb(var(--color-bg-rgb));
-  --color-surface: rgb(var(--color-surface-rgb));
-  --color-text: rgb(var(--color-text-rgb));
-  --color-border: rgb(var(--color-border-rgb));
-  --color-muted: rgb(var(--color-muted-rgb));
-
-  --bg-overlay-light: rgba(255, 255, 255, 0.02);
-  --bg-overlay-medium: rgba(255, 255, 255, 0.06);
-  --bg-surface-gradient-start: rgba(255, 255, 255, 0.02);
-  --bg-surface-gradient-end: rgba(255, 255, 255, 0.04);
-  --bg-surface-white: rgba(255, 255, 255, 0.02);
-
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.6);
-  --shadow-md: 0 3px 6px rgba(0,0,0,0.6);
-  --card-shadow: 0 1px 2px rgba(0,0,0,0.5);
-}
+/* When data-theme is set to dark, tell the UA to use dark color-scheme. */
+:root[data-theme="dark"]{color-scheme:dark}

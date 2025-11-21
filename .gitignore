@@ -8,6 +8,7 @@ yarn-error.log
 
 # Build output
 dist/
+dev-dist/
 
 # Test artifacts
 test-results/

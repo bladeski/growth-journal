@@ -129,7 +129,7 @@
 .edit-btn {
   padding: var(--space-xs) var(--space-sm);
   background: var(--color-primary);
-  color: var(--color-white);
+  color: var(--theme-lighter-colour-rgb);
   border: none;
   border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
