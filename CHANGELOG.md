@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/bladeski/growth-journal/compare/v0.0.36...v1.0.0) (2025-11-21)
+
 ### 0.0.36 (2025-11-21)
 
 ### 0.0.35 (2025-11-20)
