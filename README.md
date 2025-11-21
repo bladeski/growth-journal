@@ -57,6 +57,10 @@ npm run format
 - PWA install flow: `PWAManager` handles the beforeinstallprompt flow and the UI to let users install the app
 - Small, focused components so the UI can be reused or embedded elsewhere
 
+### Appearance
+
+This app supports light and dark appearance modes. Users can choose `System`, `Light`, or `Dark` in Settings → Appearance and the choice is persisted across sessions. The UI uses CSS `color-scheme` and theme-aware variables to ensure accessible contrast in both modes.
+
 ## Testing
 
 This repository uses Jest (with `ts-jest`) for unit tests and Playwright for end-to-end tests.
