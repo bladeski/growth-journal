@@ -21,6 +21,24 @@ html(lang="en")
     
     title Growth Journal
     link(rel="stylesheet" href="./styles/styles.css")
+    // Inline script to apply persisted theme preference before paint
+    script.
+      (function(){
+        try{
+          var pref = localStorage.getItem('gj_theme_preference');
+          // expose to page JS so components can read preference synchronously
+          try{ window.__gj_theme_pref = pref; }catch(e){}
+          if(!pref || pref === 'system'){
+            var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+            if(mq && mq.matches) document.documentElement.setAttribute('data-theme','dark');
+            else document.documentElement.removeAttribute('data-theme');
+          } else if(pref === 'dark'){
+            document.documentElement.setAttribute('data-theme','dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        }catch(e){}
+      })();
   body
     #app
       growth-dashboard#dashboard

@@ -21,22 +21,16 @@ export class SettingsComponent extends BaseComponent {
     this.applyThemePref(v);
     this.showMessage('Theme preference saved');
   }
-
-  applyThemePref(pref: string): void {
-    const body = document.body;
+  private applyThemePref(pref: string): void {
+    const root = document.documentElement;
     if (pref === 'system') {
-      // respect system setting; add class if system prefers dark
-      try {
-        const mq = window.matchMedia('(prefers-color-scheme: dark)');
-        if (mq && mq.matches) body.classList.add('dark-theme');
-        else body.classList.remove('dark-theme');
-      } catch (e) {
-        body.classList.remove('dark-theme');
-      }
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      if (mq && mq.matches) root.setAttribute('data-theme', 'dark');
+      else root.removeAttribute('data-theme');
     } else if (pref === 'dark') {
-      body.classList.add('dark-theme');
+      root.setAttribute('data-theme', 'dark');
     } else {
-      body.classList.remove('dark-theme');
+      root.removeAttribute('data-theme');
     }
   }
 
@@ -116,8 +110,10 @@ export class SettingsComponent extends BaseComponent {
     };
 
     if (themeSelect) {
-      // set initial value
-      const pref = localStorage.getItem(THEME_KEY) || 'system';
+      // set initial value. Prefer the pre-hydration window variable if present so
+      // the select reflects the same preference used by the inline script.
+      const winPref = (window as any).__gj_theme_pref as string | undefined;
+      const pref = winPref !== undefined && winPref !== null ? winPref : (localStorage.getItem(THEME_KEY) || 'system');
       themeSelect.value = pref;
       this.applyThemePref(pref);
 
@@ -133,6 +129,19 @@ export class SettingsComponent extends BaseComponent {
         // ignore
       }
     }
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    // schedule onMount on next tick to ensure shadow DOM is rendered
+    window.setTimeout(() => {
+      // call but ignore returned promise
+      try {
+        (this as any).onMount();
+      } catch (e) {
+        // ignore
+      }
+    }, 0);
   }
 
   exportDb(): void {

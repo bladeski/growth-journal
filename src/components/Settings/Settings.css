@@ -134,20 +134,9 @@ card-component .card-body {
 	text-overflow: ellipsis;
 }
 
-
-.btn {
-	padding: var(--space-sm) var(--space-md);
-	border-radius: var(--radius-sm);
-}
-
-.btn.danger {
-	background: var(--color-danger);
-	color: var(--color-white);
-}
-
 #settings-message {
 	margin-top: var(--space-md);
-	color: var(--color-muted);
+	color: var(--color-text-secondary);
 	text-align: left;
 }
 

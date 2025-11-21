@@ -75,7 +75,7 @@ body {
   padding: 8px 10px;
   border-radius: 18px;
   cursor: pointer;
-  color: var(--color-foreground, #222);
+  color: var(--color-text, #222);
 }
 
 .install-container.dismissed {

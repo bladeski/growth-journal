@@ -217,7 +217,7 @@ card-component.periodic-checkins {
 
 .stat-label {
   font-size: var(--font-size-sm);
-  color: var(--color-muted);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-weight: 600;
@@ -245,7 +245,6 @@ card-component.periodic-checkins {
 
 .checkin-item:hover {
   transform: none;
-  border-color: var(--color-primary);
 }
 
 .checkin-item.completed {
@@ -259,7 +258,7 @@ card-component.periodic-checkins {
   top: var(--space-md);
   right: var(--space-md);
   background: var(--color-success);
-  color: var(--color-white);
+  color: var(--theme-lighter-colour-rgb);
   width: var(--space-lg);
   height: var(--space-lg);
   border-radius: 50%;
@@ -279,7 +278,7 @@ card-component.periodic-checkins {
 
 .checkin-status-text {
   font-size: var(--font-size-md);
-  color: var(--color-muted);
+  color: var(--color-text-secondary);
   line-height: 1.4;
 }
 
@@ -318,13 +317,13 @@ card-component.periodic-checkins {
 
 .activity-summary {
   font-size: var(--font-size-md);
-  color: var(--color-muted);
+  color: var(--color-text-secondary);
   line-height: 1.4;
 }
 
 .no-activity {
   text-align: center;
-  color: var(--color-muted);
+  color: var(--color-text-secondary);
   font-style: italic;
   padding: var(--space-xl);
   font-size: var(--font-size-lg);
@@ -369,7 +368,7 @@ card-component.periodic-checkins {
 }
 
 .period-count {
-  color: var(--color-muted);
+  color: var(--color-text-secondary);
   margin-left: auto;
   margin-right: var(--space-md);
   white-space: nowrap;
