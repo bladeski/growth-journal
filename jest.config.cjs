@@ -1,3 +1,26 @@
+/**
+ * Jest configuration for ESM + TypeScript + jsdom
+ */
+module.exports = {
+  preset: 'ts-jest/presets/default-esm',
+  testEnvironment: 'jsdom',
+  transform: {
+    '^.+\\.ts$': ['ts-jest', { useESM: true }]
+  },
+  moduleFileExtensions: ['ts', 'js', 'json'],
+  moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': '<rootDir>/tests/__mocks__/fileMock.js',
+    '\\.(png|jpg|jpeg|svg|gif)$': '<rootDir>/tests/__mocks__/fileMock.js'
+  },
+  testMatch: ['**/tests/jest/**/*.test.ts'],
+  extensionsToTreatAsEsm: ['.ts'],
+  globals: {
+    'ts-jest': {
+      useESM: true,
+      tsconfig: 'tsconfig.json'
+    }
+  }
+};
 /* eslint-env node */
 module.exports = {
   // Use the ts-jest ESM preset so TypeScript files under 'type: module' are handled.

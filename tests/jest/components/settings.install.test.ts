@@ -1,6 +1,6 @@
 import { TextEncoder, TextDecoder } from 'util';
 import { jest } from '@jest/globals';
-import '../../src/components/Settings/Settings.ts';
+import '../../../src/components/Settings/Settings.ts';
 
 // ensure TextEncoder/TextDecoder are available in the Jest JSDOM environment
 // @ts-expect-error - global types don't include TextEncoder/TextDecoder

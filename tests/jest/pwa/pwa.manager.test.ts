@@ -1,4 +1,4 @@
-import { PWAManager } from '../../src/utils/PwaManager.ts';
+import { PWAManager } from '../../../src/utils/PwaManager.ts';
 
 describe('PWAManager ignore persistence', () => {
   beforeEach(() => {

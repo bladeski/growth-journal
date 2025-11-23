@@ -104,7 +104,7 @@ export class SettingsComponent extends BaseComponent {
     // Theme selection: system / light / dark
     const themeSelect = this.shadowRoot?.querySelector('#theme-select') as HTMLSelectElement | null;
 
-    const onSystemChange = (e: MediaQueryListEvent) => {
+    const onSystemChange = () => {
       const pref = localStorage.getItem(THEME_KEY) || 'system';
       if (pref === 'system') this.applyThemePref('system');
     };
@@ -112,8 +112,11 @@ export class SettingsComponent extends BaseComponent {
     if (themeSelect) {
       // set initial value. Prefer the pre-hydration window variable if present so
       // the select reflects the same preference used by the inline script.
-      const winPref = (window as any).__gj_theme_pref as string | undefined;
-      const pref = winPref !== undefined && winPref !== null ? winPref : (localStorage.getItem(THEME_KEY) || 'system');
+      const winPref = (window as IGrowthJournalWindow).__gj_theme_pref as string | undefined;
+      const pref =
+        winPref !== undefined && winPref !== null
+          ? winPref
+          : localStorage.getItem(THEME_KEY) || 'system';
       themeSelect.value = pref;
       this.applyThemePref(pref);
 
@@ -122,8 +125,8 @@ export class SettingsComponent extends BaseComponent {
         const mq = window.matchMedia('(prefers-color-scheme: dark)');
         if (mq && typeof mq.addEventListener === 'function') {
           mq.addEventListener('change', onSystemChange as EventListener);
-        } else if ((mq as any) && typeof (mq as any).addListener === 'function') {
-          (mq as any).addListener(onSystemChange);
+        } else if (mq && typeof mq.addListener === 'function') {
+          mq.addListener(onSystemChange);
         }
       } catch (e) {
         // ignore
@@ -137,7 +140,7 @@ export class SettingsComponent extends BaseComponent {
     window.setTimeout(() => {
       // call but ignore returned promise
       try {
-        (this as any).onMount();
+        this.onMount();
       } catch (e) {
         // ignore
       }

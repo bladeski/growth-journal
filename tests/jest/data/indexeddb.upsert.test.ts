@@ -1,5 +1,5 @@
-import { installMockServiceWorker } from './helpers/mockServiceWorker';
-import IndexedDbDataService from '../../src/data/IndexedDbDataService';
+import { installMockServiceWorker } from '../helpers/mockServiceWorker';
+import IndexedDbDataService from '../../../src/data/IndexedDbDataService';
 
 describe('IndexedDbDataService upsert behavior', () => {
   afterEach(() => {
