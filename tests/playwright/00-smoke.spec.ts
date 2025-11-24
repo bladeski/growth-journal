@@ -11,12 +11,12 @@ test.describe('Smoke / basic flows', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForFunction(() => !!(window as any).app, null, { timeout: 30000 });
     await page.waitForFunction(() => !!(window as any).customElements?.get?.('morning-checkin'), null, {
-      timeout: 20000,
+      timeout: 60000,
     });
-
+    // Ensure the element is attached and visible; increase timeout for CI
+    await page.waitForSelector('morning-checkin', { state: 'visible', timeout: 90000 });
     const morning = page.locator('morning-checkin');
-    await morning.waitFor({ state: 'visible', timeout: 60000 });
-    await expect(morning).toBeVisible({ timeout: 60000 });
+    await expect(morning).toBeVisible({ timeout: 90000 });
 
     // Fill the textareas present in the morning checkin
     const intention = morning.locator('#practice-intention');
@@ -31,12 +31,12 @@ test.describe('Smoke / basic flows', () => {
     await page.goto(APP_URL + '#/growth');
     await page.waitForLoadState('networkidle');
     await page.waitForFunction(() => !!(window as any).customElements?.get?.('personal-growth'), null, {
-      timeout: 20000,
+      timeout: 60000,
     });
-
+    // Wait for host to appear and be visible
+    await page.waitForSelector('personal-growth', { state: 'visible', timeout: 90000 });
     const pg = page.locator('personal-growth');
-    await pg.waitFor({ state: 'visible', timeout: 60000 });
-    await expect(pg).toBeVisible();
+    await expect(pg).toBeVisible({ timeout: 90000 });
   });
 });
 

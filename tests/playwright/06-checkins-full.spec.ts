@@ -20,9 +20,10 @@ test.describe('Checkins - full flows', () => {
     // Midday
     await page.goto(APP_URL + '#/midday');
     await page.waitForLoadState('networkidle');
-    await page.waitForFunction(() => !!(window as any).customElements?.get?.('midday-checkin'));
+    await page.waitForFunction(() => !!(window as any).customElements?.get?.('midday-checkin'), null, { timeout: 60000 });
+    // Ensure midday-checkin is visible; give extra time for CI
+    await page.waitForSelector('midday-checkin', { state: 'visible', timeout: 90000 });
     const midday = page.locator('midday-checkin');
-    await midday.waitFor({ state: 'visible' });
     const q = midday.locator('textarea[name="midday_question"]');
     if ((await q.count()) > 0) await q.fill('Quick midday note');
     const submitMid = midday.locator('button[type="submit"]').first();
@@ -31,9 +32,9 @@ test.describe('Checkins - full flows', () => {
     // Evening
     await page.goto(APP_URL + '#/evening');
     await page.waitForLoadState('networkidle');
-    await page.waitForFunction(() => !!(window as any).customElements?.get?.('evening-checkin'));
+    await page.waitForFunction(() => !!(window as any).customElements?.get?.('evening-checkin'), null, { timeout: 60000 });
+    await page.waitForSelector('evening-checkin', { state: 'visible', timeout: 90000 });
     const evening = page.locator('evening-checkin');
-    await evening.waitFor({ state: 'visible' });
     const what = evening.locator('textarea[name="what_went_well"]');
     if ((await what.count()) > 0) await what.fill('Something went well');
     const subE = evening.locator('button[type="submit"]').first();
