@@ -115,3 +115,18 @@ Contributions are welcome. If you plan to add new features or tests:
 ## License
 
 MIT
+
+## Service Worker & Cache Notes
+
+If you deploy a new production bundle but clients still load older assets, the service worker cache may be serving a stale bundle. To ensure clients pick up the new build:
+
+- Bump the service worker file name or contents so the generated bundle/hash changes (for example, ensure `src/sw.ts` is rebuilt and the resulting `sw.<hash>.js` is uploaded).
+- Instruct users or automation to unregister the service worker and clear caches (devtools -> Application -> Service Workers -> Unregister, or run the snippet below in the browser console):
+
+```powershell
+// Unregister SW and clear caches (run in browser Console)
+navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));
+caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k))));
+```
+
+Alternatively, deploy a small SW update that forces clients to purge old caches and fetch the new hashed bundles.
