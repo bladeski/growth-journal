@@ -230,8 +230,7 @@ export class PersonalGrowth extends BaseComponent<IPersonalGrowthProps, IPersona
       }
 
       // Debug: log the loaded payloads so we can see why entries may appear present
-      // eslint-disable-next-line no-console
-      console.debug('[DEBUG] PersonalGrowth loadDataForDate:', {
+      logger.debug('[DEBUG] PersonalGrowth loadDataForDate:', {
         date,
         intentionData: this.intentionData,
         middayData: this.middayData,

@@ -5,6 +5,9 @@ import templateHtml from 'bundle-text:./Dashboard.pug';
 import IndexedDbDataService from '../../data/IndexedDbDataService.ts';
 import type { IDashboardProps } from './interfaces/IDashboardProps.ts';
 import type { IDashboardEvents } from './interfaces/IDashboardEvents.ts';
+import { LoggingService } from '@bladeski/logger';
+
+const logger = LoggingService.getInstance();
 
 export class DashboardComponent extends BaseComponent<IDashboardProps, IDashboardEvents> {
   constructor() {
@@ -42,8 +45,7 @@ export class DashboardComponent extends BaseComponent<IDashboardProps, IDashboar
         'padding:6px;background:#fffbdd;border:1px solid #ffd966;color:#333;font-weight:600;margin:6px 0';
       this.appendChild(dbg);
       // console marker
-      // eslint-disable-next-line no-console
-      console.log('[DEBUG] growth-dashboard connected');
+      logger.debug('[DEBUG] growth-dashboard connected');
     } catch (e) {
       // ignore host DOM debug failures
     }
@@ -184,8 +186,7 @@ export class DashboardComponent extends BaseComponent<IDashboardProps, IDashboar
       const analytics = (await idb.getDashboardAnalytics()) as IDashboardAnalytics | undefined;
       // Debug: log the raw analytics payload so we can inspect why statuses may
       // be reported as completed unexpectedly (useful while diagnosing SW/IDB data).
-      // eslint-disable-next-line no-console
-      console.debug('[DEBUG] getDashboardAnalytics ->', analytics);
+      logger.debug('[DEBUG] getDashboardAnalytics ->', { analytics });
 
       const todayStatus = analytics?.today_status || {
         morning_completed: false,
@@ -194,8 +195,7 @@ export class DashboardComponent extends BaseComponent<IDashboardProps, IDashboar
       };
 
       // Debug: show the todayStatus mapping applied to the dashboard
-      // eslint-disable-next-line no-console
-      console.debug('[DEBUG] todayStatus resolved ->', todayStatus);
+      logger.debug('[DEBUG] todayStatus resolved ->', { todayStatus });
 
       this.props.morningCompleted = !!todayStatus.morning_completed;
       this.props.middayCompleted = !!todayStatus.midday_completed;
