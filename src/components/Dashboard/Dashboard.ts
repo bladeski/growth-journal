@@ -186,7 +186,11 @@ export class DashboardComponent extends BaseComponent<IDashboardProps, IDashboar
       const analytics = (await idb.getDashboardAnalytics()) as IDashboardAnalytics | undefined;
       // Debug: log the raw analytics payload so we can inspect why statuses may
       // be reported as completed unexpectedly (useful while diagnosing SW/IDB data).
-      logger.debug('[DEBUG] getDashboardAnalytics ->', { analytics });
+      try {
+        logger.debug('[DEBUG] getDashboardAnalytics ->', { analytics });
+      } catch (e) {
+        // Logging should never break functionality; swallow logging errors
+      }
 
       const todayStatus = analytics?.today_status || {
         morning_completed: false,
@@ -195,7 +199,11 @@ export class DashboardComponent extends BaseComponent<IDashboardProps, IDashboar
       };
 
       // Debug: show the todayStatus mapping applied to the dashboard
-      logger.debug('[DEBUG] todayStatus resolved ->', { todayStatus });
+      try {
+        logger.debug('[DEBUG] todayStatus resolved ->', { todayStatus });
+      } catch (e) {
+        // swallow
+      }
 
       this.props.morningCompleted = !!todayStatus.morning_completed;
       this.props.middayCompleted = !!todayStatus.midday_completed;
@@ -263,9 +271,10 @@ export class DashboardComponent extends BaseComponent<IDashboardProps, IDashboar
     this.emit('openPersonalGrowth', undefined);
   }
 
-  // Public method to refresh dashboard
-  refresh(): void {
-    this.loadDashboardData();
+  // Public method to refresh dashboard. Return the underlying promise so callers
+  // (and tests) can await completion.
+  refresh(): Promise<void> {
+    return this.loadDashboardData();
   }
 }
 
