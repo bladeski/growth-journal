@@ -1,8 +1,12 @@
 import { test, expect } from '@playwright/test';
+import { clearAndSeedEmpty, seedWithSampleData } from './helpers/seed';
 
 const APP_URL = process.env.APP_URL || 'http://localhost:3000/';
 
 test('personal growth view opens', async ({ page }) => {
+  await page.goto(APP_URL);
+  await clearAndSeedEmpty(page);
+  await seedWithSampleData(page);
   await page.goto(APP_URL + '#/growth');
   await page.waitForLoadState('networkidle');
   await page.waitForLoadState('networkidle');

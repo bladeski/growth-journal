@@ -26,7 +26,10 @@ jobs:
 
   e2e:
     needs: test
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,7 +41,11 @@ jobs:
       - name: Install dependencies (yarn)
         run: yarn install --frozen-lockfile
 
-      - name: Start dev server
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Start dev server and run Playwright on Linux
+        if: matrix.os == 'ubuntu-latest'
         env:
           APP_URL: http://127.0.0.1:3000/
         run: |
@@ -48,13 +55,11 @@ jobs:
           npx wait-on http://127.0.0.1:3000 --timeout 60000
           # small stabilization pause
           sleep 2
+          # Run Playwright only against the playwright test dir to avoid picking up Jest tests
+          npx playwright test tests/playwright --config=playwright.config.ts --reporter=list --workers=1 --timeout=120000
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Run Playwright E2E tests (with traces)
+      - name: Run e2e helper on Windows
+        if: matrix.os == 'windows-latest'
         env:
           APP_URL: http://127.0.0.1:3000/
-        run: |
-          # Run Playwright only against the playright test dir to avoid picking up Jest tests
-          npx playwright test tests/playwright --config=playwright.config.ts --reporter=list --workers=1 --timeout=120000
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-e2e.ps1
