@@ -355,10 +355,10 @@ export abstract class BaseComponent<
         .replace(/\{\{\s*(\w+)\s*\}\}/g, (_m, key) => {
           return `<span data-bind="${key}"></span>`;
         })
-        // Replace only `data-href="..."` attributes that appear inside an
-        // opening <a ...> tag. Use a non-greedy match for the attribute value
-        // to avoid spanning multiple attributes or tags.
-        .replace(/(<a\b[^>]*?)\bdata-href\s*=\s*"([^"]*?)"/gi, (_m, before, url) => {
+        // Replace only `data-href='...'` or `data-href="..."` attributes
+        // that appear inside an opening <a ...> tag. Use a capture for the
+        // surrounding quote so both single and double quoted values are handled.
+        .replace(/(<a\b[^>]*?)\bdata-href\s*=\s*(["'])(.*?)\2/gi, (_m, before, _quote, url) => {
           return `${before} href="${url}"`;
         });
 
