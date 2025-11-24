@@ -1,3 +1,7 @@
+import { LoggingService } from '@bladeski/logger';
+
+const Logger = new LoggingService();
+
 const CACHE_NAME = 'growth-journal-v1';
 const urlsToCache = ['/', '/index.html', '/manifest.json'];
 
@@ -24,19 +28,22 @@ self.addEventListener('install', (event: ExtendableEvent) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
-      console.log('Opened cache', CACHE_NAME, 'base:', scopeBase);
+      // service worker runs in worker scope; use project Logger instance for diagnostics
+      Logger.info('Opened cache', { cacheName: CACHE_NAME, base: scopeBase });
 
       // Try to pre-cache the basic list first
       try {
         await cache.addAll(normalizedUrls);
-        console.log('Basic assets cached successfully');
+        Logger.info('Basic assets cached successfully');
       } catch (err) {
-        console.warn('cache.addAll failed for basic assets, will attempt best-effort adds', err);
+        Logger.warn('cache.addAll failed for basic assets, will attempt best-effort adds', {
+          error: err,
+        });
         for (const url of normalizedUrls) {
           try {
             await cache.add(url);
           } catch (e) {
-            console.warn('Failed to cache', url, e);
+            Logger.warn('Failed to cache', { url, error: e });
           }
         }
       }
@@ -75,14 +82,14 @@ self.addEventListener('install', (event: ExtendableEvent) => {
           for (const u of Array.from(urls)) {
             try {
               await cache.add(u);
-              console.log('Pre-cached discovered asset', u);
+              Logger.info('Pre-cached discovered asset', { url: u });
             } catch (e) {
               // ignore failures for optional assets
             }
           }
         }
       } catch (e) {
-        console.warn('Failed to fetch/parse index.html for asset discovery', e);
+        Logger.warn('Failed to fetch/parse index.html for asset discovery', { error: e });
       }
     })(),
   );
@@ -166,7 +173,7 @@ self.addEventListener('activate', (event: ExtendableEvent) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
+            Logger.info('Deleting old cache', { cacheName });
             return caches.delete(cacheName);
           }
         }),
@@ -190,7 +197,7 @@ self.addEventListener('sync', (event: unknown) => {
 async function syncJournalEntries() {
   // This would sync any pending journal entries when back online
   // Implementation would depend on your backend storage solution
-  console.log('Syncing journal entries...');
+  Logger.info('Syncing journal entries...');
 }
 
 // Simple message-based IndexedDB handling for client requests
@@ -273,15 +280,15 @@ self.addEventListener('message', (event: MessageEvent<ISwMessage>) => {
       typeof msg.payload === 'object' && msg.payload
         ? (msg.payload as Record<string, unknown>)
         : {};
-    console.log('SW: add request', { type: msg.type, store, item });
+    Logger.debug('SW: add request', { type: msg.type, store, item });
     openDB()
       .then((db) => addToStore(db, store, item))
       .then((key) => {
-        console.log('SW: addToStore result', { store, key });
+        Logger.debug('SW: addToStore result', { store, key });
         respond({ success: true });
       })
       .catch((err) => {
-        console.error('SW: addToStore error', err);
+        Logger.error('SW: addToStore error', { error: err });
         respond({ success: false, error: String(err) });
       });
     return;

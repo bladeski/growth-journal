@@ -87,13 +87,13 @@
   --color-secondary-dark: color-mix(in srgb, var(--color-secondary), var(--color-text));
   --color-accent-light: color-mix(in srgb, var(--color-accent), var(--color-bg));
   --color-accent-dark: color-mix(in srgb, var(--color-accent), var(--color-text));
-  --color-info-light: color-mix(in srgb, var(--color-info), var(--color-bg));
+  --color-info-light: color-mix(in srgb, var(--color-info) 10%, var(--color-bg) 90%);
   --color-info-dark: color-mix(in srgb, var(--color-info), var(--color-text));
-  --color-success-light: color-mix(in srgb, var(--color-success), var(--color-bg));
+  --color-success-light: color-mix(in srgb, var(--color-success) 10%, var(--color-bg) 90%);
   --color-success-dark: color-mix(in srgb, var(--color-success), var(--color-text));
-  --color-warning-light: color-mix(in srgb, var(--color-warning), var(--color-bg));
+  --color-warning-light: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg) 90%);
   --color-warning-dark: color-mix(in srgb, var(--color-warning), var(--color-text));
-  --color-danger-light: color-mix(in srgb, var(--color-danger), var(--color-bg));
+  --color-danger-light: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg) 90%);
   --color-danger-dark: color-mix(in srgb, var(--color-danger), var(--color-text));
   --color-text-secondary: color-mix(in srgb, var(--color-text) 75%, var(--color-bg) 25%);
 

@@ -90,14 +90,13 @@ async function seedIntentionsIfNeeded(): Promise<void> {
       } catch (e) {
         // ignore storage errors
       }
-      console.log('Seeded growth intentions into IndexedDB');
+      logger.info('Seeded growth intentions into IndexedDB');
     } else {
-      console.warn('Failed to seed growth intentions into IndexedDB');
+      logger.warn('Failed to seed growth intentions into IndexedDB');
     }
   } catch (err) {
     // Do not block app startup on seed errors
-    // eslint-disable-next-line no-console
-    console.warn('Seeding growth intentions failed', err);
+    logger.warn('Seeding growth intentions failed', { error: err });
   }
 }
 

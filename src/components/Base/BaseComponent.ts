@@ -359,10 +359,14 @@ export abstract class BaseComponent<
         // - data-href="..."
         // - data-href='...'
         // - data-href=unquotedValue
-        .replace(/(<a\b[^>]*?)\bdata-href\s*=\s*(?:(["'])(.*?)\2|([^\s>]+))/gi, (_m, before, _quote, quotedUrl, unquotedUrl) => {
-          const url = typeof quotedUrl === 'string' && quotedUrl.length > 0 ? quotedUrl : (unquotedUrl || '');
-          return `${before} href="${url}"`;
-        });
+        .replace(
+          /(<a\b[^>]*?)\bdata-href\s*=\s*(?:(["'])(.*?)\2|([^\s>]+))/gi,
+          (_m, before, _quote, quotedUrl, unquotedUrl) => {
+            const url =
+              typeof quotedUrl === 'string' && quotedUrl.length > 0 ? quotedUrl : unquotedUrl || '';
+            return `${before} href="${url}"`;
+          },
+        );
 
       this.shadowRoot.innerHTML += processed;
 
@@ -373,7 +377,9 @@ export abstract class BaseComponent<
       try {
         const anchors = this.shadowRoot.querySelectorAll('a[data-href]');
         if (anchors.length > 0) {
-          logger.debug(`BaseComponent runtime fallback: fixing ${anchors.length} anchor(s) with data-href`);
+          logger.debug(
+            `BaseComponent runtime fallback: fixing ${anchors.length} anchor(s) with data-href`,
+          );
         }
         anchors.forEach((a) => {
           const v = a.getAttribute('data-href') || '';

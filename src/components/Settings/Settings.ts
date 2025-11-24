@@ -4,6 +4,9 @@ import styles from 'bundle-text:./Settings.css';
 import IndexedDbDataService from '../../data/IndexedDbDataService.ts';
 import { CheckinHeader } from '../CheckinHeader/CheckinHeader.ts';
 import { PWAManager } from '../../utils/PwaManager.ts';
+import { LoggingService } from '@bladeski/logger';
+
+const logger = LoggingService.getInstance();
 import { IGrowthJournalWindow } from '../../interfaces/IGrowthJournalWindow.ts';
 
 const THEME_KEY = 'gj_theme_preference';
@@ -168,7 +171,7 @@ export class SettingsComponent extends BaseComponent {
       await GrowthJournalWindow.importGrowthDb?.(file);
       this.showMessage('Import completed');
     } catch (e) {
-      console.error(e);
+      logger.error('Import failed', { error: e });
       this.showMessage('Import failed');
     }
   }
@@ -190,7 +193,7 @@ export class SettingsComponent extends BaseComponent {
       if (ok) this.showMessage('All data cleared');
       else this.showMessage('Failed to clear data');
     } catch (e) {
-      console.error(e);
+      logger.error('Failed to clear data', { error: e });
       this.showMessage('Failed to clear data');
     }
   }
@@ -205,7 +208,7 @@ export class SettingsComponent extends BaseComponent {
       for (const k of keys) await caches.delete(k);
       this.showMessage('Cache cleared');
     } catch (e) {
-      console.error(e);
+      logger.error('Failed to clear cache', { error: e });
       this.showMessage('Failed to clear cache');
     }
   }
@@ -250,7 +253,7 @@ export class SettingsComponent extends BaseComponent {
       installStatus && (installStatus.textContent = 'Install not available');
       if (installBtn) installBtn.disabled = true;
     } catch (err) {
-      console.error('installPwa error', err);
+      logger.error('installPwa error', { error: err });
       installStatus && (installStatus.textContent = 'Install failed');
     }
   }

@@ -11,6 +11,9 @@ import type {
   IEveningQuestionsData,
 } from '../interfaces/index.ts';
 import { createMessageChannel } from '../utils/MessageChannelWrapper.ts';
+import { LoggingService } from '@bladeski/logger';
+
+const logger = LoggingService.getInstance();
 
 type IdbResponse<T> = { success: true; items?: T } | { success: false; error: string };
 
@@ -427,7 +430,7 @@ if (typeof window !== 'undefined') {
       const svc = new IndexedDbDataService();
       const data = await svc.exportDatabase();
       if (!data) {
-        console.warn('Export returned no data');
+        logger.warn('Export returned no data');
         return;
       }
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -440,7 +443,7 @@ if (typeof window !== 'undefined') {
       a.remove();
       URL.revokeObjectURL(url);
     } catch (e) {
-      console.error('Export failed', e);
+      logger.error('Export failed', { error: e });
     }
   };
 
@@ -455,14 +458,14 @@ if (typeof window !== 'undefined') {
         data = jsonOrFile as Record<string, unknown[]>;
       }
       if (!data) {
-        console.warn('No data provided for import');
+        logger.warn('No data provided for import');
         return;
       }
       const ok = await svc.importDatabase(data);
-      if (ok) console.log('Import succeeded');
-      else console.warn('Import failed');
+      if (ok) logger.info('Import succeeded');
+      else logger.warn('Import failed');
     } catch (e) {
-      console.error('Import failed', e);
+      logger.error('Import failed', { error: e });
     }
   };
 }

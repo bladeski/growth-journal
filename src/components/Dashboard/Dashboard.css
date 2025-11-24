@@ -258,7 +258,7 @@ card-component.periodic-checkins {
   top: var(--space-md);
   right: var(--space-md);
   background: var(--color-success);
-  color: var(--theme-lighter-colour-rgb);
+  color: var(--color-lighter);
   width: var(--space-lg);
   height: var(--space-lg);
   border-radius: 50%;
