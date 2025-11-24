@@ -58,8 +58,26 @@ jobs:
           # Run Playwright only against the playwright test dir to avoid picking up Jest tests
           npx playwright test tests/playwright --config=playwright.config.ts --reporter=list --workers=1 --timeout=120000
 
+      - name: Upload Playwright artifacts (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-linux
+          path: |
+            dist/playwright-report
+            playwright-artifacts
+
       - name: Run e2e helper on Windows
         if: matrix.os == 'windows-latest'
         env:
           APP_URL: http://127.0.0.1:3000/
         run: powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-e2e.ps1
+
+      - name: Upload Playwright artifacts (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-windows
+          path: |
+            dist\playwright-report
+            playwright-artifacts
