@@ -14,11 +14,12 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css,scss,pug,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,scss,pug,json,md}\"",
     "clean": "rm -rf .parcel-cache dist",
-    "test": "jest",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/jest",
     "test:unit:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js tests/jest --runInBand --coverage --coverageReporters=lcov --coverageDirectory=coverage",
     "coverage:open": "npx http-server coverage/lcov-report -p 8081 --silent",
     "test:e2e": "playwright test tests/playwright",
+    "test:e2e:local": "powershell -ExecutionPolicy Bypass -File ./scripts/run-e2e.ps1",
     "test:playwright": "playwright test",
     "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --reporters=default"
   },

@@ -34,7 +34,7 @@ button,
   line-height: 1.6;
 
   &:hover {
-    border-color: var(--color-primary)
+    border-color: var(--color-primary);
   }
 
   @supports (corner-shape: squircle) {
@@ -49,7 +49,7 @@ button,
   border-color: var(--color-primary);
 
   &:hover {
-    border-color: var(--color-secondary)
+    border-color: var(--color-secondary);
   }
 }
 

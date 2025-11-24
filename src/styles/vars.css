@@ -65,9 +65,15 @@
   --color-darker: rgb(var(--theme-darker-colour-rgb));
 
   --color-bg: light-dark(rgb(var(--theme-light-colour-rgb)), rgb(var(--theme-dark-colour-rgb)));
-  --color-surface: light-dark(rgb(var(--theme-lighter-colour-rgb)), rgb(var(--theme-darker-colour-rgb)));
+  --color-surface: light-dark(
+    rgb(var(--theme-lighter-colour-rgb)),
+    rgb(var(--theme-darker-colour-rgb))
+  );
   --color-text: light-dark(rgb(var(--theme-dark-colour-rgb)), rgb(var(--theme-light-colour-rgb)));
-  --color-border: light-dark(rgba(var(--theme-dark-colour-rgb), 0.6), rgba(var(--theme-light-colour-rgb), 0.6));
+  --color-border: light-dark(
+    rgba(var(--theme-dark-colour-rgb), 0.6),
+    rgba(var(--theme-light-colour-rgb), 0.6)
+  );
 
   --color-info: rgb(var(--theme-info-colour-rgb));
   --color-success: rgb(var(--theme-success-colour-rgb));
@@ -117,12 +123,12 @@
   --form-shadow: var(--card-shadow);
 
   /* common rgba values */
-  --bg-overlay-light: light-dark(rgba(0,0,0,0.02), rgba(255,255,255,0.02));
-  --bg-overlay-medium: light-dark(rgba(0,0,0,0.1), rgba(255,255,255,0.06));
-  --bg-subtle-white: light-dark(rgba(255,255,255,0.3), rgba(0,0,0,0.06));
-  --bg-surface-gradient-start: light-dark(rgba(255,255,255,0.9), rgba(255,255,255,0.02));
-  --bg-surface-gradient-end: light-dark(rgba(255,255,255,0.7), rgba(255,255,255,0.04));
-  --bg-surface-white: light-dark(rgba(255,255,255,0.95), rgba(255,255,255,0.02));
+  --bg-overlay-light: light-dark(rgba(0, 0, 0, 0.02), rgba(255, 255, 255, 0.02));
+  --bg-overlay-medium: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.06));
+  --bg-subtle-white: light-dark(rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.06));
+  --bg-surface-gradient-start: light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.02));
+  --bg-surface-gradient-end: light-dark(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.04));
+  --bg-surface-white: light-dark(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.02));
 
   --button-height: 40px;
 
@@ -152,4 +158,6 @@
 }
 
 /* When data-theme is set to dark, tell the UA to use dark color-scheme. */
-:root[data-theme="dark"]{color-scheme:dark}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}

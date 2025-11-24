@@ -1,3 +1,35 @@
+// Minimal Service Worker / navigator.serviceWorker shim for tests
+export function setupMockServiceWorker() {
+  const originalNavigator = (globalThis as any).navigator;
+
+  const fakeRegistration = { addEventListener: () => {}, scope: '/', installing: undefined, waiting: undefined, active: undefined } as any;
+
+  const fakeSW = {
+    register: jestFn(() => Promise.resolve(fakeRegistration)),
+  } as any;
+
+  const fakeNavigator = {
+    serviceWorker: {
+      register: fakeSW.register,
+    },
+  } as any;
+
+  (globalThis as any).navigator = fakeNavigator;
+
+  return {
+    restore: () => {
+      (globalThis as any).navigator = originalNavigator;
+    },
+    registration: fakeRegistration,
+  };
+}
+
+function jestFn(fn: any) {
+  // local simple wrapper instead of importing jest in helpers
+  return (...args: any[]) => fn(...args);
+}
+
+export default setupMockServiceWorker;
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/ban-types */
 /*
  * Lightweight mock for navigator.serviceWorker used in Jest tests.
