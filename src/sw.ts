@@ -7,25 +7,33 @@ const Logger = {
     try {
       // eslint-disable-next-line no-console
       console.info('[SW]', ...args);
-    } catch (_) {}
+    } catch (_) {
+      /* empty */
+    }
   },
   debug: (...args: unknown[]) => {
     try {
       // eslint-disable-next-line no-console
       console.debug('[SW]', ...args);
-    } catch (_) {}
+    } catch (_) {
+      // Ignore console errors
+    }
   },
   warn: (...args: unknown[]) => {
     try {
       // eslint-disable-next-line no-console
       console.warn('[SW]', ...args);
-    } catch (_) {}
+    } catch (_) {
+      /* empty */
+    }
   },
   error: (...args: unknown[]) => {
     try {
       // eslint-disable-next-line no-console
       console.error('[SW]', ...args);
-    } catch (_) {}
+    } catch (_) {
+      /* empty */
+    }
   },
 };
 

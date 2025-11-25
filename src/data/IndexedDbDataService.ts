@@ -498,7 +498,9 @@ if (typeof window !== 'undefined') {
         );
         // Debug: service worker returned no data
         // eslint-disable-next-line no-console
-        console.debug('[DBG] service worker export returned no data, attempting direct IDB fallback');
+        console.debug(
+          '[DBG] service worker export returned no data, attempting direct IDB fallback',
+        );
         try {
           // Direct IndexedDB fallback: open the DB and read known stores
           const dbReq = indexedDB.open('growth-journal-db');
