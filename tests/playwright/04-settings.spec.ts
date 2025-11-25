@@ -24,7 +24,15 @@ test('settings export/import/clear flows', async ({ page }) => {
   const downloadsDir = path.join(process.cwd(), 'downloads');
   if (!fs.existsSync(downloadsDir)) fs.mkdirSync(downloadsDir);
 
-  const [download] = await Promise.all([page.waitForEvent('download'), exportBtn.click()]);
+  // Wait for the UI to acknowledge the export started, then wait for the
+  // download event on the context. Using the context ensures Playwright
+  // observes downloads triggered by the page in CI/headless environments.
+  await expect(settings.locator('text=Export started')).toBeVisible({ timeout: 15000 });
+
+  const [download] = await Promise.all([
+    page.context().waitForEvent('download', { timeout: 60000 }),
+    exportBtn.click(),
+  ]);
   const filename = download.suggestedFilename() || 'backup.json';
   const saved = path.join(downloadsDir, filename);
   await download.saveAs(saved);
