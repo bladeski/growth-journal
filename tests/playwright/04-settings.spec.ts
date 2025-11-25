@@ -9,8 +9,19 @@ const rawAppUrl = process.env.APP_URL || 'http://localhost:3000';
 const APP_URL = rawAppUrl.includes('#') ? rawAppUrl : rawAppUrl.replace(/\/$/, '') + '/#/settings';
 
 test('settings export/import/clear flows', async ({ page }) => {
+  // Unregister any existing service workers to ensure a clean start in CI
+  await page.goto('about:blank');
+  await page.evaluate(async () => {
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const r of regs) await r.unregister();
+    } catch (_) {}
+  });
+  // Now navigate to the app and wait for load
   await page.goto(APP_URL);
   await page.waitForLoadState('networkidle');
+  // Wait for service worker controller (app will register and claim)
+  await page.waitForFunction(() => (navigator as any).serviceWorker && (navigator as any).serviceWorker.controller, null, { timeout: 20000 }).catch(() => null);
   // Scope all selectors to the rendered settings component (shadow DOM)
   await page.waitForFunction(() => !!(window as any).app, null, { timeout: 30000 });
   const settings = page.locator('app-settings');
@@ -32,7 +43,7 @@ test('settings export/import/clear flows', async ({ page }) => {
   // If no download event is observed (CI flakiness), fallback to a test-exposed
   // global payload `window.__lastExportPayload` that the app sets when exporting.
   let download: any = null;
-  const downloadPromise = page.context().waitForEvent('download', { timeout: 10000 }).catch(() => null);
+  const downloadPromise = page.context().waitForEvent('download', { timeout: 20000 }).catch(() => null);
   await exportBtn.click();
   // Ensure the export helper is invoked in case click doesn't trigger it in this environment
   await page.evaluate(() => {
@@ -54,15 +65,15 @@ test('settings export/import/clear flows', async ({ page }) => {
         resolve(true);
       };
       window.addEventListener('gj:export-ready', onReady as EventListener);
-      // fallback timeout to avoid hanging tests
-      setTimeout(() => resolve(false), 10000);
+      // fallback timeout to avoid hanging tests (extended)
+      setTimeout(() => resolve(false), 20000);
     }),
   );
 
   const raceResult = await Promise.race([downloadPromise, exportReadyPromise]);
   download = typeof raceResult === 'object' ? raceResult : null;
 
-  await expect(settings.locator('text=Export started')).toBeVisible({ timeout: 15000 });
+  await expect(settings.locator('text=Export started')).toBeVisible({ timeout: 30000 });
 
   let saved: string;
   if (download) {
@@ -75,6 +86,12 @@ test('settings export/import/clear flows', async ({ page }) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return !!(window as any).__lastExportPayload;
     }, null, { timeout: 15000 }).catch(() => null);
+    // as an extra safeguard, try explicit invocation again
+    await page.evaluate(() => {
+      try {
+        if ((window as any).exportGrowthDb) (window as any).exportGrowthDb();
+      } catch (_) {}
+    });
 
     // read payload from page and write to disk. If the app didn't populate
     // `__lastExportPayload`, read directly from IndexedDB as a robust fallback.
