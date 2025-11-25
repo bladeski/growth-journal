@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+// Ensure downloads are accepted in this spec (CI runners sometimes require explicit opt-in)
+test.use({ acceptDownloads: true });
 import fs from 'fs';
 import path from 'path';
 
