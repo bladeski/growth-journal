@@ -1,6 +1,33 @@
-import { LoggingService } from '@bladeski/logger';
-
-const Logger = new LoggingService();
+// Lightweight local logger for the service worker.
+// Avoid importing the app's LoggingService here to keep the worker bundle
+// self-contained and prevent module resolution issues when the worker is
+// registered directly from `dev-dist`.
+const Logger = {
+  info: (...args: unknown[]) => {
+    try {
+      // eslint-disable-next-line no-console
+      console.info('[SW]', ...args);
+    } catch (_) {}
+  },
+  debug: (...args: unknown[]) => {
+    try {
+      // eslint-disable-next-line no-console
+      console.debug('[SW]', ...args);
+    } catch (_) {}
+  },
+  warn: (...args: unknown[]) => {
+    try {
+      // eslint-disable-next-line no-console
+      console.warn('[SW]', ...args);
+    } catch (_) {}
+  },
+  error: (...args: unknown[]) => {
+    try {
+      // eslint-disable-next-line no-console
+      console.error('[SW]', ...args);
+    } catch (_) {}
+  },
+};
 
 const CACHE_NAME = 'growth-journal-v1';
 const urlsToCache = ['/', '/index.html', '/manifest.json'];
@@ -207,6 +234,13 @@ self.addEventListener('message', (event: MessageEvent<ISwMessage>) => {
   const msg = event.data || ({} as ISwMessage);
   if (!msg || !msg.type) return;
 
+  // Log incoming messages for debugging in e2e traces
+  try {
+    Logger.debug('SW: received message', { type: msg.type });
+  } catch (e) {
+    // ignore logging failures
+  }
+
   const respond = (payload: unknown) => {
     if (event.ports && event.ports[0]) {
       event.ports[0].postMessage({ type: msg.type + ':response', payload });
@@ -307,6 +341,7 @@ self.addEventListener('message', (event: MessageEvent<ISwMessage>) => {
 
   // Export all stores as a backup
   if (msg.type === 'IDB:ExportAll') {
+    Logger.info('SW: handling IDB:ExportAll');
     openDB()
       .then((db) =>
         Promise.all(
@@ -318,9 +353,22 @@ self.addEventListener('message', (event: MessageEvent<ISwMessage>) => {
       .then((results) => {
         const payload: Record<string, unknown[]> = {};
         for (const r of results) payload[r.store] = r.items || [];
+        try {
+          Logger.info('SW: ExportAll prepared payload', {
+            stores: Object.keys(payload),
+            sizes: Object.fromEntries(
+              Object.keys(payload).map((k) => [k, (payload[k] || []).length]),
+            ),
+          });
+        } catch (e) {
+          /* ignore logging errors */
+        }
         respond({ success: true, items: payload });
       })
-      .catch((err) => respond({ success: false, error: String(err) }));
+      .catch((err) => {
+        Logger.error('SW: ExportAll error', { error: String(err) });
+        respond({ success: false, error: String(err) });
+      });
     return;
   }
 

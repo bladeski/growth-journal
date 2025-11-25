@@ -47,6 +47,24 @@ export class PWAManager {
           type: 'module',
         });
         logger.info('Service Worker registered successfully', { registration });
+        // Additional diagnostic: request an explicit update to ensure the
+        // registration fetches the currently served worker script (helpful
+        // when running tests that rely on the built `dev-dist` file).
+        try {
+          if (typeof registration.update === 'function') {
+            logger.debug('Calling registration.update() to refresh worker script');
+            await registration.update();
+          }
+          logger.debug('SW registration details', {
+            scriptURL: (registration as any).scriptURL,
+            scope: registration.scope,
+            active: registration.active,
+            installing: registration.installing,
+            waiting: registration.waiting,
+          });
+        } catch (e) {
+          logger.warn('Failed to update/log SW registration details', { error: e });
+        }
         // Diagnostic: log registration worker states to help debug 'active: null' cases
         try {
           logger.debug('SW registration state', {
