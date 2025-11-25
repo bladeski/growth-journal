@@ -56,7 +56,8 @@ export class PWAManager {
             await registration.update();
           }
           logger.debug('SW registration details', {
-            scriptURL: (registration as any).scriptURL,
+            scriptURL: (registration as ServiceWorkerRegistration & { scriptURL?: string })
+              .scriptURL,
             scope: registration.scope,
             active: registration.active,
             installing: registration.installing,
