@@ -3,6 +3,10 @@
  * Handles service worker registration, installation prompts, and offline functionality
  */
 
+import { LoggingService } from '@bladeski/logger';
+
+const logger = LoggingService.getInstance();
+
 export class PWAManager {
   private deferredPrompt: BeforeInstallPromptEvent | null = null;
   private isOnline: boolean = navigator.onLine;
@@ -42,10 +46,29 @@ export class PWAManager {
         const registration = await navigator.serviceWorker.register(swUrl.toString(), {
           type: 'module',
         });
-        console.log('Service Worker registered successfully:', registration);
+        logger.info('Service Worker registered successfully', { registration });
+        // Additional diagnostic: request an explicit update to ensure the
+        // registration fetches the currently served worker script (helpful
+        // when running tests that rely on the built `dev-dist` file).
+        try {
+          if (typeof registration.update === 'function') {
+            logger.debug('Calling registration.update() to refresh worker script');
+            await registration.update();
+          }
+          logger.debug('SW registration details', {
+            scriptURL: (registration as ServiceWorkerRegistration & { scriptURL?: string })
+              .scriptURL,
+            scope: registration.scope,
+            active: registration.active,
+            installing: registration.installing,
+            waiting: registration.waiting,
+          });
+        } catch (e) {
+          logger.warn('Failed to update/log SW registration details', { error: e });
+        }
         // Diagnostic: log registration worker states to help debug 'active: null' cases
         try {
-          console.log('SW registration state:', {
+          logger.debug('SW registration state', {
             active: registration.active,
             installing: registration.installing,
             waiting: registration.waiting,
@@ -68,7 +91,7 @@ export class PWAManager {
           }
         });
       } catch (error) {
-        console.error('Service Worker registration failed:', error);
+        logger.error('Service Worker registration failed', { error });
       }
     }
   }
@@ -78,7 +101,7 @@ export class PWAManager {
    */
   private setupBeforeInstallPrompt(): void {
     window.addEventListener('beforeinstallprompt', (e) => {
-      console.log('PWAManager: beforeinstallprompt fired');
+      logger.info('PWAManager: beforeinstallprompt fired');
       // Prevent the automatic prompt so we can show it on a user gesture
       e.preventDefault();
       this.deferredPrompt = e;
@@ -101,7 +124,7 @@ export class PWAManager {
 
     const container = document.querySelector('.install-container') as HTMLElement | null;
     if (!container) return;
-    console.log('PWAManager: showing install container');
+    logger.info('PWAManager: showing install container');
     container.style.display = 'flex';
 
     const installBtn = document.getElementById('install-button');
@@ -144,7 +167,7 @@ export class PWAManager {
       const choiceResult = await this.deferredPrompt.userChoice;
 
       if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the install prompt');
+        logger.info('User accepted the install prompt');
         // Hide the install UI after acceptance
         const container = document.querySelector('.install-container') as HTMLElement | null;
         if (container) {
@@ -158,7 +181,7 @@ export class PWAManager {
           // ignore
         }
       } else {
-        console.log('User dismissed the install prompt');
+        logger.info('User dismissed the install prompt');
       }
 
       this.deferredPrompt = null;
@@ -195,7 +218,7 @@ export class PWAManager {
    */
   private setupInstallPrompt(): void {
     window.addEventListener('appinstalled', () => {
-      console.log('PWA was installed');
+      logger.info('PWA was installed');
       // Hide install button or show success message
       const container = document.querySelector('.install-container') as HTMLElement | null;
       if (container) {

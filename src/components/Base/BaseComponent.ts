@@ -359,10 +359,14 @@ export abstract class BaseComponent<
         // - data-href="..."
         // - data-href='...'
         // - data-href=unquotedValue
-        .replace(/(<a\b[^>]*?)\bdata-href\s*=\s*(?:(["'])(.*?)\2|([^\s>]+))/gi, (_m, before, _quote, quotedUrl, unquotedUrl) => {
-          const url = typeof quotedUrl === 'string' && quotedUrl.length > 0 ? quotedUrl : (unquotedUrl || '');
-          return `${before} href="${url}"`;
-        });
+        .replace(
+          /(<a\b[^>]*?)\bdata-href\s*=\s*(?:(["'])(.*?)\2|([^\s>]+))/gi,
+          (_m, before, _quote, quotedUrl, unquotedUrl) => {
+            const url =
+              typeof quotedUrl === 'string' && quotedUrl.length > 0 ? quotedUrl : unquotedUrl || '';
+            return `${before} href="${url}"`;
+          },
+        );
 
       this.shadowRoot.innerHTML += processed;
 
@@ -373,10 +377,9 @@ export abstract class BaseComponent<
       try {
         const anchors = this.shadowRoot.querySelectorAll('a[data-href]');
         if (anchors.length > 0) {
-          // tiny instrumentation to help confirm execution in production
-          // (can be removed after verifying behavior)
-          // eslint-disable-next-line no-console
-          console.debug(`BaseComponent runtime fallback: fixing ${anchors.length} anchor(s) with data-href`);
+          logger.debug(
+            `BaseComponent runtime fallback: fixing ${anchors.length} anchor(s) with data-href`,
+          );
         }
         anchors.forEach((a) => {
           const v = a.getAttribute('data-href') || '';
@@ -384,8 +387,7 @@ export abstract class BaseComponent<
         });
       } catch (e) {
         // non-fatal: if shadowRoot isn't accessible or query fails, ignore
-        // eslint-disable-next-line no-console
-        console.warn('BaseComponent: runtime data-href fallback failed', e);
+        logger.warn('BaseComponent: runtime data-href fallback failed', { error: e });
       }
 
       // collect bindings and set initial values
@@ -448,7 +450,7 @@ export abstract class BaseComponent<
         if (event && typeof method === 'function') {
           el.addEventListener(event, method.bind(this));
         } else {
-          console.warn(`No method "${methodName}" found on component for action "${action}"`);
+          logger.warn(`No method "${methodName}" found on component for action "${action}"`);
         }
       });
     });
