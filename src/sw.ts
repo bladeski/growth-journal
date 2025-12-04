@@ -1,41 +1,17 @@
-// Lightweight local logger for the service worker.
-// Avoid importing the app's LoggingService here to keep the worker bundle
-// self-contained and prevent module resolution issues when the worker is
-// registered directly from `dev-dist`.
-const Logger = {
-  info: (...args: unknown[]) => {
-    try {
-      // eslint-disable-next-line no-console
-      console.info('[SW]', ...args);
-    } catch (_) {
-      /* empty */
-    }
-  },
-  debug: (...args: unknown[]) => {
-    try {
-      // eslint-disable-next-line no-console
-      console.debug('[SW]', ...args);
-    } catch (_) {
-      // Ignore console errors
-    }
-  },
-  warn: (...args: unknown[]) => {
-    try {
-      // eslint-disable-next-line no-console
-      console.warn('[SW]', ...args);
-    } catch (_) {
-      /* empty */
-    }
-  },
-  error: (...args: unknown[]) => {
-    try {
-      // eslint-disable-next-line no-console
-      console.error('[SW]', ...args);
-    } catch (_) {
-      /* empty */
-    }
-  },
-};
+import { LoggingService } from './sw-logger-proxy.ts';
+
+let Logger: ReturnType<typeof LoggingService.getInstance>;
+
+try {
+  LoggingService.initialize({
+    applicationName: 'GrowthJournalServiceWorker',
+    enableConsoleCore: false,
+    autoRegisterIndexedDBAdvancedLogger: true,
+  });
+  Logger = LoggingService.getInstance();
+} catch (e) {
+  console.error('Failed to load LoggingService');
+}
 
 const CACHE_NAME = 'growth-journal-v1';
 const urlsToCache = ['/', '/index.html', '/manifest.json'];

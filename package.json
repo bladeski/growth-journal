@@ -7,9 +7,9 @@
     "dev": "parcel src/index.pug --port 3000 --dist-dir dev-dist",
     "build": "parcel build src/index.pug --public-url ./",
     "release": "standard-version",
-    "build:pwa": "npm run build && npm run copy-pwa-files",
-    "copy-pwa-files": "powershell -Command \"Copy-Item src/manifest.json dist/; Copy-Item src/sw.ts dist/sw.js; if (Test-Path src/icons) { Copy-Item -Recurse src/icons dist/ }\"",
-    "copy-pwa-files:dev": "powershell -Command \"Copy-Item src/manifest.json dev-dist/; Copy-Item src/sw.ts dev-dist/sw.js; if (Test-Path src/icons) { Copy-Item -Recurse src/icons dev-dist/ }\"",
+    "build:pwa": "npm run build && npm run build:sw && npm run copy-pwa-files",
+    "copy-pwa-files": "powershell -Command \"Copy-Item src/manifest.json dist/; if (Test-Path dist/sw.js) { Copy-Item dist/sw.js dist/sw.js -Force } else { Copy-Item src/sw.ts dist/sw.js } ; if (Test-Path src/icons) { Copy-Item -Recurse src/icons dist/ }\"",
+    "copy-pwa-files:dev": "powershell -Command \"Copy-Item src/manifest.json dev-dist/; if (Test-Path dev-dist/sw.js) { Copy-Item dev-dist/sw.js dev-dist/sw.js -Force } else { Copy-Item src/sw.ts dev-dist/sw.js } ; if (Test-Path src/icons) { Copy-Item -Recurse src/icons dev-dist/ }\"",
     "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,scss,pug,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,scss,pug,json,md}\"",
@@ -21,21 +21,31 @@
     "test:e2e": "playwright test tests/playwright",
     "test:e2e:local": "powershell -ExecutionPolicy Bypass -File ./scripts/run-e2e.ps1",
     "test:playwright": "playwright test",
-    "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --reporters=default"
+    "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --reporters=default",
+    "build:sw": "parcel build --target sw"
   },
   "targets": {
     "default": {
       "publicUrl": "./"
+    },
+    "sw": {
+      "context": "web-worker",
+      "source": "src/sw.ts",
+      "distDir": "dist",
+      "publicUrl": "./",
+      "includeNodeModules": {
+        "@bladeski/logger": true
+      }
     }
   },
   "dependencies": {
     "@bladeski/logger": "^1.0.3"
   },
   "devDependencies": {
-    "@parcel/packager-raw-url": "2.16.0",
-    "@parcel/transformer-inline-string": "2.16.0",
-    "@parcel/transformer-pug": "^2.16.0",
-    "@parcel/transformer-webmanifest": "2.16.0",
+    "@parcel/packager-raw-url": "2.16.1",
+    "@parcel/transformer-inline-string": "2.16.1",
+    "@parcel/transformer-pug": "2.16.1",
+    "@parcel/transformer-webmanifest": "2.16.1",
     "@playwright/test": "^1.56.1",
     "@types/jest": "^29.5.4",
     "@types/pug": "^2.0.10",
