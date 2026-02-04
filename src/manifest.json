@@ -10,6 +10,12 @@
   "categories": ["productivity", "lifestyle"],
   "lang": "en",
   "dir": "ltr",
+  "background": {
+    "service_worker": {
+      "src": "sw.js",
+      "type": "module"
+    }
+  },
   "icons": [
     {
       "src": "icons/icon-72-72.png",

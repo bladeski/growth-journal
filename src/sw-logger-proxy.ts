@@ -1,3 +1,4 @@
-// This proxy re-exports the project's LoggingService so bundlers will
-// include `@bladeski/logger` in builds that import this file.
-export { LoggingService } from '@bladeski/logger';
+// Re-export the package's compiled entry to force Parcel to include the
+// prebuilt UMD/ES output instead of pulling in source files which may be
+// code-split into chunks that the Service Worker cannot resolve at runtime.
+export { LoggingService } from '@bladeski/logger/dist/index.js';

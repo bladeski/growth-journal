@@ -4,12 +4,9 @@ import GrowthIntentions from './data/GrowthIntentions.ts';
 import IndexedDbDataService from './data/IndexedDbDataService.ts';
 // Register web components (side-effect import)
 import './components/index.ts';
-// Minimal local logging configuration type to avoid requiring @bladeski/logger type files
-interface ILoggingConfigurationOptions {
-  applicationName: string;
-  enableConsoleCore?: boolean;
-  enableLocalStorageCore?: boolean;
-}
+import { ILoggingConfigurationOptions } from '@bladeski/logger/dist/interfaces/index.js';
+
+let logger: ReturnType<typeof LoggingService.getInstance>;
 
 function setupWelcomeMessage() {
   const welcomeSection = document.querySelector('.welcome-section');
@@ -33,11 +30,12 @@ const pwaManager = new PWAManager();
 function initializeApp() {
   const options: ILoggingConfigurationOptions = {
     applicationName: 'growth-journal',
-    enableConsoleCore: true,
+    enableConsoleCore: false,
     enableLocalStorageCore: true,
+    maxLogs: 500,
   };
   LoggingService.initialize(options);
-  const logger = LoggingService.getInstance();
+  logger = LoggingService.getInstance();
 
   logger.info('🌱 Growth Journal is starting...');
 
