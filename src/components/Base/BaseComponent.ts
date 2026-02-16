@@ -1,7 +1,6 @@
 import { LoggingService } from '@bladeski/logger';
 import baseStyles from 'bundle-text:../../styles/base.css';
-import { IBaseComponent } from '../../interfaces/IBaseComponent.ts';
-import type { IPropTypes } from './interfaces/IPropTypes.ts';
+import { IBaseComponent, IPropTypes } from '../../models/index.ts';
 
 const logger = LoggingService.getInstance();
 
@@ -18,14 +17,21 @@ const logger = LoggingService.getInstance();
  * @typeParam TEvents - Shape of emitted custom event details
  */
 export abstract class BaseComponent<
-    TProps extends IPropTypes = Record<string, never>,
-    TEvents = Record<string, never>,
-  >
+  TProps extends IPropTypes = Record<string, never>,
+  TEvents = Record<string, never>,
+>
   extends HTMLElement
   implements IBaseComponent<TProps, TEvents>
 {
+  /** Optional static helper: explicit prop keys declared by subclasses. */
+  // Subclasses may declare `static propKeys = ['title', 'readonly'] as const;`
+  // BaseComponent will derive `observedAttributes` from these keys at runtime.
+  // Note: Type information (TProps) is not available at runtime; this is a
+  // convenience to avoid repeating attribute names. For compile-time safety,
+  // use the exported `definePropKeys<T>()` helper when declaring `propKeys`.
+  static propKeys?: readonly string[];
   /** List of observed attributes; subclasses may override. */
-  static observedAttributes: string[] = [];
+  observedAttributes: (keyof TProps)[] = [];
 
   /** Public props object — proxied so direct assignments can trigger updates. */
   props = {} as TProps;
@@ -50,6 +56,12 @@ export abstract class BaseComponent<
 
   /** Track which style strings/paths have already been added to the shadowRoot. */
   private styleAdded = new Set<string>();
+
+  // Subclasses can declare required props for first render
+  static requiredProps: string[] = [];
+
+  // Keep track if we tried to render and deferred
+  private _renderDeferred = false;
 
   /**
    * Create a new BaseComponent.
@@ -111,6 +123,10 @@ export abstract class BaseComponent<
     // merge initial props into the proxy (keeps proxy intact)
     if (initialProps) {
       Object.assign(this.props, initialProps as TProps);
+      // Define element-level accessors for each initial prop so callers can do `el.prop = value`
+      for (const k of Object.keys(initialProps as Record<string, unknown>)) {
+        this.defineElementPropAccessor(k as keyof TProps & string);
+      }
     }
 
     if (typeof template === 'string') {
@@ -194,7 +210,80 @@ export abstract class BaseComponent<
   connectedCallback(): void {
     // Auto-sync data-prop: attributes to props before rendering
     this.syncDataPropAttributes();
+
+    // Define element-level accessors for common/required props and observed attributes
+    try {
+      const ctor = this.constructor as typeof BaseComponent;
+      // If subclass provided `propKeys`, derive observedAttributes from them when not explicitly set.
+      try {
+        const anyCtor = ctor as unknown as {
+          propKeys?: readonly string[];
+          observedAttributes?: string[];
+        };
+        if (
+          (!Array.isArray(anyCtor.observedAttributes) || anyCtor.observedAttributes.length === 0) &&
+          Array.isArray(anyCtor.propKeys) &&
+          anyCtor.propKeys.length > 0
+        ) {
+          // convert prop key -> data-prop:kebab-case-name
+          const toKebab = (s: string) =>
+            s
+              .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+              .replace(/_/g, '-')
+              .toLowerCase();
+          anyCtor.observedAttributes = anyCtor.propKeys.map((p) => `data-prop:${toKebab(p)}`);
+        }
+      } catch (e) {
+        // ignore any errors during observedAttributes derivation
+      }
+      // requiredProps
+      if (Array.isArray(ctor.requiredProps)) {
+        for (const k of ctor.requiredProps) this.defineElementPropAccessor(k);
+      }
+      // observedAttributes: include both plain and data-prop: keys
+      for (const rawAttr of this.observedAttributes || []) {
+        const attr = String(rawAttr); // normalize to string
+        if (attr.startsWith('data-prop:')) {
+          const prop = this.dataPropToPropName(attr);
+          this.defineElementPropAccessor(prop);
+        } else {
+          this.defineElementPropAccessor(attr);
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    if (this.shouldDeferInitialRender()) {
+      this._renderDeferred = true;
+      return; // don't render yet
+    }
     this.render();
+  }
+
+  // Check whether all required props are present (not undefined)
+  protected shouldDeferInitialRender(): boolean {
+    const ctor = this.constructor as typeof BaseComponent;
+    const required = Array.isArray(ctor.requiredProps) ? ctor.requiredProps : [];
+    if (required.length === 0) return false;
+
+    for (const key of required) {
+      const v = (this.props as Record<string, unknown>)[key];
+      if (v === undefined) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Call this whenever you set props that may satisfy required props.
+   * If initial render was deferred and requirements are now met, trigger first render.
+   */
+  protected tryInitialRender(): void {
+    if (!this._renderDeferred) return;
+    if (!this.shouldDeferInitialRender()) {
+      this._renderDeferred = false;
+      this.render();
+    }
   }
 
   /**
@@ -202,9 +291,8 @@ export abstract class BaseComponent<
    * This runs automatically on connectedCallback.
    */
   private syncDataPropAttributes(): void {
-    const observedAttrs = (this.constructor as typeof BaseComponent).observedAttributes;
-
-    for (const attrName of observedAttrs) {
+    for (const rawAttr of this.observedAttributes || []) {
+      const attrName = String(rawAttr);
       // Handle both formats: "data-prop:title" and plain "title"
       if (attrName.startsWith('data-prop:')) {
         const propName = this.dataPropToPropName(attrName);
@@ -287,11 +375,46 @@ export abstract class BaseComponent<
   protected setProp<K extends keyof TProps & string>(key: K, value: TProps[K]) {
     // assign via the proxied props so updateBindings runs automatically
     this.props[key] = value;
+    // ensure element-level accessor exists so consumers can use el.key = value
+    this.defineElementPropAccessor(key as string);
     if (typeof value === 'boolean') {
       if (value) this.setAttribute(key, '');
       else this.removeAttribute(key);
     } else {
       this.setAttribute(key, String(value));
+    }
+
+    this.tryInitialRender();
+  }
+  protected setProps(patch: Partial<TProps>): void {
+    // Set multiple props via setProp so accessors and attribute reflection are kept in sync
+    for (const [key, value] of Object.entries(patch)) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      this.setProp(key as keyof TProps & string, value as TProps[keyof TProps & string]);
+    }
+  }
+
+  /**
+   * Define a property accessor on the element instance that proxies to this.props.
+   * This enables `el.someProp = value` to work and keeps attribute reflection.
+   */
+  private defineElementPropAccessor(propName: string): void {
+    try {
+      if (propName in this) return; // don't overwrite existing properties
+
+      Object.defineProperty(this, propName, {
+        configurable: true,
+        enumerable: true,
+        get: () => (this.props as Record<string, unknown>)[propName],
+        set: (v: unknown) => {
+          // Use setProp to keep attributes and bindings in sync
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          this.setProp(propName as keyof TProps & string, v as TProps[keyof TProps & string]);
+        },
+      });
+    } catch (e) {
+      // non-fatal: if defineProperty fails, continue without accessor
+      logger.debug(`BaseComponent: failed to define prop accessor for ${propName}`, { error: e });
     }
   }
 
@@ -455,4 +578,12 @@ export abstract class BaseComponent<
       });
     });
   }
+}
+
+/**
+ * Helper to declare prop keys with type-safety in subclasses.
+ * Usage: `static propKeys = definePropKeys<keyof MyProps & string>(['title','readonly'])`
+ */
+export function definePropKeys<T extends string>(keys: readonly T[]): readonly T[] {
+  return keys;
 }

@@ -1,0 +1,154 @@
+{
+  "value": "{{ value }}",
+  "challenge": "{{ challenge }}",
+  "morning": {
+    "id": "3f1a9a54-2c8a-4c3a-9b3f-6b7d9a1f2e10",
+    "kind": "morning-reset",
+    "titleKey": "sec.3f1a9a54-2c8a-4c3a-9b3f-6b7d9a1f2e10.title",
+    "descriptionKey": "sec.3f1a9a54-2c8a-4c3a-9b3f-6b7d9a1f2e10.desc",
+    "version": 1,
+    "questions": [
+      {
+        "id": "morning-grateful-1",
+        "kind": "text",
+        "promptKey": "q.morning-grateful.prompt",
+        "required": true,
+        "placeholderKey": "q.morning-grateful.placeholder"
+      },
+      {
+        "id": "morning-grateful-2",
+        "kind": "text",
+        "promptKey": "q.morning-grateful.prompt",
+        "required": true,
+        "placeholderKey": "q.morning-grateful.placeholder"
+      },
+      {
+        "id": "morning-grateful-3",
+        "kind": "text",
+        "promptKey": "q.morning-grateful.prompt",
+        "required": true,
+        "placeholderKey": "q.morning-grateful.placeholder"
+      }
+    ]
+  },
+  "midday": {
+    "id": "7b2e1c90-1f45-4d2a-bb33-8e9d7c6b5a11",
+    "kind": "midday-checkin",
+    "titleKey": "sec.7b2e1c90-1f45-4d2a-bb33-8e9d7c6b5a11.title",
+    "descriptionKey": "sec.7b2e1c90-1f45-4d2a-bb33-8e9d7c6b5a11.desc",
+    "version": 1,
+    "questions": [
+      {
+        "id": "midday-emotion",
+        "kind": "text",
+        "promptKey": "q.midday-emotion.prompt",
+        "placeholderKey": "q.midday-emotion.placeholder"
+      },
+      {
+        "id": "midday-trigger",
+        "kind": "text",
+        "promptKey": "q.midday-trigger.prompt",
+        "placeholderKey": "q.midday-trigger.placeholder",
+        "helpTextKey": "q.midday-trigger.help"
+      },
+      {
+        "id": "midday-body",
+        "kind": "text",
+        "promptKey": "q.midday-body.prompt",
+        "placeholderKey": "q.midday-body.placeholder",
+        "helpTextKey": "q.midday-body.help"
+      },
+      {
+        "id": "midday-thought",
+        "kind": "text",
+        "promptKey": "q.midday-thought.prompt",
+        "placeholderKey": "q.midday-thought.placeholder",
+        "helpTextKey": "q.midday-thought.help"
+      },
+      {
+        "id": "midday-reframe",
+        "kind": "text",
+        "promptKey": "q.midday-reframe.prompt",
+        "placeholderKey": "q.midday-reframe.placeholder",
+        "helpTextKey": "q.midday-reframe.help"
+      },
+      {
+        "id": "midday-progress",
+        "kind": "text",
+        "promptKey": "q.midday-progress.prompt",
+        "placeholderKey": "q.midday-progress.placeholder",
+        "helpTextKey": "q.midday-progress.help"
+      }
+    ]
+  },
+  "evening": {
+    "id": "c0ffee00-1234-4abc-9def-000000000019",
+    "kind": "evening-reflection",
+    "titleKey": "sec.c0ffee00-1234-4abc-9def-000000000019.title",
+    "descriptionKey": "sec.c0ffee00-1234-4abc-9def-000000000019.desc",
+    "version": 1,
+    "questions": [
+      {
+        "id": "evening-challenge",
+        "kind": "text",
+        "promptKey": "q.evening-challenge.prompt",
+        "placeholderKey": "q.evening-challenge.placeholder",
+        "helpTextKey": "q.evening-challenge.help"
+      },
+      {
+        "id": "evening-struggle",
+        "kind": "text",
+        "promptKey": "q.evening-struggle.prompt",
+        "placeholderKey": "q.evening-struggle.placeholder",
+        "helpTextKey": "q.evening-struggle.help"
+      },
+      {
+        "id": "evening-proud",
+        "kind": "text",
+        "promptKey": "q.evening-proud.prompt",
+        "placeholderKey": "q.evening-proud.placeholder",
+        "helpTextKey": "q.evening-proud.help"
+      },
+      {
+        "id": "evening-try-again",
+        "kind": "text",
+        "promptKey": "q.evening-try-again.prompt",
+        "placeholderKey": "q.evening-try-again.placeholder",
+        "helpTextKey": "q.evening-try-again.help"
+      }
+    ]
+  },
+  "accountability": {
+    "id": "deadbeef-aaaa-4bbb-8ccc-ffffffff0025",
+    "kind": "accountability",
+    "titleKey": "sec.deadbeef-aaaa-4bbb-8ccc-ffffffff0025.title",
+    "descriptionKey": "sec.deadbeef-aaaa-4bbb-8ccc-ffffffff0025.desc",
+    "version": 1,
+    "questions": [
+      {
+        "id": "accountability-check",
+        "kind": "single-select",
+        "promptKey": "q.3d4e5f60-7182-494a-cb34-567890000029.prompt",
+        "options": [
+          { "value": "yes", "labelKey": "partner.check.yes" },
+          { "value": "no", "labelKey": "partner.check.no" }
+        ]
+      }
+    ]
+  },
+  "journal-entry": {
+    "id": "feedface-1234-5678-9abc-def0000000010",
+    "kind": "journal-entry",
+    "titleKey": "sec.feedface-1234-5678-9abc-def0000000010.title",
+    "descriptionKey": "sec.feedface-1234-5678-9abc-def0000000010.desc",
+    "version": 1,
+    "questions": [
+      {
+        "id": "journal-entry-text",
+        "kind": "text",
+        "promptKey": "q.feedface-text.prompt",
+        "placeholderKey": "q.feedface-text.placeholder"
+       }
+     ]
+   }
+}

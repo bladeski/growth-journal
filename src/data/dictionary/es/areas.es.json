@@ -1,0 +1,23 @@
+{
+  "area-none": "Ninguna",
+  "area-emotional-wellbeing": "Bienestar emocional",
+  "area-physical-health": "Salud física",
+  "area-relationships": "Relaciones",
+  "area-career": "Carrera y rendimiento laboral",
+  "area-communication": "Comunicación",
+  "area-productivity": "Productividad y hábitos",
+  "area-financial-health": "Salud financiera",
+  "area-creativity-learning": "Creatividad y aprendizaje",
+  "area-leadership": "Liderazgo",
+  "area-self-confidence": "Confianza en uno mismo",
+  "area-stress-management": "Gestión del estrés",
+  "area-time-management": "Gestión del tiempo",
+  "area-decision-making": "Toma de decisiones",
+  "area-purpose": "Propósito y significado",
+  "area-community": "Comunidad y contribución",
+  "area-digital-wellbeing": "Bienestar digital",
+  "area-resilience": "Resiliencia",
+  "area-self-discipline": "Autodisciplina",
+  "area-boundaries": "Límites personales",
+  "area-life-balance": "Equilibrio vital"
+}
