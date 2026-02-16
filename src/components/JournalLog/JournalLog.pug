@@ -1,0 +1,12 @@
+section.section
+  fieldset
+    legend Journal Log
+    label#journal-log-label(for="journal-log-textarea" data-js="label")
+    textarea(
+      id="journal-log-textarea"
+      name="log"
+      data-q="log"
+      rows="5"
+      data-action="input:onInput; focus:onFocus"
+      aria-labelledby="journal-log-label"
+    )

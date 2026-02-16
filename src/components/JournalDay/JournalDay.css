@@ -1,0 +1,48 @@
+.day {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.day-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+.day-title {
+  min-width: max-content;
+}
+
+.value-challenge {
+  display: flex;
+  flex-direction: column;
+
+  .value-label,
+  .challenge-label {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-lg);
+    color: var(--color-muted);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr);
+  gap: var(--space-md);
+  flex-grow: 1;
+  max-height: 100%;
+  overflow: hidden;
+
+  > #log {
+    grid-column: 2;
+    grid-row: 1 / -1;
+  }
+
+  .questions {
+    grid-column: 1;
+    overflow: auto;
+    margin-top: 2px;
+  }
+}

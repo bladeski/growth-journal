@@ -4,8 +4,10 @@
   "description": "A Progressive Web App for daily growth journaling and reflection.",
   "type": "module",
   "scripts": {
-    "dev": "powershell -Command \"Start-Job -ScriptBlock { npm run build:sw:dev } | Out-Null; parcel src/index.pug --port 3000 --dist-dir dev-dist\"",
-    "build": "parcel build src/index.pug --public-url ./",
+    "build:dictionaries": "node src/scripts/build-dictionaries.js",
+    "build:dictionaries:dev": "node src/scripts/build-dictionaries.js dev-dist/data/dictionaries",
+    "dev": "powershell -Command \"npm run build:dictionaries:dev; Start-Job -ScriptBlock { npm run build:sw:dev } | Out-Null; parcel src/index.pug --port 3000 --dist-dir dev-dist\"",
+    "build": "parcel build src/index.pug --public-url ./ && npm run build:dictionaries",
     "release": "standard-version",
     "build:pwa": "npm run build && npm run build:sw && npm run copy-pwa-files",
     "copy-pwa-files": "powershell -Command \"Copy-Item src/manifest.json dist/; if (Test-Path dist/sw.js) { Copy-Item dist/sw.js dist/sw.js -Force } else { Copy-Item src/sw.ts dist/sw.js } ; if (Test-Path src/icons) { Copy-Item -Recurse src/icons dist/ }\"",
@@ -44,6 +46,7 @@
   },
   "devDependencies": {
     "@parcel/packager-raw-url": "2.16.1",
+    "@parcel/resolver-default": "^2.16.4",
     "@parcel/transformer-inline-string": "2.16.1",
     "@parcel/transformer-pug": "2.16.1",
     "@parcel/transformer-webmanifest": "2.16.1",

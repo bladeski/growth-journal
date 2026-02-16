@@ -7,6 +7,21 @@ import { LoggingService } from '@bladeski/logger';
 
 const logger = LoggingService.getInstance();
 
+/**
+ * Custom interface for BeforeInstallPromptEvent
+ * This is a non-standard API not included in the standard TypeScript DOM types
+ */
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
+declare global {
+  interface WindowEventMap {
+    beforeinstallprompt: BeforeInstallPromptEvent;
+  }
+}
+
 export class PWAManager {
   private deferredPrompt: BeforeInstallPromptEvent | null = null;
   private isOnline: boolean = navigator.onLine;
@@ -261,8 +276,11 @@ export class PWAManager {
   private async syncOfflineData(): Promise<void> {
     if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
       const registration = await navigator.serviceWorker.ready;
-      if (registration.sync) {
-        await registration.sync.register('background-sync-journal');
+      const syncRegistration = registration as ServiceWorkerRegistration & {
+        sync: { register: (tag: string) => Promise<void> };
+      };
+      if (syncRegistration.sync) {
+        await syncRegistration.sync.register('background-sync-journal');
       }
     }
   }

@@ -1,0 +1,29 @@
+style.
+  .hidden { display: none; }
+
+main.app
+  #error.hidden
+    | {{error}}
+  #loading Loading…
+  #content.hidden
+    header
+      .heading
+        img(src="/src/images/logo.svg", alt="Growth Journal Logo. A stylised image of a sprout.")
+        h1 Growth Journal
+      .settings
+        .date-picker-bar
+          button#prev-day.btn.btn-icon(data-action="click:prevDay") <
+          button#next-day.btn.btn-icon(data-action="click:nextDay") >
+          label(for="date-picker") Date:
+          input#date-picker(type="date")
+        button#settings-btn.btn(data-action="click:openSettings") Settings
+    dialog#settings
+      h2 Settings
+        button.btn.btn-icon(data-action="click:closeSettings") ╳
+      .setting
+        label(for="setting-growth-area") Growth Area:
+        select#setting-growth-area(
+          data-action="change:onSettingChange"
+          name="growthArea"
+        )
+    journal-day#day

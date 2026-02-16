@@ -1,17 +1,38 @@
-import { LoggingService } from './sw-logger-proxy.ts';
+/// <reference lib="webworker" />
+declare const self: ServiceWorkerGlobalScope;
 
-let Logger: ReturnType<typeof LoggingService.getInstance>;
+// Load logging proxy dynamically to avoid import-time failures inside the
+// Service Worker execution environment. Some logger builds reference DOM
+// globals that are unavailable in workers; importing at runtime prevents
+// module evaluation from aborting the entire worker script.
+let Logger: {
+  info: (...args: any[]) => void;
+  warn: (...args: any[]) => void;
+  debug: (...args: any[]) => void;
+  error: (...args: any[]) => void;
+} = console;
 
-try {
-  LoggingService.initialize({
-    applicationName: 'GrowthJournalServiceWorker',
-    enableConsoleCore: false,
-    autoRegisterIndexedDBAdvancedLogger: true,
+void import('./sw-logger-proxy.ts')
+  .then((mod) => {
+    try {
+      const LoggingService = (mod as any).LoggingService;
+      if (LoggingService && typeof LoggingService.initialize === 'function') {
+        LoggingService.initialize({
+          applicationName: 'GrowthJournalServiceWorker',
+          enableConsoleCore: false,
+          autoRegisterIndexedDBAdvancedLogger: true,
+        });
+      }
+      if (LoggingService && typeof LoggingService.getInstance === 'function') {
+        Logger = LoggingService.getInstance();
+      }
+    } catch (e) {
+      console.error('Failed to initialize LoggingService in SW', e);
+    }
+  })
+  .catch((e) => {
+    console.error('Failed to import sw-logger-proxy in SW', e);
   });
-  Logger = LoggingService.getInstance();
-} catch (e) {
-  console.error('Failed to load LoggingService');
-}
 
 const CACHE_NAME = 'growth-journal-v1';
 const urlsToCache = ['/', '/index.html', '/manifest.json'];
@@ -200,8 +221,9 @@ self.addEventListener('activate', (event: ExtendableEvent) => {
 
 // Background sync for journal entries (when connectivity is restored)
 self.addEventListener('sync', (event: unknown) => {
-  if ((event as SyncEvent).tag === 'background-sync-journal') {
-    (event as SyncEvent).waitUntil(syncJournalEntries());
+  const syncEvent = event as { tag?: string; waitUntil?: (promise: Promise<void>) => void };
+  if (syncEvent.tag === 'background-sync-journal') {
+    syncEvent.waitUntil?.(syncJournalEntries());
   }
 });
 
@@ -212,10 +234,11 @@ async function syncJournalEntries() {
 }
 
 // Simple message-based IndexedDB handling for client requests
-import type { ISwMessage } from './interfaces/index.ts';
+import type { ISwMessage } from './models/index.ts';
 
-self.addEventListener('message', (event: MessageEvent<ISwMessage>) => {
-  const msg = event.data || ({} as ISwMessage);
+self.addEventListener('message', (event: ExtendableMessageEvent) => {
+  const mev = event as unknown as MessageEvent<ISwMessage>;
+  const msg = mev.data || ({} as ISwMessage);
   if (!msg || !msg.type) return;
 
   // Log incoming messages for debugging in e2e traces
@@ -226,11 +249,11 @@ self.addEventListener('message', (event: MessageEvent<ISwMessage>) => {
   }
 
   const respond = (payload: unknown) => {
-    if (event.ports && event.ports[0]) {
-      event.ports[0].postMessage({ type: msg.type + ':response', payload });
+    if (mev.ports && mev.ports[0]) {
+      mev.ports[0].postMessage({ type: msg.type + ':response', payload });
       return;
     }
-    const src = event.source as unknown as
+    const src = mev.source as unknown as
       | { postMessage?: (data: unknown, transfer?: Transferable[]) => void }
       | undefined;
     if (src && typeof src.postMessage === 'function') {
@@ -238,87 +261,283 @@ self.addEventListener('message', (event: MessageEvent<ISwMessage>) => {
     }
   };
 
-  // map message types to store names and operations
-  const mapGetAll: Record<string, string> = {
-    'IDB:GetGrowthIntentions': 'intentions',
-  };
+  // Current app IndexedDB stores: 'entries', 'dictionaries', 'settings'.
+  // Support a compact set of message types used by the runtime.
 
-  const mapSetAll: Record<string, string> = {
-    'IDB:SetGrowthIntentions': 'intentions',
-  };
-
-  const mapAdd: Record<string, string> = {
-    'IDB:AddGrowthIntention': 'intentions',
-    'IDB:AddMorningCheckin': 'morning',
-    'IDB:AddMiddayCheckin': 'midday',
-    'IDB:AddEveningReflection': 'evening',
-    'IDB:AddWeeklyReview': 'weekly',
-    'IDB:AddMonthlyReview': 'monthly',
-  };
-
-  const mapGetByDate: Record<string, string> = {
-    'IDB:GetGrowthIntention': 'intentions',
-    'IDB:GetMorningIntention': 'morning',
-    'IDB:GetMorningCheckin': 'morning',
-    'IDB:GetMiddayCheckin': 'midday',
-    'IDB:GetEveningReflection': 'evening',
-    'IDB:GetWeeklyReview': 'weekly',
-    'IDB:GetMonthlyReview': 'monthly',
-  };
-
-  // Handle getAll
-  if (mapGetAll[msg.type]) {
-    const store = mapGetAll[msg.type];
+  // Get a single journal entry by ISO date (payload: string date)
+  if (msg.type === 'IDB:GetEntry') {
+    const date = typeof msg.payload === 'string' ? msg.payload : undefined;
+    if (!date) return respond({ success: false, error: 'missing date' });
     openDB()
-      .then((db) => readAllFromStore(db, store))
-      .then((items) => respond({ success: true, items }))
+      .then((db) => {
+        const tx = db.transaction('entries', 'readonly');
+        const os = tx.objectStore('entries');
+        const req = os.get(date.slice(0, 10));
+        return new Promise((res, rej) => {
+          req.onsuccess = () => res(req.result || null);
+          req.onerror = () => rej(req.error);
+        });
+      })
+      .then((item) => respond({ success: true, item }))
       .catch((err) => respond({ success: false, error: String(err) }));
     return;
   }
 
-  // Handle setAll
-  if (mapSetAll[msg.type]) {
-    const store = mapSetAll[msg.type];
+  // Put (upsert) a journal entry (payload: IJournalEntry)
+  if (msg.type === 'IDB:PutEntry') {
+    const item =
+      typeof msg.payload === 'object' && msg.payload
+        ? (msg.payload as Record<string, unknown>)
+        : undefined;
+    if (!item) return respond({ success: false, error: 'missing entry' });
     openDB()
       .then((db) => {
-        const payload = Array.isArray(msg.payload)
-          ? (msg.payload as Record<string, unknown>[])
-          : [];
-        return writeAllToStore(db, store, payload);
+        const tx = db.transaction('entries', 'readwrite');
+        const os = tx.objectStore('entries');
+        const r = os.put(item as unknown);
+        return new Promise((res, rej) => {
+          r.onsuccess = () => res(r.result);
+          r.onerror = () => rej(r.error);
+        });
       })
       .then(() => respond({ success: true }))
       .catch((err) => respond({ success: false, error: String(err) }));
     return;
   }
 
-  // Handle add single item
-  if (mapAdd[msg.type]) {
-    const store = mapAdd[msg.type];
-    const item =
-      typeof msg.payload === 'object' && msg.payload
-        ? (msg.payload as Record<string, unknown>)
-        : {};
-    Logger.debug('SW: add request', { type: msg.type, store, item });
+  // Delete entry by date (payload: string date)
+  if (msg.type === 'IDB:DeleteEntry') {
+    const date = typeof msg.payload === 'string' ? msg.payload : undefined;
+    if (!date) return respond({ success: false, error: 'missing date' });
     openDB()
-      .then((db) => addToStore(db, store, item))
-      .then((key) => {
-        Logger.debug('SW: addToStore result', { store, key });
-        respond({ success: true });
+      .then((db) => {
+        const tx = db.transaction('entries', 'readwrite');
+        const os = tx.objectStore('entries');
+        const r = os.delete(date.slice(0, 10));
+        return new Promise((res, rej) => {
+          r.onsuccess = () => res(true);
+          r.onerror = () => rej(r.error);
+        });
       })
-      .catch((err) => {
-        Logger.error('SW: addToStore error', { error: err });
-        respond({ success: false, error: String(err) });
-      });
+      .then(() => respond({ success: true }))
+      .catch((err) => respond({ success: false, error: String(err) }));
     return;
   }
 
-  // Handle get by date
-  if (mapGetByDate[msg.type]) {
-    const store = mapGetByDate[msg.type];
-    const date = typeof msg.payload === 'string' ? msg.payload : undefined;
+  // List dates (keys) in entries
+  if (msg.type === 'IDB:ListDates') {
     openDB()
-      .then((db) => (date ? getAllByDate(db, store, date) : Promise.resolve([])))
+      .then((db) => {
+        const tx = db.transaction('entries', 'readonly');
+        const os = tx.objectStore('entries');
+        const r = os.getAllKeys();
+        return new Promise((res, rej) => {
+          r.onsuccess = () => res(r.result || []);
+          r.onerror = () => rej(r.error);
+        });
+      })
+      .then((keys) => respond({ success: true, keys }))
+      .catch((err) => respond({ success: false, error: String(err) }));
+    return;
+  }
+
+  // Query entries updated since timestamp (payload: { updatedAt: string, limit?: number })
+  if (msg.type === 'IDB:SinceUpdated') {
+    const payload = typeof msg.payload === 'object' && msg.payload ? (msg.payload as any) : {};
+    const updatedAt = typeof payload.updatedAt === 'string' ? payload.updatedAt : undefined;
+    const limit = typeof payload.limit === 'number' ? payload.limit : 100;
+    if (!updatedAt) return respond({ success: false, error: 'missing updatedAt' });
+    openDB()
+      .then((db) => {
+        const tx = db.transaction('entries', 'readonly');
+        const os = tx.objectStore('entries');
+        const idx = os.index ? os.index('byUpdatedAt') : null;
+        if (!idx) return [] as unknown[];
+        const range = IDBKeyRange.lowerBound(updatedAt);
+        const req = idx.getAll(range, limit);
+        return new Promise((res, rej) => {
+          req.onsuccess = () => res(req.result || []);
+          req.onerror = () => rej(req.error);
+        });
+      })
+      .then((rows) => respond({ success: true, items: rows }))
+      .catch((err) => respond({ success: false, error: String(err) }));
+    return;
+  }
+
+  // By date range (payload: { startISO: string, endISO: string })
+  if (msg.type === 'IDB:ByDateRange') {
+    const payload = typeof msg.payload === 'object' && msg.payload ? (msg.payload as any) : {};
+    const startISO = typeof payload.startISO === 'string' ? payload.startISO : undefined;
+    const endISO = typeof payload.endISO === 'string' ? payload.endISO : undefined;
+    if (!startISO || !endISO) return respond({ success: false, error: 'missing range' });
+    openDB()
+      .then((db) => {
+        const tx = db.transaction('entries', 'readonly');
+        const os = tx.objectStore('entries');
+        const range = IDBKeyRange.bound(startISO.slice(0, 10), endISO.slice(0, 10));
+        const result: unknown[] = [];
+        return new Promise((res, rej) => {
+          const req = os.openCursor(range);
+          req.onsuccess = () => {
+            const cursor = req.result;
+            if (cursor) {
+              result.push(cursor.value);
+              cursor.continue();
+            } else {
+              res(result);
+            }
+          };
+          req.onerror = () => rej(req.error);
+        });
+      })
       .then((items) => respond({ success: true, items }))
+      .catch((err) => respond({ success: false, error: String(err) }));
+    return;
+  }
+
+  // By tag (payload: string tag)
+  if (msg.type === 'IDB:ByTag') {
+    const tag = typeof msg.payload === 'string' ? msg.payload : undefined;
+    if (!tag) return respond({ success: false, error: 'missing tag' });
+    openDB()
+      .then((db) => {
+        const tx = db.transaction('entries', 'readonly');
+        const os = tx.objectStore('entries');
+        const idx = os.index ? os.index('byTag') : null;
+        if (!idx) return [] as unknown[];
+        const req = idx.getAll(tag);
+        return new Promise((res, rej) => {
+          req.onsuccess = () => res(req.result || []);
+          req.onerror = () => rej(req.error);
+        });
+      })
+      .then((rows) => respond({ success: true, items: rows }))
+      .catch((err) => respond({ success: false, error: String(err) }));
+    return;
+  }
+
+  // Dictionaries
+  if (msg.type === 'IDB:GetDictionary') {
+    const locale = typeof msg.payload === 'string' ? msg.payload : undefined;
+    if (!locale) return respond({ success: false, error: 'missing locale' });
+    openDB()
+      .then((db) => {
+        const tx = db.transaction('dictionaries', 'readonly');
+        const os = tx.objectStore('dictionaries');
+        const r = os.get(locale);
+        return new Promise((res, rej) => {
+          r.onsuccess = () => res(r.result || null);
+          r.onerror = () => rej(r.error);
+        });
+      })
+      .then((item) => respond({ success: true, item }))
+      .catch((err) => respond({ success: false, error: String(err) }));
+    return;
+  }
+
+  if (msg.type === 'IDB:PutDictionary') {
+    const payload =
+      typeof msg.payload === 'object' && msg.payload ? (msg.payload as any) : undefined;
+    if (!payload || typeof payload.locale !== 'string' || !payload.resources)
+      return respond({ success: false, error: 'invalid payload' });
+    openDB()
+      .then((db) => {
+        const tx = db.transaction('dictionaries', 'readwrite');
+        const os = tx.objectStore('dictionaries');
+        const r = os.put({
+          locale: payload.locale,
+          resources: payload.resources,
+          fetchedAt: new Date().toISOString(),
+        });
+        return new Promise((res, rej) => {
+          r.onsuccess = () => res(r.result);
+          r.onerror = () => rej(r.error);
+        });
+      })
+      .then(() => respond({ success: true }))
+      .catch((err) => respond({ success: false, error: String(err) }));
+    return;
+  }
+
+  // Settings
+  if (msg.type === 'IDB:GetSetting') {
+    const key = typeof msg.payload === 'string' ? msg.payload : undefined;
+    if (!key) return respond({ success: false, error: 'missing key' });
+    openDB()
+      .then((db) => {
+        const tx = db.transaction('settings', 'readonly');
+        const os = tx.objectStore('settings');
+        const r = os.get(key);
+        return new Promise((res, rej) => {
+          r.onsuccess = () => res(r.result ? r.result.value : null);
+          r.onerror = () => rej(r.error);
+        });
+      })
+      .then((value) => respond({ success: true, value }))
+      .catch((err) => respond({ success: false, error: String(err) }));
+    return;
+  }
+
+  if (msg.type === 'IDB:PutSetting') {
+    const payload =
+      typeof msg.payload === 'object' && msg.payload ? (msg.payload as any) : undefined;
+    if (!payload || typeof payload.key !== 'string')
+      return respond({ success: false, error: 'invalid payload' });
+    openDB()
+      .then((db) => {
+        const tx = db.transaction('settings', 'readwrite');
+        const os = tx.objectStore('settings');
+        const row = { key: payload.key, value: payload.value, updatedAt: new Date().toISOString() };
+        const r = os.put(row);
+        return new Promise((res, rej) => {
+          r.onsuccess = () => res(r.result);
+          r.onerror = () => rej(r.error);
+        });
+      })
+      .then(() => respond({ success: true }))
+      .catch((err) => respond({ success: false, error: String(err) }));
+    return;
+  }
+
+  // Export all stores as a backup
+  if (msg.type === 'IDB:ExportAll') {
+    Logger.info('SW: handling IDB:ExportAll');
+    openDB()
+      .then((db) =>
+        Promise.all(
+          ['entries', 'dictionaries', 'settings'].map((s) =>
+            readAllFromStore(db, s).then((items) => ({ store: s, items })),
+          ),
+        ),
+      )
+      .then((results) => {
+        const payloadOut: Record<string, unknown[]> = {};
+        for (const r of results) payloadOut[r.store] = r.items || [];
+        respond({ success: true, items: payloadOut });
+      })
+      .catch((err) => respond({ success: false, error: String(err) }));
+    return;
+  }
+
+  // Import all stores from payload { storeName: [items] }
+  if (msg.type === 'IDB:ImportAll') {
+    const payload = (msg.payload as Record<string, unknown[]>) || {};
+    openDB()
+      .then((db) =>
+        Promise.all(
+          Object.keys(payload).map((storeName) =>
+            writeAllToStore(
+              db,
+              storeName,
+              Array.isArray(payload[storeName])
+                ? (payload[storeName] as Record<string, unknown>[])
+                : [],
+            ),
+          ),
+        ),
+      )
+      .then(() => respond({ success: true }))
       .catch((err) => respond({ success: false, error: String(err) }));
     return;
   }
@@ -381,19 +600,35 @@ self.addEventListener('message', (event: MessageEvent<ISwMessage>) => {
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open('growth-journal-db', 1);
+    const DB_NAME = 'journal-db';
+    const DB_VERSION = 3;
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
     req.onupgradeneeded = () => {
       const db = req.result;
-      const stores = ['intentions', 'morning', 'midday', 'evening', 'weekly', 'monthly'];
-      for (const s of stores) {
-        if (!db.objectStoreNames.contains(s)) {
-          const os = db.createObjectStore(s, { keyPath: 'id', autoIncrement: true });
-          try {
-            os.createIndex('date', 'date', { unique: false });
-          } catch (e) {
-            // ignore if index exists
-          }
+      // v1 -> entries store (keyPath: 'date') with indexes
+      if (!db.objectStoreNames.contains('entries')) {
+        const entries = db.createObjectStore('entries', { keyPath: 'date' });
+        try {
+          entries.createIndex('byUpdatedAt', 'updatedAt', { unique: false });
+          entries.createIndex('byTag', 'tags', { unique: false, multiEntry: true });
+        } catch (e) {
+          // ignore index creation errors
         }
+      }
+
+      // dictionaries store keyed by locale
+      if (!db.objectStoreNames.contains('dictionaries')) {
+        const dict = db.createObjectStore('dictionaries', { keyPath: 'locale' });
+        try {
+          dict.createIndex('byFetchedAt', 'fetchedAt', { unique: false });
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      // settings store keyed by key
+      if (!db.objectStoreNames.contains('settings')) {
+        db.createObjectStore('settings', { keyPath: 'key' });
       }
     };
     req.onsuccess = () => resolve(req.result);
@@ -476,24 +711,15 @@ function addToStore(
     // This keeps existing schema (keyPath: 'id') but assigns the 'id' value to the
     // ISO date string when present, so add/put will create a stable key per date.
     try {
-      const timeStores = new Set(['morning', 'midday', 'evening', 'weekly', 'monthly']);
-      // prefer canonical 'date', but fall back to 'check_date' or 'entry_date' used elsewhere
-      const d =
-        (typeof item.date === 'string' && item.date) ||
-        (typeof item.check_date === 'string' && item.check_date) ||
-        (typeof item.entry_date === 'string' && item.entry_date) ||
-        undefined;
-      if (timeStores.has(storeName)) {
-        // If no date provided, default to today's ISO date so today's checkins are keyed by date
+      // Normalize entries to ensure date key exists when storing in 'entries'
+      if (storeName === 'entries') {
+        const d =
+          (typeof item.date === 'string' && item.date) ||
+          (typeof item.entry_date === 'string' && item.entry_date) ||
+          undefined;
         const finalDate = d || new Date().toISOString().slice(0, 10);
-        if (finalDate) {
-          // ensure the id uses the date string so subsequent lookups keyed by date are stable
-          // also ensure the canonical 'date' field exists for index lookups
-          const it = item as ItemRecord;
-          it.id = finalDate;
-          // populate the date field if missing
-          if (!it.date) it.date = finalDate;
-        }
+        const it = item as ItemRecord;
+        it.date = finalDate;
       }
     } catch (e) {
       // ignore assignment errors and proceed to add
@@ -504,8 +730,8 @@ function addToStore(
     // For other stores (like intentions) keep add() to preserve auto-increment behavior.
     let req: IDBRequest;
     try {
-      const timeStores = new Set(['morning', 'midday', 'evening', 'weekly', 'monthly']);
-      if (timeStores.has(storeName)) {
+      // Use put() for our main stores to support upserts (entries,dictionaries,settings)
+      if (['entries', 'dictionaries', 'settings'].includes(storeName)) {
         req = store.put(item as unknown);
       } else {
         req = store.add(item as unknown);

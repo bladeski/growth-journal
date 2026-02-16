@@ -1,0 +1,13 @@
+section.day
+  header.day-header
+    h2.day-title {{date}}
+    .value-challenge
+      span.value-label Value: {{valueChallenge.value}}
+      span.challenge-label Challenge: {{valueChallenge.challenge}}
+  .grid
+    .questions
+      journal-section#sec-morning
+      journal-section#sec-midday
+      journal-section#sec-evening
+      journal-section#sec-accountability
+    journal-log#log
