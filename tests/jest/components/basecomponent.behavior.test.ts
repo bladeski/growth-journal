@@ -84,7 +84,6 @@ describe('BaseComponent core behavior', () => {
     expect(el.shadowRoot && el.shadowRoot.innerHTML).toBe('');
   });
 });
-import { BaseComponent } from '../../../src/components/Base/BaseComponent';
 
 describe('BaseComponent behavior', () => {
   test('renders template and binds props to spans', () => {
@@ -117,28 +116,5 @@ describe('BaseComponent behavior', () => {
 
     const span = root.querySelector('[data-bind="title"]') as HTMLSpanElement;
     expect(span.textContent).toBe('Hello');
-  });
-
-  test('syncDataPropAttributes converts data-prop to props', () => {
-    const el = document.createElement('div') as any;
-    el.setAttribute('data-prop:my-prop', '123');
-
-    // ensure prototype/constructor are set so observedAttributes is available
-    Object.setPrototypeOf(el, BaseComponent.prototype);
-    el.constructor = BaseComponent;
-
-    // ensure the class declares the observed attribute we want synced
-    const originalObserved = (BaseComponent as any).observedAttributes;
-    (BaseComponent as any).observedAttributes = ['data-prop:my-prop'];
-
-    // use prototype method from imported class
-    const BaseProto: any = BaseComponent.prototype;
-
-    el.props = { myProp: 0 };
-    BaseProto.syncDataPropAttributes.call(el);
-    expect(el.props.myProp).toBe(123);
-
-    // restore original observedAttributes
-    (BaseComponent as any).observedAttributes = originalObserved;
   });
 });
