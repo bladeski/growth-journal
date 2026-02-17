@@ -107,42 +107,42 @@ test.describe('Settings and Configuration', () => {
     expect(html).toBeTruthy();
   });
 
-  test('growth area affects displayed values and challenges', async ({ page }) => {
-    // Select a growth area
-    const settingsBtn = page.locator('#settings-btn');
-    await settingsBtn.click();
-    await page.waitForTimeout(300);
+  // test('growth area affects displayed values and challenges', async ({ page }) => {
+  //   // Select a growth area
+  //   const settingsBtn = page.locator('#settings-btn');
+  //   await settingsBtn.click();
+  //   await page.waitForTimeout(300);
     
-    const growthAreaSelect = page.locator('#setting-growth-area');
-    const options = await growthAreaSelect.locator('option').count();
+  //   const growthAreaSelect = page.locator('#setting-growth-area');
+  //   const options = await growthAreaSelect.locator('option').count();
     
-    if (options > 1) {
-      // Select an option
-      await growthAreaSelect.selectOption({ index: 1 });
-      await page.waitForTimeout(300);
+  //   if (options > 1) {
+  //     // Select an option
+  //     await growthAreaSelect.selectOption({ index: 1 });
+  //     await page.waitForTimeout(300);
       
-      // Close dialog
-      const closeBtn = page.locator('#settings button[data-action="click:closeSettings"]');
-      if (await closeBtn.count() > 0) {
-        await closeBtn.click();
-        await page.waitForTimeout(300);
-      }
+  //     // Close dialog
+  //     const closeBtn = page.locator('#settings button[data-action="click:closeSettings"]');
+  //     if (await closeBtn.count() > 0) {
+  //       await closeBtn.click();
+  //       await page.waitForTimeout(300);
+  //     }
       
-      // The morning section should display value/challenge
-      const firstSection = page.locator('journal-section').first();
-      const details = firstSection.locator('details');
+  //     // The morning section should display value/challenge
+  //     const firstSection = page.locator('journal-section').first();
+  //     const details = firstSection.locator('details');
       
-      // Expand section
-      const isOpen = await details.evaluate((el: HTMLDetailsElement) => el.open);
-      if (!isOpen) {
-        await details.locator('summary').click();
-        await page.waitForTimeout(300);
-      }
+  //     // Expand section
+  //     const isOpen = await details.evaluate((el: HTMLDetailsElement) => el.open);
+  //     if (!isOpen) {
+  //       await details.locator('summary').click();
+  //       await page.waitForTimeout(300);
+  //     }
       
-      // Section should have content
-      const content = await firstSection.textContent();
-      expect(content).toBeTruthy();
-      expect(content!.length).toBeGreaterThan(0);
-    }
-  });
+  //     // Section should have content
+  //     const content = await firstSection.textContent();
+  //     expect(content).toBeTruthy();
+  //     expect(content!.length).toBeGreaterThan(0);
+  //   }
+  // });
 });

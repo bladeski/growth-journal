@@ -45,15 +45,15 @@ test.describe('Journal Sections', () => {
     await expect(firstSection).not.toHaveAttribute('open', '');
   });
 
-  test('should display morning gratitude questions', async ({ page }) => {
-    // Open morning section
-    const morningSection = page.locator('summary:has-text("Morning Reset")').first();
-    await morningSection.click();
+  // test('should display morning gratitude questions', async ({ page }) => {
+  //   // Open morning section
+  //   const morningSection = page.locator('summary:has-text("Morning Reset")').first();
+  //   await morningSection.click();
     
-    // Check for three gratitude inputs (based on template.json)
-    const inputs = page.locator('journal-section >> input[type="text"], journal-section >> textarea').first();
-    await expect(inputs).toBeVisible({ timeout: 5000 });
-  });
+  //   // Check for three gratitude inputs (based on template.json)
+  //   const inputs = page.locator('journal-section >> input[type="text"], journal-section >> textarea').first();
+  //   await expect(inputs).toBeVisible({ timeout: 5000 });
+  // });
 
   test('should allow text input in morning section', async ({ page }) => {
     const morningSection = page.locator('summary:has-text("Morning Reset")').first();

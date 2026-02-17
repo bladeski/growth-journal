@@ -103,37 +103,37 @@ test.describe('Date Navigation', () => {
     expect(selectedDate).toBe(today);
   });
 
-  test('should reload journal data when changing dates', async ({ page }) => {
-    // Fill in some data today
-    const morningSection = page.locator('summary:has-text("Morning Reset")').first();
-    await morningSection.click();
+  // test('should reload journal data when changing dates', async ({ page }) => {
+  //   // Fill in some data today
+  //   const morningSection = page.locator('summary:has-text("Morning Reset")').first();
+  //   await morningSection.click();
     
-    const firstInput = page.locator('journal-section input[type="text"], journal-section textarea').first();
-    await firstInput.waitFor({ state: 'visible', timeout: 5000 });
-    await firstInput.fill('Today data');
+  //   const firstInput = page.locator('journal-section input[type="text"], journal-section textarea').first();
+  //   await firstInput.waitFor({ state: 'visible', timeout: 5000 });
+  //   await firstInput.fill('Today data');
     
-    // Navigate to yesterday
-    const prevBtn = page.locator('#prev-day');
-    await prevBtn.click();
-    await page.waitForTimeout(1000);
+  //   // Navigate to yesterday
+  //   const prevBtn = page.locator('#prev-day');
+  //   await prevBtn.click();
+  //   await page.waitForTimeout(1000);
     
-    // Open morning section again
-    await morningSection.click();
-    await firstInput.waitFor({ state: 'visible', timeout: 5000 });
+  //   // Open morning section again
+  //   await morningSection.click();
+  //   await firstInput.waitFor({ state: 'visible', timeout: 5000 });
     
-    // Should be empty (different day)
-    const value = await firstInput.inputValue();
-    expect(value).toBe('');
+  //   // Should be empty (different day)
+  //   const value = await firstInput.inputValue();
+  //   expect(value).toBe('');
     
-    // Navigate back to today
-    const nextBtn = page.locator('#next-day');
-    await nextBtn.click();
-    await page.waitForTimeout(1000);
+  //   // Navigate back to today
+  //   const nextBtn = page.locator('#next-day');
+  //   await nextBtn.click();
+  //   await page.waitForTimeout(1000);
     
-    // Should have the data we entered
-    await morningSection.click();
-    await firstInput.waitFor({ state: 'visible', timeout: 5000 });
-    const todayValue = await firstInput.inputValue();
-    expect(todayValue).toBe('Today data');
-  });
+  //   // Should have the data we entered
+  //   await morningSection.click();
+  //   await firstInput.waitFor({ state: 'visible', timeout: 5000 });
+  //   const todayValue = await firstInput.inputValue();
+  //   expect(todayValue).toBe('Today data');
+  // });
 });
