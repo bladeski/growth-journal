@@ -316,7 +316,7 @@ select {
   transition: all 0.3s ease;
   box-sizing: border-box;
   background-color: var(--bg-subtle-white);
-  color: var(--color-text);
+  color: var(--color-text-secondary);
 }
 
 input[type='text']:focus,
@@ -348,6 +348,7 @@ textarea {
   transition: all 0.3s ease;
   box-sizing: border-box;
   min-height: 120px;
+  color: var(--color-text-secondary);
 }
 
 textarea:focus {
