@@ -20,13 +20,7 @@
     "ch-curiosity-4",
     "ch-curiosity-5"
   ],
-  "val-courage": [
-    "ch-courage-1",
-    "ch-courage-2",
-    "ch-courage-3",
-    "ch-courage-4",
-    "ch-courage-5"
-  ],
+  "val-courage": ["ch-courage-1", "ch-courage-2", "ch-courage-3", "ch-courage-4", "ch-courage-5"],
   "val-discipline": [
     "ch-discipline-1",
     "ch-discipline-2",
@@ -41,13 +35,7 @@
     "ch-gratitude-4",
     "ch-gratitude-5"
   ],
-  "val-empathy": [
-    "ch-empathy-1",
-    "ch-empathy-2",
-    "ch-empathy-3",
-    "ch-empathy-4",
-    "ch-empathy-5"
-  ],
+  "val-empathy": ["ch-empathy-1", "ch-empathy-2", "ch-empathy-3", "ch-empathy-4", "ch-empathy-5"],
   "val-creativity": [
     "ch-creativity-1",
     "ch-creativity-2",
@@ -97,20 +85,8 @@
     "ch-growth-mindset-4",
     "ch-growth-mindset-5"
   ],
-  "val-balance": [
-    "ch-balance-1",
-    "ch-balance-2",
-    "ch-balance-3",
-    "ch-balance-4",
-    "ch-balance-5"
-  ],
-  "val-respect": [
-    "ch-respect-1",
-    "ch-respect-2",
-    "ch-respect-3",
-    "ch-respect-4",
-    "ch-respect-5"
-  ],
+  "val-balance": ["ch-balance-1", "ch-balance-2", "ch-balance-3", "ch-balance-4", "ch-balance-5"],
+  "val-respect": ["ch-respect-1", "ch-respect-2", "ch-respect-3", "ch-respect-4", "ch-respect-5"],
   "val-perseverance": [
     "ch-perseverance-1",
     "ch-perseverance-2",

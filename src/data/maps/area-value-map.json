@@ -48,23 +48,14 @@
     "val-creativity",
     "val-courage"
   ],
-  "area-communication": [
-    "val-empathy",
-    "val-respect",
-    "val-authenticity",
-    "val-patience"
-  ],
+  "area-communication": ["val-empathy", "val-respect", "val-authenticity", "val-patience"],
   "area-productivity": [
     "val-discipline",
     "val-perseverance",
     "val-responsibility",
     "val-growth-mindset"
   ],
-  "area-financial-health": [
-    "val-responsibility",
-    "val-discipline",
-    "val-patience"
-  ],
+  "area-financial-health": ["val-responsibility", "val-discipline", "val-patience"],
   "area-creativity-learning": [
     "val-curiosity",
     "val-creativity",
@@ -78,64 +69,25 @@
     "val-humility",
     "val-responsibility"
   ],
-  "area-self-confidence": [
-    "val-courage",
-    "val-authenticity",
-    "val-growth-mindset"
-  ],
+  "area-self-confidence": ["val-courage", "val-authenticity", "val-growth-mindset"],
   "area-stress-management": [
     "val-mindfulness",
     "val-balance",
     "val-patience",
     "val-self-awareness"
   ],
-  "area-time-management": [
-    "val-discipline",
-    "val-responsibility",
-    "val-balance"
-  ],
+  "area-time-management": ["val-discipline", "val-responsibility", "val-balance"],
   "area-decision-making": [
     "val-integrity",
     "val-courage",
     "val-self-awareness",
     "val-responsibility"
   ],
-  "area-purpose": [
-    "val-authenticity",
-    "val-gratitude",
-    "val-curiosity",
-    "val-growth-mindset"
-  ],
-  "area-community": [
-    "val-generosity",
-    "val-compassion",
-    "val-respect",
-    "val-responsibility"
-  ],
-  "area-digital-wellbeing": [
-    "val-discipline",
-    "val-balance",
-    "val-mindfulness"
-  ],
-  "area-resilience": [
-    "val-perseverance",
-    "val-courage",
-    "val-growth-mindset"
-  ],
-  "area-self-discipline": [
-    "val-discipline",
-    "val-responsibility",
-    "val-integrity"
-  ],
-  "area-boundaries": [
-    "val-self-awareness",
-    "val-respect",
-    "val-courage"
-  ],
-  "area-life-balance": [
-    "val-balance",
-    "val-mindfulness",
-    "val-patience",
-    "val-responsibility"
-  ]
+  "area-purpose": ["val-authenticity", "val-gratitude", "val-curiosity", "val-growth-mindset"],
+  "area-community": ["val-generosity", "val-compassion", "val-respect", "val-responsibility"],
+  "area-digital-wellbeing": ["val-discipline", "val-balance", "val-mindfulness"],
+  "area-resilience": ["val-perseverance", "val-courage", "val-growth-mindset"],
+  "area-self-discipline": ["val-discipline", "val-responsibility", "val-integrity"],
+  "area-boundaries": ["val-self-awareness", "val-respect", "val-courage"],
+  "area-life-balance": ["val-balance", "val-mindfulness", "val-patience", "val-responsibility"]
 }

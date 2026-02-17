@@ -4,7 +4,7 @@ import { PWAManager } from './utils/PwaManager.ts';
 // import IndexedDbDataService from './legacy/data/IndexedDbDataService.ts';
 // Register web components (side-effect import)
 import './components/index.ts';
-import { ILoggingConfigurationOptions } from '@bladeski/logger/dist/interfaces/index.js';
+// import { ILoggingConfigurationOptions } from '@bladeski/logger/dist/interfaces/index.js';
 
 let logger: ReturnType<typeof LoggingService.getInstance>;
 
@@ -28,12 +28,12 @@ function setupWelcomeMessage() {
 const pwaManager = new PWAManager();
 // App initialization
 function initializeApp() {
-  const options: ILoggingConfigurationOptions = {
-    applicationName: 'growth-journal',
-    enableConsoleCore: false,
-    enableLocalStorageCore: true,
-    maxLogs: 500,
-  };
+  // const options: ILoggingConfigurationOptions = {
+  //   applicationName: 'growth-journal',
+  //   enableConsoleCore: false,
+  //   enableLocalStorageCore: true,
+  //   maxLogs: 500,
+  // };
   // LoggingService.initialize(options);
   logger = LoggingService.getInstance();
 

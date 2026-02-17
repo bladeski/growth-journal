@@ -33,7 +33,11 @@ button,
   text-decoration: none;
   line-height: var(--line-height);
   background-color: var(--bg-overlay-light);
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
 
   &:hover:not(&:disabled) {
     background-color: var(--color-primary-light);
@@ -54,7 +58,6 @@ button,
     opacity: 0.6;
     border-color: var(--color-border);
   }
-
 
   &.btn-primary {
     background: var(--color-primary);
@@ -241,7 +244,7 @@ details {
     }
 
     &::before {
-      content: "▶";
+      content: '▶';
       position: absolute;
       border-radius: 50%;
       background-color: var(--color-light);
@@ -269,7 +272,7 @@ details {
     }
   }
 
-  &>*:not(summary) {
+  & > *:not(summary) {
     margin-top: var(--spacing-xl);
   }
 }
@@ -340,8 +343,10 @@ textarea:focus {
 /* Two-column checkin body: left tips rail + right main form */
 .checkin-body {
   display: grid;
-  grid-template-columns: minmax(var(--checkin-tips-width), 1fr) minmax(500px, 1100px) minmax(var(--checkin-tips-width),
-      1fr);
+  grid-template-columns: minmax(var(--checkin-tips-width), 1fr) minmax(500px, 1100px) minmax(
+      var(--checkin-tips-width),
+      1fr
+    );
   gap: var(--checkin-body-gap);
   align-items: start;
   width: 100%;
