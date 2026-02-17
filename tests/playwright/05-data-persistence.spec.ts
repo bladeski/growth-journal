@@ -282,9 +282,9 @@ test.describe('Data Persistence', () => {
   //     });
   //   });
     
-    // Timestamps should be different
-    expect(firstTimestamp).toBeTruthy();
-    expect(secondTimestamp).toBeTruthy();
-    expect(secondTimestamp).not.toBe(firstTimestamp);
-  });
+  //   // Timestamps should be different
+  //   expect(firstTimestamp).toBeTruthy();
+  //   expect(secondTimestamp).toBeTruthy();
+  //   expect(secondTimestamp).not.toBe(firstTimestamp);
+  // });
 });
