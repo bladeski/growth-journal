@@ -66,19 +66,10 @@
   --color-dark: rgb(var(--theme-dark-color-rgb));
   --color-darker: rgb(var(--theme-darker-color-rgb));
 
-  --color-bg: light-dark(
-    rgb(var(--theme-light-color-rgb)),
-    rgb(var(--theme-dark-color-rgb))
-  );
-  --color-surface: light-dark(
-    rgb(var(--theme-lighter-color-rgb)),
-    rgb(var(--theme-darker-color-rgb))
-  );
-  --color-text: light-dark(rgb(var(--theme-dark-color-rgb)), rgb(var(--theme-light-color-rgb)));
-  --color-border: light-dark(
-    rgba(var(--theme-dark-color-rgb), 0.6),
-    rgba(var(--theme-light-color-rgb), 0.6)
-  );
+  --color-background: rgb(var(--theme-light-color-rgb));
+  --color-surface: rgb(var(--theme-lighter-color-rgb));
+  --color-text: rgb(var(--theme-dark-color-rgb));
+  --color-border: rgba(var(--theme-dark-color-rgb), 0.6);
 
   --color-info: rgb(var(--theme-info-color-rgb));
   --color-success: rgb(var(--theme-success-color-rgb));
@@ -86,21 +77,21 @@
   --color-danger: rgb(var(--theme-danger-color-rgb));
 
   /* extended color variants */
-  --color-primary-light: color-mix(in srgb, var(--color-primary), var(--color-bg));
+  --color-primary-light: color-mix(in srgb, var(--color-primary), var(--color-background));
   --color-primary-dark: color-mix(in srgb, var(--color-primary), var(--color-text));
-  --color-secondary-light: color-mix(in srgb, var(--color-secondary), var(--color-bg));
+  --color-secondary-light: color-mix(in srgb, var(--color-secondary), var(--color-background));
   --color-secondary-dark: color-mix(in srgb, var(--color-secondary), var(--color-text));
-  --color-accent-light: color-mix(in srgb, var(--color-accent), var(--color-bg));
+  --color-accent-light: color-mix(in srgb, var(--color-accent), var(--color-background));
   --color-accent-dark: color-mix(in srgb, var(--color-accent), var(--color-text));
-  --color-info-light: color-mix(in srgb, var(--color-info) 10%, var(--color-bg) 90%);
+  --color-info-light: color-mix(in srgb, var(--color-info) 10%, var(--color-background) 90%);
   --color-info-dark: color-mix(in srgb, var(--color-info), var(--color-text));
-  --color-success-light: color-mix(in srgb, var(--color-success) 10%, var(--color-bg) 90%);
+  --color-success-light: color-mix(in srgb, var(--color-success) 10%, var(--color-background) 90%);
   --color-success-dark: color-mix(in srgb, var(--color-success), var(--color-text));
-  --color-warning-light: color-mix(in srgb, var(--color-warning) 10%, var(--color-bg) 90%);
+  --color-warning-light: color-mix(in srgb, var(--color-warning) 10%, var(--color-background) 90%);
   --color-warning-dark: color-mix(in srgb, var(--color-warning), var(--color-text));
-  --color-danger-light: color-mix(in srgb, var(--color-danger) 10%, var(--color-bg) 90%);
+  --color-danger-light: color-mix(in srgb, var(--color-danger) 10%, var(--color-background) 90%);
   --color-danger-dark: color-mix(in srgb, var(--color-danger), var(--color-text));
-  --color-text-secondary: color-mix(in srgb, var(--color-text) 75%, var(--color-bg) 25%);
+  --color-text-secondary: color-mix(in srgb, var(--color-text) 75%, var(--color-background) 25%);
 
   /* radii & border */
   --radius-sm: 2px;
@@ -129,12 +120,12 @@
   --form-shadow: var(--card-shadow);
 
   /* common rgba values */
-  --bg-overlay-light: light-dark(rgba(0, 0, 0, 0.02), rgba(255, 255, 255, 0.02));
-  --bg-overlay-medium: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.06));
-  --bg-subtle-white: light-dark(rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.06));
-  --bg-surface-gradient-start: light-dark(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.02));
-  --bg-surface-gradient-end: light-dark(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.04));
-  --bg-surface-white: light-dark(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.02));
+  --bg-overlay-light: rgba(0, 0, 0, 0.02);
+  --bg-overlay-medium: rgba(0, 0, 0, 0.1);
+  --bg-subtle-white: rgba(255, 255, 255, 0.3);
+  --bg-surface-gradient-start: rgba(255, 255, 255, 0.9);
+  --bg-surface-gradient-end: rgba(255, 255, 255, 0.7);
+  --bg-surface-white: rgba(255, 255, 255, 0.95);
 
   --button-height: 40px;
 
@@ -168,4 +159,20 @@
 /* When data-theme is set to dark, tell the UA to use dark color-scheme. */
 :root[data-theme='dark'] {
   color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-background: rgb(var(--theme-dark-color-rgb));
+    --color-surface: rgb(var(--theme-darker-color-rgb));
+    --color-text: rgb(var(--theme-light-color-rgb));
+    --color-border: rgba(var(--theme-light-color-rgb), 0.6);
+    --bg-overlay-light: rgba(255, 255, 255, 0.02);
+    --bg-overlay-medium: rgba(255, 255, 255, 0.06);
+    --bg-subtle-white: rgba(0, 0, 0, 0.06);
+    --bg-surface-gradient-start: rgba(255, 255, 255, 0.02);
+    --bg-surface-gradient-end: rgba(255, 255, 255, 0.04);
+    --bg-surface-white: rgba(255, 255, 255, 0.02);
+  }
 }
