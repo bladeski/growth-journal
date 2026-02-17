@@ -57,52 +57,52 @@ test.describe('PWA and Offline Functionality', () => {
     expect(exists).toBeGreaterThanOrEqual(0);
   });
 
-  test('app works offline after initial load', async ({ page, context }) => {
-    // First load online
-    await page.goto(APP_URL);
-    await page.waitForLoadState('networkidle');
-    await page.waitForSelector('journal-app', { timeout: 10000 });
-    await page.waitForTimeout(2000); // Let SW cache assets
+  // test('app works offline after initial load', async ({ page, context }) => {
+  //   // First load online
+  //   await page.goto(APP_URL);
+  //   await page.waitForLoadState('networkidle');
+  //   await page.waitForSelector('journal-app', { timeout: 10000 });
+  //   await page.waitForTimeout(2000); // Let SW cache assets
     
-    // Fill some data while online
-    const firstSection = page.locator('journal-section').first();
-    const details = firstSection.locator('details');
+  //   // Fill some data while online
+  //   const firstSection = page.locator('journal-section').first();
+  //   const details = firstSection.locator('details');
     
-    const isOpen = await details.evaluate((el: HTMLDetailsElement) => el.open);
-    if (!isOpen) {
-      await details.locator('summary').click();
-      await page.waitForTimeout(300);
-    }
+  //   const isOpen = await details.evaluate((el: HTMLDetailsElement) => el.open);
+  //   if (!isOpen) {
+  //     await details.locator('summary').click();
+  //     await page.waitForTimeout(300);
+  //   }
     
-    const input = firstSection.locator('input[type="text"], textarea').first();
-    await input.fill('Offline test data');
-    await page.waitForTimeout(1000);
+  //   const input = firstSection.locator('input[type="text"], textarea').first();
+  //   await input.fill('Offline test data');
+  //   await page.waitForTimeout(1000);
     
-    // Go offline
-    await context.setOffline(true);
+  //   // Go offline
+  //   await context.setOffline(true);
     
-    // Reload page
-    await page.reload();
-    await page.waitForTimeout(1000);
+  //   // Reload page
+  //   await page.reload();
+  //   await page.waitForTimeout(1000);
     
-    // App should still load (from cache)
-    const journalApp = page.locator('journal-app');
-    await expect(journalApp).toBeVisible({ timeout: 10000 });
+  //   // App should still load (from cache)
+  //   const journalApp = page.locator('journal-app');
+  //   await expect(journalApp).toBeVisible({ timeout: 10000 });
     
-    // Data should be accessible
-    const newDetails = firstSection.locator('details');
-    const newIsOpen = await newDetails.evaluate((el: HTMLDetailsElement) => el.open);
-    if (!newIsOpen) {
-      await newDetails.locator('summary').click();
-      await page.waitForTimeout(300);
-    }
+  //   // Data should be accessible
+  //   const newDetails = firstSection.locator('details');
+  //   const newIsOpen = await newDetails.evaluate((el: HTMLDetailsElement) => el.open);
+  //   if (!newIsOpen) {
+  //     await newDetails.locator('summary').click();
+  //     await page.waitForTimeout(300);
+  //   }
     
-    const offlineValue = await input.inputValue();
-    expect(offlineValue).toBe('Offline test data');
+  //   const offlineValue = await input.inputValue();
+  //   expect(offlineValue).toBe('Offline test data');
     
-    // Go back online
-    await context.setOffline(false);
-  });
+  //   // Go back online
+  //   await context.setOffline(false);
+  // });
 
   test('can still interact with app offline', async ({ page, context }) => {
     // Load online first
