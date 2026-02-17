@@ -29,7 +29,8 @@
   },
   "targets": {
     "default": {
-      "publicUrl": "./"
+      "publicUrl": "./",
+      "distDir": "dist"
     },
     "sw": {
       "context": "web-worker",
