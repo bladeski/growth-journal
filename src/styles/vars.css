@@ -42,45 +42,48 @@
   --line-height: 1.6rem;
 
   /* color palette */
-  --theme-primary-colour-rgb: 163, 200, 137; /* #A3C889 */
-  --theme-secondary-colour-rgb: 224, 219, 166; /* #E0DBA6 */
-  --theme-accent-colour-rgb: 44, 110, 111; /* #2C6E6F */
-  --theme-light-colour-rgb: 255, 252, 243; /* #FFFCF3 */
-  --theme-lighter-colour-rgb: 255, 253, 250; /* #FFFDFA */
-  --theme-dark-colour-rgb: 56, 56, 56; /* #383838 */
-  --theme-darker-colour-rgb: 44, 44, 44; /* #2C2C2C */
+  --theme-primary-color-rgb: 163, 200, 137; /* #A3C889 */
+  --theme-secondary-color-rgb: 224, 219, 166; /* #E0DBA6 */
+  --theme-accent-color-rgb: 44, 110, 111; /* #2C6E6F */
+  --theme-light-color-rgb: 255, 252, 243; /* #FFFCF3 */
+  --theme-lighter-color-rgb: 255, 253, 250; /* #FFFDFA */
+  --theme-dark-color-rgb: 56, 56, 56; /* #383838 */
+  --theme-darker-color-rgb: 44, 44, 44; /* #2C2C2C */
 
-  --theme-info-colour-rgb: 90, 156, 168; /* #5A9CA8 */
-  --theme-success-colour-rgb: 107, 163, 104; /* #6BA368 */
-  --theme-warning-colour-rgb: 217, 164, 65; /* #D9A443 */
-  --theme-danger-colour-rgb: 199, 92, 92; /* #C75C5C */
+  --theme-info-color-rgb: 90, 156, 168; /* #5A9CA8 */
+  --theme-success-color-rgb: 107, 163, 104; /* #6BA368 */
+  --theme-warning-color-rgb: 217, 164, 65; /* #D9A443 */
+  --theme-danger-color-rgb: 199, 92, 92; /* #C75C5C */
 
-  --color-primary: rgb(var(--theme-primary-colour-rgb));
-  --color-primary-contrast: rgb(var(--theme-darker-colour-rgb));
-  --color-secondary: rgb(var(--theme-secondary-colour-rgb));
-  --color-secondary-contrast: rgb(var(--theme-dark-colour-rgb));
-  --color-accent: rgb(var(--theme-accent-colour-rgb));
-  --color-accent-contrast: rgb(var(--theme-lighter-colour-rgb));
-  --color-light: rgb(var(--theme-light-colour-rgb));
-  --color-lighter: rgb(var(--theme-lighter-colour-rgb));
-  --color-dark: rgb(var(--theme-dark-colour-rgb));
-  --color-darker: rgb(var(--theme-darker-colour-rgb));
+  --color-primary: rgb(var(--theme-primary-color-rgb));
+  --color-primary-contrast: rgb(var(--theme-darker-color-rgb));
+  --color-secondary: rgb(var(--theme-secondary-color-rgb));
+  --color-secondary-contrast: rgb(var(--theme-dark-color-rgb));
+  --color-accent: rgb(var(--theme-accent-color-rgb));
+  --color-accent-contrast: rgb(var(--theme-lighter-color-rgb));
+  --color-light: rgb(var(--theme-light-color-rgb));
+  --color-lighter: rgb(var(--theme-lighter-color-rgb));
+  --color-dark: rgb(var(--theme-dark-color-rgb));
+  --color-darker: rgb(var(--theme-darker-color-rgb));
 
-  --color-bg: light-dark(rgb(var(--theme-light-colour-rgb)), rgb(var(--theme-dark-colour-rgb)));
+  --color-bg: light-dark(
+    rgb(var(--theme-light-color-rgb)),
+    rgb(var(--theme-dark-color-rgb))
+  );
   --color-surface: light-dark(
-    rgb(var(--theme-lighter-colour-rgb)),
-    rgb(var(--theme-darker-colour-rgb))
+    rgb(var(--theme-lighter-color-rgb)),
+    rgb(var(--theme-darker-color-rgb))
   );
-  --color-text: light-dark(rgb(var(--theme-dark-colour-rgb)), rgb(var(--theme-light-colour-rgb)));
+  --color-text: light-dark(rgb(var(--theme-dark-color-rgb)), rgb(var(--theme-light-color-rgb)));
   --color-border: light-dark(
-    rgba(var(--theme-dark-colour-rgb), 0.6),
-    rgba(var(--theme-light-colour-rgb), 0.6)
+    rgba(var(--theme-dark-color-rgb), 0.6),
+    rgba(var(--theme-light-color-rgb), 0.6)
   );
 
-  --color-info: rgb(var(--theme-info-colour-rgb));
-  --color-success: rgb(var(--theme-success-colour-rgb));
-  --color-warning: rgb(var(--theme-warning-colour-rgb));
-  --color-danger: rgb(var(--theme-danger-colour-rgb));
+  --color-info: rgb(var(--theme-info-color-rgb));
+  --color-success: rgb(var(--theme-success-color-rgb));
+  --color-warning: rgb(var(--theme-warning-color-rgb));
+  --color-danger: rgb(var(--theme-danger-color-rgb));
 
   /* extended color variants */
   --color-primary-light: color-mix(in srgb, var(--color-primary), var(--color-bg));
@@ -105,7 +108,7 @@
   --radius-lg: 6px;
   --radius-squircle: 200px;
   --border-width: 1px;
-  --focus-ring: 0 0 0 3px rgba(var(--theme-primary-colour-rgb), 0.15);
+  --focus-ring: 0 0 0 3px rgba(var(--theme-primary-color-rgb), 0.15);
 
   /* border radius aliases */
   --border-radius: var(--radius-md);
@@ -158,6 +161,8 @@
   --checkin-header-height: 56px;
   --checkin-tips-width: 250px;
   --checkin-body-gap: var(--spacing-lg);
+
+  --focus-ring: 2px solid var(--color-accent);
 }
 
 /* When data-theme is set to dark, tell the UA to use dark color-scheme. */
