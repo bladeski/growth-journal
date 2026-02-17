@@ -19,6 +19,7 @@ select,
 textarea {
   font-family: var(--font-family-ui);
   font-weight: var(--font-weight-body);
+  color: var(--color-text-secondary);
 }
 
 button,
@@ -202,7 +203,7 @@ h6 {
 .label-hint {
   display: block;
   font-size: 1rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   font-style: italic;
   line-height: 1.4;
 }
@@ -316,7 +317,6 @@ select {
   transition: all 0.3s ease;
   box-sizing: border-box;
   background-color: var(--bg-subtle-white);
-  color: var(--color-text-secondary);
 }
 
 input[type='text']:focus,
@@ -348,7 +348,6 @@ textarea {
   transition: all 0.3s ease;
   box-sizing: border-box;
   min-height: 120px;
-  color: var(--color-text-secondary);
 }
 
 textarea:focus {

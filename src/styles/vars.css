@@ -91,7 +91,8 @@
   --color-warning-dark: color-mix(in srgb, var(--color-warning), var(--color-text));
   --color-danger-light: color-mix(in srgb, var(--color-danger) 10%, var(--color-background) 90%);
   --color-danger-dark: color-mix(in srgb, var(--color-danger), var(--color-text));
-  --color-text-secondary: color-mix(in srgb, var(--color-text) 75%, var(--color-background) 25%);
+  --color-text-muted: color-mix(in srgb, var(--color-text) 75%, var(--color-background) 25%);
+  --color-text-secondary: rgb(var(--theme-darker-color-rgb));
 
   /* radii & border */
   --radius-sm: 2px;
@@ -168,6 +169,7 @@
     --color-surface: rgb(var(--theme-darker-color-rgb));
     --color-text: rgb(var(--theme-light-color-rgb));
     --color-border: rgba(var(--theme-light-color-rgb), 0.6);
+    --color-text-secondary: rgb(var(--theme-lighter-color-rgb));
     --bg-overlay-light: rgba(255, 255, 255, 0.02);
     --bg-overlay-medium: rgba(255, 255, 255, 0.06);
     --bg-subtle-white: rgba(0, 0, 0, 0.06);
