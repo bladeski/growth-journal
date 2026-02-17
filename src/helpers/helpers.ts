@@ -19,9 +19,15 @@ function pickRandom<T>(items: readonly T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-function pickRandomValueChallenge(map: GenericMap, allowedValues?: readonly string[]): ValueChallengePair {
+function pickRandomValueChallenge(
+  map: GenericMap,
+  allowedValues?: readonly string[],
+): ValueChallengePair {
   const values = Object.keys(map);
-  const candidates = allowedValues && allowedValues.length ? values.filter((v) => allowedValues.includes(v)) : values;
+  const candidates =
+    allowedValues && allowedValues.length
+      ? values.filter((v) => allowedValues.includes(v))
+      : values;
   if (candidates.length === 0) return { value: 'val-integrity', challenge: 'ch-integrity-1' };
   const value = pickRandom(candidates);
   const challenges = map[value] ?? [];
@@ -163,7 +169,8 @@ export function getJournalDayTemplates(
 ): { templates: JournalDayTemplates; valueChallenge: ValueChallengePair } | null {
   const tplFile = TemplateData as unknown as TemplateFile;
   const valueChallenge =
-    existingValueChallenge ?? pickRandomValueChallenge(ValueChallengeMap as unknown as GenericMap, allowedValues);
+    existingValueChallenge ??
+    pickRandomValueChallenge(ValueChallengeMap as unknown as GenericMap, allowedValues);
 
   const { value, challenge } = valueChallenge;
 

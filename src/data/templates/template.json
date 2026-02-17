@@ -148,7 +148,7 @@
         "kind": "text",
         "promptKey": "q.feedface-text.prompt",
         "placeholderKey": "q.feedface-text.placeholder"
-       }
-     ]
-   }
+      }
+    ]
+  }
 }

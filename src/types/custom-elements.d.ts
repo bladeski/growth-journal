@@ -5,20 +5,20 @@ declare global {
   interface HTMLJournalDayElement extends HTMLElement {
     entry?: IJournalEntry;
     i18n?: I18n;
-    'readonly'?: boolean;
+    readonly?: boolean;
   }
 
   interface HTMLJournalLogElement extends HTMLElement {
     log?: string;
     i18n?: I18n;
-    'readonly'?: boolean;
+    readonly?: boolean;
   }
 
   interface HTMLJournalSectionElement extends HTMLElement {
     i18n?: I18n;
     template?: ISectionTemplate;
     state?: ISectionState;
-    'readonly'?: boolean;
+    readonly?: boolean;
   }
 
   interface HTMLElementTagNameMap {

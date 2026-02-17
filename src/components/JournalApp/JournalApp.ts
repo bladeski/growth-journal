@@ -1,6 +1,11 @@
 import { I18n } from '../../i18n/i18n.ts';
 import { defaultI18n, loadRuntimeI18n } from '../../i18n/runtime.ts';
-import { IJournalEntry } from '../../models/index.ts';
+import {
+  IJournalEntry,
+  ResponseValue,
+  SectionKind,
+  ValueChallengePair,
+} from '../../models/index.ts';
 import { JournalService } from '../../services/journal.service.ts';
 import { BaseComponent } from '../Base/BaseComponent.ts';
 import template from 'bundle-text:./JournalApp.pug';
@@ -91,7 +96,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
       let savedGrowthArea: string | null = null;
       if (this.db) {
         try {
-          const val = await (this.db as any).getSetting(this.SETTINGS_KEY);
+          const val = await this.db.getSetting(this.SETTINGS_KEY);
           savedGrowthArea = typeof val === 'string' ? val : null;
         } catch {
           savedGrowthArea = null;
@@ -129,7 +134,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
         });
 
         day.addEventListener('value-challenge-change', (evt: Event) => {
-          const e = evt as CustomEvent<{ valueChallenge: any }>;
+          const e = evt as CustomEvent<{ valueChallenge: ValueChallengePair }>;
           const updated: IJournalEntry = {
             ...this.props.entry!,
             valueChallenge: e.detail.valueChallenge,
@@ -142,7 +147,11 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
         });
 
         day.addEventListener('section-answer', async (evt: Event) => {
-          const e = evt as CustomEvent;
+          const e = evt as CustomEvent<{
+            sectionKind: SectionKind;
+            questionId: string;
+            value: ResponseValue;
+          }>;
           const updated = await this.service.applyAnswer(this.props.entry!, e.detail);
           this.setProp('entry', updated);
         });

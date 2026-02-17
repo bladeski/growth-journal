@@ -170,12 +170,6 @@ export class JournalDB {
   }
 }
 
-// Tell TypeScript these prototype helpers exist (we assign them below)
-interface JournalDB {
-  getSetting(key: string): Promise<unknown | null>;
-  putSetting(key: string, value: unknown): Promise<void>;
-}
-
 // ---------- Settings ----------
 
 type SettingRow = { key: string; value: unknown; updatedAt: string };
@@ -185,8 +179,9 @@ export interface SettingsStore {
   putSetting(key: string, value: unknown): Promise<void>;
 }
 
-// Settings helpers on JournalDB
-export interface JournalDBWithSettings extends JournalDB, SettingsStore { }
+// Extend JournalDB to include settings methods
+// (No need for separate interface declarations - the class already has these methods)
+export interface JournalDBWithSettings extends JournalDB, SettingsStore {}
 
 // ---------- helpers ----------
 

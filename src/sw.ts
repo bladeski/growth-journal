@@ -5,17 +5,12 @@ declare const self: ServiceWorkerGlobalScope;
 // Service Worker execution environment. Some logger builds reference DOM
 // globals that are unavailable in workers; importing at runtime prevents
 // module evaluation from aborting the entire worker script.
-let Logger: {
-  info: (...args: any[]) => void;
-  warn: (...args: any[]) => void;
-  debug: (...args: any[]) => void;
-  error: (...args: any[]) => void;
-} = console;
+let Logger: Console | LoggingService = console;
 
 void import('./sw-logger-proxy.ts')
   .then((mod) => {
     try {
-      const LoggingService = (mod as any).LoggingService;
+      const LoggingService = mod.LoggingService;
       if (LoggingService && typeof LoggingService.initialize === 'function') {
         LoggingService.initialize({
           applicationName: 'GrowthJournalServiceWorker',
@@ -233,6 +228,7 @@ async function syncJournalEntries() {
   Logger.info('Syncing journal entries...');
 }
 
+import { LoggingService } from '@bladeski/logger';
 // Simple message-based IndexedDB handling for client requests
 import type { ISwMessage } from './models/index.ts';
 
@@ -343,7 +339,10 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
 
   // Query entries updated since timestamp (payload: { updatedAt: string, limit?: number })
   if (msg.type === 'IDB:SinceUpdated') {
-    const payload = typeof msg.payload === 'object' && msg.payload ? (msg.payload as any) : {};
+    const payload =
+      typeof msg.payload === 'object' && msg.payload
+        ? (msg.payload as { updatedAt: string; limit?: number })
+        : ({} as { updatedAt: string; limit?: number });
     const updatedAt = typeof payload.updatedAt === 'string' ? payload.updatedAt : undefined;
     const limit = typeof payload.limit === 'number' ? payload.limit : 100;
     if (!updatedAt) return respond({ success: false, error: 'missing updatedAt' });
@@ -367,7 +366,10 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
 
   // By date range (payload: { startISO: string, endISO: string })
   if (msg.type === 'IDB:ByDateRange') {
-    const payload = typeof msg.payload === 'object' && msg.payload ? (msg.payload as any) : {};
+    const payload =
+      typeof msg.payload === 'object' && msg.payload
+        ? (msg.payload as { startISO: string; endISO: string })
+        : ({} as { startISO: string; endISO: string });
     const startISO = typeof payload.startISO === 'string' ? payload.startISO : undefined;
     const endISO = typeof payload.endISO === 'string' ? payload.endISO : undefined;
     if (!startISO || !endISO) return respond({ success: false, error: 'missing range' });
@@ -438,7 +440,9 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
 
   if (msg.type === 'IDB:PutDictionary') {
     const payload =
-      typeof msg.payload === 'object' && msg.payload ? (msg.payload as any) : undefined;
+      typeof msg.payload === 'object' && msg.payload
+        ? (msg.payload as { locale: string; resources: unknown })
+        : undefined;
     if (!payload || typeof payload.locale !== 'string' || !payload.resources)
       return respond({ success: false, error: 'invalid payload' });
     openDB()
@@ -481,7 +485,9 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
 
   if (msg.type === 'IDB:PutSetting') {
     const payload =
-      typeof msg.payload === 'object' && msg.payload ? (msg.payload as any) : undefined;
+      typeof msg.payload === 'object' && msg.payload
+        ? (msg.payload as { key: string; value: unknown })
+        : undefined;
     if (!payload || typeof payload.key !== 'string')
       return respond({ success: false, error: 'invalid payload' });
     openDB()
@@ -665,82 +671,82 @@ function writeAllToStore(
   });
 }
 
-function getAllByDate(
-  db: IDBDatabase,
-  storeName: string,
-  date: string,
-): Promise<Record<string, unknown>[]> {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(storeName, 'readonly');
-    const store = tx.objectStore(storeName);
-    const index = store.index ? store.index('date') : null;
-    if (!index) {
-      const req = store.getAll();
-      req.onsuccess = () => {
-        const all = req.result || [];
-        resolve(
-          (all as Record<string, unknown>[]).filter((it) => {
-            const obj = it as Record<string, unknown>;
-            const d = typeof obj.date === 'string' ? obj.date : undefined;
-            const w = typeof obj.week_of === 'string' ? obj.week_of : undefined;
-            return d === date || w === date;
-          }),
-        );
-      };
-      req.onerror = () => reject(req.error);
-      return;
-    }
-    const range = IDBKeyRange.only(date);
-    const req = index.getAll(range);
-    req.onsuccess = () => resolve(req.result || []);
-    req.onerror = () => reject(req.error);
-  });
-}
+// function getAllByDate(
+//   db: IDBDatabase,
+//   storeName: string,
+//   date: string,
+// ): Promise<Record<string, unknown>[]> {
+//   return new Promise((resolve, reject) => {
+//     const tx = db.transaction(storeName, 'readonly');
+//     const store = tx.objectStore(storeName);
+//     const index = store.index ? store.index('date') : null;
+//     if (!index) {
+//       const req = store.getAll();
+//       req.onsuccess = () => {
+//         const all = req.result || [];
+//         resolve(
+//           (all as Record<string, unknown>[]).filter((it) => {
+//             const obj = it as Record<string, unknown>;
+//             const d = typeof obj.date === 'string' ? obj.date : undefined;
+//             const w = typeof obj.week_of === 'string' ? obj.week_of : undefined;
+//             return d === date || w === date;
+//           }),
+//         );
+//       };
+//       req.onerror = () => reject(req.error);
+//       return;
+//     }
+//     const range = IDBKeyRange.only(date);
+//     const req = index.getAll(range);
+//     req.onsuccess = () => resolve(req.result || []);
+//     req.onerror = () => reject(req.error);
+//   });
+// }
 
-function addToStore(
-  db: IDBDatabase,
-  storeName: string,
-  item: Record<string, unknown>,
-): Promise<IDBValidKey | undefined> {
-  return new Promise((resolve, reject) => {
-    type ItemRecord = Record<string, unknown>;
-    const tx = db.transaction(storeName, 'readwrite');
-    const store = tx.objectStore(storeName);
-    // For time-keyed stores (daily/weekly/monthly checkins), prefer using the date as
-    // the primary key so records are written/read by date instead of an auto-increment id.
-    // This keeps existing schema (keyPath: 'id') but assigns the 'id' value to the
-    // ISO date string when present, so add/put will create a stable key per date.
-    try {
-      // Normalize entries to ensure date key exists when storing in 'entries'
-      if (storeName === 'entries') {
-        const d =
-          (typeof item.date === 'string' && item.date) ||
-          (typeof item.entry_date === 'string' && item.entry_date) ||
-          undefined;
-        const finalDate = d || new Date().toISOString().slice(0, 10);
-        const it = item as ItemRecord;
-        it.date = finalDate;
-      }
-    } catch (e) {
-      // ignore assignment errors and proceed to add
-    }
+// function addToStore(
+//   db: IDBDatabase,
+//   storeName: string,
+//   item: Record<string, unknown>,
+// ): Promise<IDBValidKey | undefined> {
+//   return new Promise((resolve, reject) => {
+//     type ItemRecord = Record<string, unknown>;
+//     const tx = db.transaction(storeName, 'readwrite');
+//     const store = tx.objectStore(storeName);
+//     // For time-keyed stores (daily/weekly/monthly checkins), prefer using the date as
+//     // the primary key so records are written/read by date instead of an auto-increment id.
+//     // This keeps existing schema (keyPath: 'id') but assigns the 'id' value to the
+//     // ISO date string when present, so add/put will create a stable key per date.
+//     try {
+//       // Normalize entries to ensure date key exists when storing in 'entries'
+//       if (storeName === 'entries') {
+//         const d =
+//           (typeof item.date === 'string' && item.date) ||
+//           (typeof item.entry_date === 'string' && item.entry_date) ||
+//           undefined;
+//         const finalDate = d || new Date().toISOString().slice(0, 10);
+//         const it = item as ItemRecord;
+//         it.date = finalDate;
+//       }
+//     } catch (e) {
+//       // ignore assignment errors and proceed to add
+//     }
 
-    // Use put for time-keyed stores so saving an entry for the same date will
-    // update (upsert) the existing record instead of failing on duplicate keys.
-    // For other stores (like intentions) keep add() to preserve auto-increment behavior.
-    let req: IDBRequest;
-    try {
-      // Use put() for our main stores to support upserts (entries,dictionaries,settings)
-      if (['entries', 'dictionaries', 'settings'].includes(storeName)) {
-        req = store.put(item as unknown);
-      } else {
-        req = store.add(item as unknown);
-      }
-    } catch (e) {
-      reject(e);
-      return;
-    }
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
+//     // Use put for time-keyed stores so saving an entry for the same date will
+//     // update (upsert) the existing record instead of failing on duplicate keys.
+//     // For other stores (like intentions) keep add() to preserve auto-increment behavior.
+//     let req: IDBRequest;
+//     try {
+//       // Use put() for our main stores to support upserts (entries,dictionaries,settings)
+//       if (['entries', 'dictionaries', 'settings'].includes(storeName)) {
+//         req = store.put(item as unknown);
+//       } else {
+//         req = store.add(item as unknown);
+//       }
+//     } catch (e) {
+//       reject(e);
+//       return;
+//     }
+//     req.onsuccess = () => resolve(req.result);
+//     req.onerror = () => reject(req.error);
+//   });
+// }
