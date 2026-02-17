@@ -2,10 +2,10 @@
   "name": "Growth Journal",
   "short_name": "GrowthJournal",
   "description": "A Progressive Web App for daily growth journaling and reflection",
-  "start_url": "/",
+  "start_url": "/growth-journal/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#2196f3",
+  "background_color": "#FFFCF3",
+  "theme_color": "#A3C889",
   "orientation": "portrait-primary",
   "categories": ["productivity", "lifestyle"],
   "lang": "en",
@@ -58,32 +58,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "New Entry",
-      "short_name": "New Entry",
-      "description": "Create a new journal entry",
-      "url": "/new-entry",
-      "icons": [
-        {
-          "src": "icons/icon-192-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Reflect",
-      "short_name": "Reflect",
-      "description": "View reflection dashboard",
-      "url": "/reflect",
-      "icons": [
-        {
-          "src": "icons/icon-192-192.png",
-          "sizes": "192x192"
-        }
-      ]
     }
   ]
 }
