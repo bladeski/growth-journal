@@ -1,6 +1,4 @@
 /* Design tokens / CSS variables */
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap');
-
 :root {
   /* prefer light color-scheme by default; components may flip to dark via data-theme */
   color-scheme: light;
