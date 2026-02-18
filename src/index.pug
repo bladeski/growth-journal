@@ -20,7 +20,14 @@ html(lang="en")
     meta(name="msapplication-TileColor" content="#A3C889")
     
     title Growth Journal
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
+    link(href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet")
     link(rel="stylesheet" href="./styles/styles.css")
+    link(rel="preload" href="./styles/base.css" as="style" onload="this.onload=null;this.rel='stylesheet'")
+    noscript
+      link(rel="stylesheet" href="./styles/base.css")
+
     // Inline script to apply persisted theme preference before paint
     script.
       (function(){
