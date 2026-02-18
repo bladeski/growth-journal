@@ -189,7 +189,7 @@ h6 {
 .form-group:has(:required) .label-text::after {
   content: ' *';
   color: var(--color-danger);
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .label-text {
