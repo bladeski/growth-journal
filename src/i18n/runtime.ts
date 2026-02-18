@@ -29,6 +29,22 @@ function browserPreferredLocales(): string[] {
   return [...langs].filter(Boolean);
 }
 
+async function fetchSupportedLanguages(): Promise<string[]> {
+  const url =
+    typeof document !== 'undefined' && document.baseURI
+      ? new URL('./data/dictionaries/supported-languages.json', document.baseURI).toString()
+      : './data/dictionaries/supported-languages.json';
+  try {
+    const resp = await fetch(url, { cache: 'no-cache' });
+    if (!resp.ok) throw new Error('Failed to fetch supported languages');
+    const data = (await resp.json()) as unknown;
+    if (!Array.isArray(data)) throw new Error('Invalid supported languages format');
+    return data.map(String).filter(Boolean);
+  } catch {
+    return ['en']; // Fallback to English if fetch fails
+  }
+}
+
 async function fetchDictionary(locale: string): Promise<Resources | null> {
   const rel = `./data/dictionaries/dictionary.${locale}.json`;
   const relUrl =
@@ -71,6 +87,9 @@ export async function loadRuntimeI18n(preferred?: string[] | string): Promise<I1
       ? [preferred]
       : browserPreferredLocales();
 
+  const supportedRaw = await fetchSupportedLanguages();
+  const supported = new Set(supportedRaw.map((tag) => normalizeLocaleTag(tag)));
+
   // Expand preferred locales into unique candidate tags (preserving order)
   const seen = new Set<string>();
   const candidates: string[] = [];
@@ -84,6 +103,10 @@ export async function loadRuntimeI18n(preferred?: string[] | string): Promise<I1
   }
   if (!seen.has('en')) candidates.push('en');
 
+  const resolvedCandidates =
+    supported.size > 0 ? candidates.filter((tag) => supported.has(tag)) : candidates;
+  if (!resolvedCandidates.includes('en')) resolvedCandidates.push('en');
+
   // Open DB once; if it fails, proceed without caching.
   let db: JournalDB | null = null;
   try {
@@ -93,7 +116,7 @@ export async function loadRuntimeI18n(preferred?: string[] | string): Promise<I1
     db = null;
   }
 
-  for (const locale of candidates) {
+  for (const locale of resolvedCandidates) {
     try {
       const cached = db ? await db.getDictionary(locale) : null;
       if (cached && Object.keys(cached).length > 0) {

@@ -37,6 +37,7 @@ export class JournalService {
   }
 
   async save(entry: IJournalEntry): Promise<void> {
+    await this.ready;
     entry.updatedAt = new Date().toISOString();
     await this.storage.saveEntry(entry);
   }
@@ -45,6 +46,7 @@ export class JournalService {
     entry: IJournalEntry,
     detail: { sectionKind: SectionKind; questionId: string; value: ResponseValue },
   ): Promise<IJournalEntry> {
+    await this.ready;
     const copy: IJournalEntry = JSON.parse(JSON.stringify(entry));
     const key =
       detail.sectionKind === 'morning-reset'

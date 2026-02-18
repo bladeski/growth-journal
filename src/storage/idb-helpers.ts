@@ -28,6 +28,7 @@ export function tx(db: IDBDatabase, store: string, mode: IDBMode): IDBTransactio
   return db.transaction(store, mode);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function store<T = unknown>(tx: IDBTransaction, name: string): IDBObjectStore {
   return tx.objectStore(name);
 }

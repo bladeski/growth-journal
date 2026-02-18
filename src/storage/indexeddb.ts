@@ -48,7 +48,7 @@ export class JournalDB {
     });
 
     // Optional: request persistent storage
-    if ('storage' in navigator && 'persist' in navigator.storage) {
+    if (navigator.storage && 'persist' in navigator.storage) {
       try {
         await navigator.storage.persist();
       } catch {

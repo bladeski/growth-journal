@@ -24,7 +24,7 @@ export class JournalLog extends BaseComponent<JournalLogProps, JournalLogEvents>
     const templateFn = () => template;
     super(templateFn, undefined, [styles]);
     // defaults
-    this.setProp('log', this.props.log ?? '');
+    this.props.log = this.props.log ?? '';
   }
 
   connectedCallback(): void {

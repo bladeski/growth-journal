@@ -45,5 +45,6 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/tests/jest/setupTests.cjs'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   collectCoverage: true,
+  coverageReporters: ['json-summary', 'text-summary'],
   coverageDirectory: 'coverage',
 };
