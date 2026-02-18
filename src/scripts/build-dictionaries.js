@@ -40,4 +40,9 @@ languages.forEach((lang) => {
   console.log(`✓ Generated ${outputFile}`);
 });
 
+// Write supported languages list
+const languagesFile = path.join(outputDir, 'supported-languages.json');
+fs.writeFileSync(languagesFile, JSON.stringify(languages, null, 2));
+console.log(`✓ Generated ${languagesFile}`);
+
 console.log(`\nSuccessfully generated ${languages.length} dictionary file(s).`);
