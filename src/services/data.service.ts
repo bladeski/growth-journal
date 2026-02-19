@@ -6,6 +6,11 @@ export default class DataService {
   private areaValueMap?: GenericMap;
   private valueChallengeMap?: GenericMap;
 
+  private baseUrl =
+    typeof document !== 'undefined' && document.baseURI
+      ? new URL('./data/', document.baseURI).toString()
+      : './data/';
+
   public static getInstance(): DataService {
     if (!DataService.instance) {
       DataService.instance = new DataService();
@@ -18,7 +23,7 @@ export default class DataService {
       return this.areaValueMap;
     }
     try {
-      const res = await fetch('/data/maps/area-value-map.json');
+      const res = await fetch(`${this.baseUrl}maps/area-value-map.json`);
       this.areaValueMap = await (res.json() as Promise<GenericMap>);
       return this.areaValueMap;
     } catch (err) {
@@ -32,7 +37,7 @@ export default class DataService {
       return this.valueChallengeMap;
     }
     try {
-      const res = await fetch('/data/maps/value-challenge-map.json');
+      const res = await fetch(`${this.baseUrl}maps/value-challenge-map.json`);
       this.valueChallengeMap = await (res.json() as Promise<GenericMap>);
       return this.valueChallengeMap;
     } catch (err) {
@@ -43,7 +48,7 @@ export default class DataService {
 
   public async getTemplateFile(): Promise<TemplateFile | null> {
     try {
-      const res = await fetch('/data/templates/template.json');
+      const res = await fetch(`${this.baseUrl}templates/template.json`);
       return await (res.json() as Promise<TemplateFile>);
     } catch (err) {
       console.error('Error fetching template file:', err);
