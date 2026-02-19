@@ -15,7 +15,7 @@ main.app
           button#prev-day.btn.btn-icon(data-action="click:prevDay") <
           button#next-day.btn.btn-icon(data-action="click:nextDay") >
           label(for="date-picker") Date:
-          input#date-picker(type="date")
+          input#date-picker(type="date" data-action="change:onDateChange")
         button#settings-btn.btn(data-action="click:openSettings") Settings
     dialog#settings
       h2 Settings

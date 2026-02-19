@@ -18,12 +18,12 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-proxy-test', ProxyTestComponent as any);
+      customElements.define('x-proxy-test', ProxyTestComponent);
       const el = document.createElement('x-proxy-test') as ProxyTestComponent;
       document.body.appendChild(el);
 
       // Manually render to initialize
-      (el as any).render();
+      el.render();
 
       // Now when we set props via proxy after initialization, it should update bindings
       el.props.title = 'updated';
@@ -39,7 +39,7 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-proxy-preinit', ProxyPreInitComponent as any);
+      customElements.define('x-proxy-preinit', ProxyPreInitComponent);
       const el = document.createElement('x-proxy-preinit') as ProxyPreInitComponent;
 
       // Before rendering (before initialization), setting props should not call updateBindings
@@ -55,16 +55,16 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-proxy-symbol', ProxySymbolComponent as any);
+      customElements.define('x-proxy-symbol', ProxySymbolComponent);
       const el = document.createElement('x-proxy-symbol') as ProxySymbolComponent;
       document.body.appendChild(el);
 
-      (el as any).render();
+      el.render();
 
       // Setting via symbol should work but not call updateBindings with non-string key
       const sym = Symbol('test');
       expect(() => {
-        (el.props as any)[sym] = 'value';
+        (el.props as Record<symbol, unknown>)[sym] = 'value';
       }).not.toThrow();
     });
   });
@@ -79,7 +79,7 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-empty-propkeys', EmptyPropKeysComponent as any);
+      customElements.define('x-empty-propkeys', EmptyPropKeysComponent);
       const el = document.createElement('x-empty-propkeys') as EmptyPropKeysComponent;
 
       expect(() => {
@@ -96,7 +96,7 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-camel-props', CamelCasePropsComponent as any);
+      customElements.define('x-camel-props', CamelCasePropsComponent);
       const el = document.createElement('x-camel-props') as CamelCasePropsComponent;
 
       expect(() => {
@@ -114,7 +114,7 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-underscore-props', UnderscorePropsComponent as any);
+      customElements.define('x-underscore-props', UnderscorePropsComponent);
       const el = document.createElement('x-underscore-props') as UnderscorePropsComponent;
 
       expect(() => {
@@ -131,7 +131,7 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-no-observed', NoObservedComponent as any);
+      customElements.define('x-no-observed', NoObservedComponent);
       const el = document.createElement('x-no-observed') as NoObservedComponent;
 
       expect(() => {
@@ -148,13 +148,13 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-required-props', RequiredPropsComponent as any);
+      customElements.define('x-required-props', RequiredPropsComponent);
       const el = document.createElement('x-required-props') as RequiredPropsComponent;
 
       // Component should defer render since 'id' is missing
       document.body.appendChild(el);
 
-      expect((el as any)._renderDeferred).toBe(true);
+      expect(el.renderDeferred).toBe(true);
     });
 
     test('syncs data-prop attributes on connectedCallback', () => {
@@ -166,7 +166,7 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-data-prop-sync', DataPropComponent as any);
+      customElements.define('x-data-prop-sync', DataPropComponent);
       const el = document.createElement('x-data-prop-sync') as DataPropComponent;
       el.setAttribute('data-prop:label', 'synced-value');
       document.body.appendChild(el);
@@ -185,12 +185,12 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-deferred-render', DeferredComponent as any);
+      customElements.define('x-deferred-render', DeferredComponent);
       const el = document.createElement('x-deferred-render') as DeferredComponent;
       document.body.appendChild(el);
 
-      expect((el as any)._renderDeferred).toBe(true);
-      expect((el as any).initialized).toBe(false);
+      expect(el.renderDeferred).toBe(true);
+      expect(el.isInitialized).toBe(false);
     });
 
     test('tryInitialRender triggers render when requirements are met', () => {
@@ -202,17 +202,17 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-try-initial-render', DeferredComponent as any);
+      customElements.define('x-try-initial-render', DeferredComponent);
       const el = document.createElement('x-try-initial-render') as DeferredComponent;
       document.body.appendChild(el);
 
-      expect((el as any)._renderDeferred).toBe(true);
+      expect(el.renderDeferred).toBe(true);
 
       el.props.required = 'now-set';
-      (el as any).tryInitialRender();
+      el.tryInitialRender();
 
-      expect((el as any)._renderDeferred).toBe(false);
-      expect((el as any).initialized).toBe(true);
+      expect(el.renderDeferred).toBe(false);
+      expect(el.isInitialized).toBe(true);
     });
 
     test('tryInitialRender does nothing if render was not deferred', () => {
@@ -222,16 +222,16 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-not-deferred', NotDeferredComponent as any);
+      customElements.define('x-not-deferred', NotDeferredComponent);
       const el = document.createElement('x-not-deferred') as NotDeferredComponent;
       document.body.appendChild(el);
 
-      expect((el as any)._renderDeferred).toBe(false);
+      expect(el.renderDeferred).toBe(false);
 
       // Should be no-op
-      (el as any).tryInitialRender();
+      el.tryInitialRender();
 
-      expect((el as any)._renderDeferred).toBe(false);
+      expect(el.renderDeferred).toBe(false);
     });
   });
 
@@ -249,7 +249,7 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-use-template', TemplateComponent as any);
+      customElements.define('x-use-template', TemplateComponent);
       const el = document.createElement('x-use-template') as TemplateComponent;
       document.body.appendChild(el);
 
@@ -260,7 +260,7 @@ describe('BaseComponent advanced scenarios', () => {
     });
 
     test('logs warning when template element not found', () => {
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
 
       class TemplateComponent extends BaseComponent<{ title: string }> {
         constructor() {
@@ -268,15 +268,15 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-missing-template', TemplateComponent as any);
+      customElements.define('x-missing-template', TemplateComponent);
       const el = document.createElement('x-missing-template') as TemplateComponent;
       document.body.appendChild(el);
 
       el.useTemplateById('nonexistent-id');
 
       // Check that templateFn was set to a resolver function
-      expect((el as any).templateFn).toBeDefined();
-      expect(typeof (el as any).templateFn).toBe('function');
+      expect(el.templateFn).toBeDefined();
+      expect(typeof el.templateFn).toBe('function');
 
       warnSpy.mockRestore();
     });
@@ -288,7 +288,7 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-template-later', TemplateComponent as any);
+      customElements.define('x-template-later', TemplateComponent);
       const el = document.createElement('x-template-later') as TemplateComponent;
       document.body.appendChild(el);
 
@@ -301,7 +301,7 @@ describe('BaseComponent advanced scenarios', () => {
       document.body.appendChild(template);
 
       // Trigger render which will use the resolver
-      (el as any).render();
+      el.render();
 
       const p = el.shadowRoot?.querySelector('[data-bind="title"]') as HTMLElement;
       expect(p?.textContent).toBe('test');
@@ -316,14 +316,14 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-disconnect', DisconnectComponent as any);
+      customElements.define('x-disconnect', DisconnectComponent);
       const el = document.createElement('x-disconnect') as DisconnectComponent;
       document.body.appendChild(el);
 
       // Manually trigger render since connectedCallback might defer
-      (el as any).render();
+      el.render();
 
-      expect((el as any).initialized).toBe(true);
+      expect(el.isInitialized).toBe(true);
       const boundDisconnect = el.disconnectedCallback as () => void;
 
       expect(typeof boundDisconnect).toBe('function');
@@ -338,11 +338,11 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-string-template', StringTemplateComponent as any);
+      customElements.define('x-string-template', StringTemplateComponent);
       const el = document.createElement('x-string-template') as StringTemplateComponent;
 
-      expect((el as any).templateId).toBe('my-template-id');
-      expect((el as any).templateFn).toBeDefined();
+      expect(el.templateId).toBe('my-template-id');
+      expect(el.templateFn).toBeDefined();
     });
 
     test('constructor with function template sets function directly', () => {
@@ -354,14 +354,14 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-function-template', FunctionTemplateComponent as any);
+      customElements.define('x-function-template', FunctionTemplateComponent);
       const el = document.createElement('x-function-template') as FunctionTemplateComponent;
 
-      expect((el as any).templateFn).toBe(templateFn);
+      expect(el.templateFn).toBe(templateFn);
     });
 
     test('constructor logs warning when string template ID not found on render', () => {
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
 
       class MissingTemplateComponent extends BaseComponent<{ text: string }> {
         constructor() {
@@ -369,14 +369,14 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-missing-id', MissingTemplateComponent as any);
+      customElements.define('x-missing-id', MissingTemplateComponent);
       const el = document.createElement('x-missing-id') as MissingTemplateComponent;
       document.body.appendChild(el);
 
-      (el as any).render();
+      el.render();
 
       // Render should handle missing template gracefully
-      expect((el as any).initialized).toBe(true);
+      expect(el.isInitialized).toBe(true);
 
       warnSpy.mockRestore();
     });
@@ -385,20 +385,34 @@ describe('BaseComponent advanced scenarios', () => {
   describe('initial props and accessors', () => {
     test('defines element prop accessors for initial props', () => {
       class PropAccessorComponent extends BaseComponent<{ label: string; count: number }> {
+        get label(): string {
+          return this.props.label;
+        }
+        set label(value: string) {
+          this.props.label = value;
+        }
+
+        get count(): number {
+          return this.props.count;
+        }
+        set count(value: number) {
+          this.props.count = value;
+        }
+
         constructor() {
           super(() => '<div></div>', { label: 'test', count: 0 });
         }
       }
 
-      customElements.define('x-prop-accessor', PropAccessorComponent as any);
+      customElements.define('x-prop-accessor', PropAccessorComponent);
       const el = document.createElement('x-prop-accessor') as PropAccessorComponent;
       document.body.appendChild(el);
 
       // Should be able to set via element property
-      (el as any).label = 'updated';
+      el.label = 'updated';
       expect(el.props.label).toBe('updated');
 
-      (el as any).count = 5;
+      el.count = 5;
       expect(el.props.count).toBe(5);
     });
 
@@ -409,7 +423,7 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-empty-props', EmptyPropsComponent as any);
+      customElements.define('x-empty-props', EmptyPropsComponent);
       const el = document.createElement('x-empty-props') as EmptyPropsComponent;
 
       expect(() => {
@@ -427,11 +441,11 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-no-required', NoRequiredComponent as any);
+      customElements.define('x-no-required', NoRequiredComponent);
       const el = document.createElement('x-no-required') as NoRequiredComponent;
       document.body.appendChild(el);
 
-      expect((el as any)._renderDeferred).toBe(false);
+      expect(el.renderDeferred).toBe(false);
     });
 
     test('returns true when any required prop is undefined', () => {
@@ -443,11 +457,11 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-multi-required', MultiRequiredComponent as any);
+      customElements.define('x-multi-required', MultiRequiredComponent);
       const el = document.createElement('x-multi-required') as MultiRequiredComponent;
       document.body.appendChild(el);
 
-      expect((el as any)._renderDeferred).toBe(true);
+      expect(el.renderDeferred).toBe(true);
     });
 
     test('returns false when all required props are defined', () => {
@@ -459,12 +473,12 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-all-required', AllRequiredComponent as any);
+      customElements.define('x-all-required', AllRequiredComponent);
       const el = document.createElement('x-all-required') as AllRequiredComponent;
       document.body.appendChild(el);
 
-      expect((el as any)._renderDeferred).toBe(false);
-      expect((el as any).initialized).toBe(true);
+      expect(el.renderDeferred).toBe(false);
+      expect(el.isInitialized).toBe(true);
     });
   });
 });

@@ -8,10 +8,14 @@ const projectRoot = path.resolve(__dirname, '../../');
 const dictionaryDir = path.join(__dirname, '../data/dictionary');
 const defaultOutputDir = path.join(__dirname, '../../dist/data/');
 const outputDir = process.argv[2] ? path.resolve(projectRoot, process.argv[2]) : defaultOutputDir;
+const dictionariesDir = path.join(outputDir, 'dictionaries');
 
 // Ensure output directory exists
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
+}
+if (!fs.existsSync(dictionariesDir)) {
+  fs.mkdirSync(dictionariesDir, { recursive: true });
 }
 
 // Get all language subdirectories
@@ -33,13 +37,13 @@ languages.forEach((lang) => {
   });
 
   // Write merged dictionary
-  const outputFile = path.join(outputDir, 'dictionaries', `dictionary.${lang}.json`);
+  const outputFile = path.join(dictionariesDir, `dictionary.${lang}.json`);
   fs.writeFileSync(outputFile, JSON.stringify(merged, null, 2));
   console.log(`✓ Generated ${outputFile}`);
 });
 
 // Write supported languages list
-const languagesFile = path.join(outputDir, 'dictionaries', 'supported-languages.json');
+const languagesFile = path.join(dictionariesDir, 'supported-languages.json');
 fs.writeFileSync(languagesFile, JSON.stringify(languages, null, 2));
 console.log(`✓ Generated ${languagesFile}`);
 

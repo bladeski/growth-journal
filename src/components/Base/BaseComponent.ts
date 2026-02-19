@@ -63,6 +63,15 @@ export abstract class BaseComponent<
   // Keep track if we tried to render and deferred
   private _renderDeferred = false;
 
+  // Read-only access for tests and diagnostics
+  get renderDeferred(): boolean {
+    return this._renderDeferred;
+  }
+
+  get isInitialized(): boolean {
+    return this.initialized;
+  }
+
   /**
    * Create a new BaseComponent.
    *
@@ -91,7 +100,7 @@ export abstract class BaseComponent<
     this.attachShadow({ mode: 'open' });
 
     // Always include base styles, then component-specific styles
-    const allStyles: string[] = [baseStyles];
+    const allStyles: string[] = [baseStyles as unknown as string];
     if (Array.isArray(styles) && styles.length > 0) {
       allStyles.push(...styles.filter(Boolean));
     }
@@ -519,7 +528,8 @@ export abstract class BaseComponent<
         const key = el.getAttribute('data-bind');
         if (!key) return;
         if (!this.bindings.has(key)) this.bindings.set(key, []);
-        this.bindings.get(key)!.push(el);
+        const list = this.bindings.get(key)!;
+        if (!list.includes(el)) list.push(el);
         const v = (this.props as Record<string, unknown>)[key];
         el.textContent = v == null ? '' : String(v);
       });

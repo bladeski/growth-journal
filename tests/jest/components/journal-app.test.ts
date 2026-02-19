@@ -82,11 +82,11 @@ const baseMarkup =
   '<div id="loading"></div>' +
   '<div id="content" class="hidden"></div>' +
   '<div id="error" class="hidden"></div>' +
-  '<select id="setting-growth-area"></select>' +
+  '<select id="setting-growth-area" data-action="change:onSettingChange"></select>' +
   '<journal-day id="day"></journal-day>' +
-  '<input id="date-picker" />' +
-  '<button id="prev-day"></button>' +
-  '<button id="next-day"></button>';
+  '<input id="date-picker" type="date" data-action="change:onDateChange" />' +
+  '<button id="prev-day" data-action="click:prevDay"></button>' +
+  '<button id="next-day" data-action="click:nextDay"></button>';
 
 async function flushMicrotasks() {
   for (let i = 0; i < 20; i += 1) {
@@ -289,7 +289,7 @@ describe('JournalApp', () => {
     expect(dateInput).not.toBeNull();
 
     dateInput!.value = '2026-02-17';
-    dateInput!.onchange!(new Event('change'));
+    dateInput!.dispatchEvent(new Event('change'));
 
     await flushMicrotasks();
 

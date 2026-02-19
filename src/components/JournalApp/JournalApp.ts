@@ -190,72 +190,62 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
       const dateInput = this.shadowRoot.querySelector('#date-picker') as HTMLInputElement | null;
       const prevBtn = this.shadowRoot.querySelector('#prev-day') as HTMLButtonElement | null;
       const nextBtn = this.shadowRoot.querySelector('#next-day') as HTMLButtonElement | null;
+
       if (dateInput) {
         // never allow selecting a date beyond today
         dateInput.max = this.today;
         dateInput.value = this.props.date;
-        dateInput.onchange = async () => {
-          const newDate = dateInput.value;
-          if (newDate && newDate !== this.props.date) {
-            // clamp to today
-            const clamped = newDate > this.today ? this.today : newDate;
-            this.setProp('loading', true);
-            this.setProp('date', clamped);
-            // Set readonly prop for journal-day (use clamped value)
-            const readonly = clamped < this.today;
-            const day = this.shadowRoot?.querySelector('#day') as JournalDay | null;
-            if (day) day.props.readonly = readonly;
-            // immediately reflect the clamped value in the input and buttons
-            dateInput.value = clamped;
-            if (nextBtn) nextBtn.disabled = clamped >= this.today;
-            if (prevBtn) prevBtn.disabled = false;
-            await this.bootstrap();
-          }
-        };
         // update next/prev button disabled state
         if (nextBtn) nextBtn.disabled = dateInput.value >= this.today;
         if (prevBtn) prevBtn.disabled = false;
       }
+    }
+  }
 
-      if (prevBtn) {
-        prevBtn.onclick = async () => {
-          const current = this.props.date || this.today;
-          const dt = new Date(current + 'T00:00:00');
-          dt.setDate(dt.getDate() - 1);
-          const newDate = dt.toISOString().slice(0, 10);
-          this.setProp('loading', true);
-          this.setProp('date', newDate);
-          const day = this.shadowRoot?.querySelector('#day') as JournalDay | null;
-          if (day) day.props.readonly = newDate < this.today;
-          // update UI immediately
-          if (dateInput) dateInput.value = newDate;
-          if (nextBtn) nextBtn.disabled = newDate >= this.today ? true : false;
-          if (prevBtn) prevBtn.disabled = false;
-          await this.bootstrap();
-        };
-      }
+  private async prevDay() {
+    const current = this.props.date || this.today;
+    const dt = new Date(current + 'T00:00:00');
+    dt.setDate(dt.getDate() - 1);
+    const newDate = dt.toISOString().slice(0, 10);
+    await this.changeDate(newDate);
+  }
 
-      if (nextBtn) {
-        nextBtn.onclick = async () => {
-          const current = this.props.date || this.today;
-          const dt = new Date(current + 'T00:00:00');
-          dt.setDate(dt.getDate() + 1);
-          let newDate = dt.toISOString().slice(0, 10);
-          // clamp to today
-          if (newDate > this.today) newDate = this.today;
-          // if unchanged, do nothing
-          if (newDate === this.props.date) return;
-          this.setProp('loading', true);
-          this.setProp('date', newDate);
-          const day = this.shadowRoot?.querySelector('#day') as JournalDay | null;
-          if (day) day.props.readonly = newDate < this.today;
-          // update UI immediately
-          if (dateInput) dateInput.value = newDate;
-          if (nextBtn) nextBtn.disabled = newDate >= this.today;
-          if (prevBtn) prevBtn.disabled = false;
-          await this.bootstrap();
-        };
-      }
+  private async nextDay() {
+    const current = this.props.date || this.today;
+    const dt = new Date(current + 'T00:00:00');
+    dt.setDate(dt.getDate() + 1);
+    const newDate = dt.toISOString().slice(0, 10);
+    await this.changeDate(newDate);
+  }
+
+  private async onDateChange() {
+    if (!this.shadowRoot) return;
+    const dateInput = this.shadowRoot.querySelector('#date-picker') as HTMLInputElement | null;
+    if (!dateInput) return;
+    const newDate = dateInput.value;
+    await this.changeDate(newDate);
+  }
+
+  private async changeDate(newDate: string) {
+    if (!this.shadowRoot) return;
+    const dateInput = this.shadowRoot.querySelector('#date-picker') as HTMLInputElement | null;
+    const prevBtn = this.shadowRoot.querySelector('#prev-day') as HTMLButtonElement | null;
+    const nextBtn = this.shadowRoot.querySelector('#next-day') as HTMLButtonElement | null;
+    if (!dateInput) return;
+    if (newDate && newDate !== this.props.date) {
+      // clamp to today
+      const clamped = newDate > this.today ? this.today : newDate;
+      this.setProp('loading', true);
+      this.setProp('date', clamped);
+      // Set readonly prop for journal-day (use clamped value)
+      const readonly = clamped < this.today;
+      const day = this.shadowRoot?.querySelector('#day') as JournalDay | null;
+      if (day) day.props.readonly = readonly;
+      // immediately reflect the clamped value in the input and buttons
+      dateInput.value = clamped;
+      if (nextBtn) nextBtn.disabled = clamped >= this.today;
+      if (prevBtn) prevBtn.disabled = false;
+      await this.bootstrap();
     }
   }
 
