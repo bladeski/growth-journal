@@ -4,16 +4,12 @@ import { Question } from '../models/Question.ts';
 import {
   JournalDayTemplates,
   SectionTemplateWithMeta,
-  TemplateFile,
   TemplateQuestion,
   GenericMap,
   ValueChallengePair,
   TemplateSection,
 } from '../models/index.ts';
-
-import TemplateData from '../data/templates/template.json' with { type: 'json' };
-import ValueChallengeMap from '../data/maps/value-challenge-map.json' with { type: 'json' };
-import AreaValueMap from '../data/maps/area-value-map.json' with { type: 'json' };
+import DataService from '../services/data.service.ts';
 
 function pickRandom<T>(items: readonly T[]): T {
   return items[Math.floor(Math.random() * items.length)];
@@ -162,15 +158,17 @@ function resolveTemplateStrings(i18n: I18n, tpl: SectionTemplateWithMeta): Secti
  * Build the four day section templates from JSON and resolve their strings
  * using the provided runtime i18n (so `q.*` keys become real translated text).
  */
-export function getJournalDayTemplates(
+export async function getJournalDayTemplates(
   i18n: I18n,
   existingValueChallenge?: ValueChallengePair,
   allowedValues?: readonly string[],
-): { templates: JournalDayTemplates; valueChallenge: ValueChallengePair } | null {
-  const tplFile = TemplateData as unknown as TemplateFile;
+): Promise<{ templates: JournalDayTemplates; valueChallenge: ValueChallengePair } | null> {
+  const dataService = DataService.getInstance();
+  const tplFile = await dataService.getTemplateFile();
+  const valueChallengeMap = await dataService.getValueChallengeMap();
+  if (!tplFile || !valueChallengeMap) return null;
   const valueChallenge =
-    existingValueChallenge ??
-    pickRandomValueChallenge(ValueChallengeMap as unknown as GenericMap, allowedValues);
+    existingValueChallenge ?? pickRandomValueChallenge(valueChallengeMap, allowedValues);
 
   const { value, challenge } = valueChallenge;
 
@@ -211,8 +209,10 @@ export function getJournalDayTemplates(
   };
 }
 
-export function getGrowthAreas(i18n: I18n): Array<{ id: string; label: string }> {
-  const keys = Object.keys(AreaValueMap) as (keyof typeof AreaValueMap)[];
+export async function getGrowthAreas(i18n: I18n): Promise<Array<{ id: string; label: string }>> {
+  const dataService = DataService.getInstance();
+  const areaValueMap = await dataService.getAreaValueMap();
+  const keys = Object.keys(areaValueMap) as (keyof typeof areaValueMap)[];
   return keys.map((key) => ({
     id: key,
     label: t(i18n, key),

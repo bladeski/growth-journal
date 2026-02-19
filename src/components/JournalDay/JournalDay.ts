@@ -14,7 +14,7 @@ import styles from 'bundle-text:./JournalDay.css';
 import { JournalLog } from '../JournalLog/JournalLog.ts';
 import { JournalSection } from '../JournalSection/JournalSection.ts';
 import { getJournalDayTemplates } from '../../helpers/helpers.ts';
-import AreaValueMap from '../../data/maps/area-value-map.json' with { type: 'json' };
+import DataService from '../../services/data.service.ts';
 
 export interface JournalDayProps extends IPropTypes {
   entry: IJournalEntry;
@@ -30,6 +30,7 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
 
   private sectionOpenedBound = false;
   private valueChallenge: ValueChallengePair | undefined;
+  private dataService = DataService.getInstance();
 
   constructor() {
     const templateFn = () => template;
@@ -116,16 +117,17 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
     }
     // Determine allowed values for value-challenge selection from the passed-in growthArea prop
     let allowedValues: string[] | undefined;
-    const area: keyof typeof AreaValueMap = (this.props.growthArea ??
+    const areaValueMap = await this.dataService.getAreaValueMap();
+    const area: keyof typeof areaValueMap = (this.props.growthArea ??
       (typeof localStorage !== 'undefined'
         ? (localStorage.getItem('settings:growthArea') ?? 'area-none')
-        : 'area-none')) as keyof typeof AreaValueMap;
-    if (area && AreaValueMap[area]) {
-      const vals = AreaValueMap[area];
+        : 'area-none')) as keyof typeof areaValueMap;
+    if (area && areaValueMap[area]) {
+      const vals = areaValueMap[area];
       if (Array.isArray(vals)) allowedValues = vals as string[];
     }
 
-    const built = getJournalDayTemplates(i18n, valueChallengeToUse, allowedValues);
+    const built = await getJournalDayTemplates(i18n, valueChallengeToUse, allowedValues);
     if (!built) return;
     this.valueChallenge = built.valueChallenge;
 

@@ -13,7 +13,7 @@ jest.unstable_mockModule('../../../src/i18n/runtime.ts', () => ({
   loadRuntimeI18n: loadRuntimeI18nMock,
 }));
 
-const getGrowthAreasMock = jest.fn();
+const getGrowthAreasMock = jest.fn<() => Promise<Array<{ id: string; label: string }>>>();
 const getJournalDayTemplatesMock = jest.fn();
 
 jest.unstable_mockModule('../../../src/helpers/helpers.ts', () => ({
@@ -89,7 +89,7 @@ const baseMarkup =
   '<button id="next-day"></button>';
 
 async function flushMicrotasks() {
-  for (let i = 0; i < 5; i += 1) {
+  for (let i = 0; i < 20; i += 1) {
     // eslint-disable-next-line no-await-in-loop
     await Promise.resolve();
   }
@@ -114,15 +114,15 @@ describe('JournalApp', () => {
     loadRuntimeI18nMock.mockResolvedValue(i18n);
     ensureDayMock.mockResolvedValue(entry);
     dbGetSettingMock.mockResolvedValue(null as unknown);
-    getGrowthAreasMock.mockReturnValue([
+    getGrowthAreasMock.mockResolvedValue([
       { id: 'area.focus', label: 'Focus' },
       { id: 'area.health', label: 'Health' },
     ]);
     localStorage.setItem('settings:growthArea', 'area.focus');
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
-    el.shadowRoot!.innerHTML = baseMarkup;
     document.body.appendChild(el);
+    el.shadowRoot!.innerHTML = baseMarkup;
 
     await flushMicrotasks();
 
@@ -150,7 +150,7 @@ describe('JournalApp', () => {
     loadRuntimeI18nMock.mockResolvedValue(i18n);
     ensureDayMock.mockResolvedValue(entry);
     dbGetSettingMock.mockResolvedValue(null as unknown);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
     el.shadowRoot!.innerHTML = baseMarkup;
@@ -188,7 +188,7 @@ describe('JournalApp', () => {
     loadRuntimeI18nMock.mockResolvedValue(i18n);
     ensureDayMock.mockResolvedValue(entry);
     dbGetSettingMock.mockResolvedValue(null as unknown);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
     el.shadowRoot!.innerHTML = baseMarkup;
@@ -230,7 +230,7 @@ describe('JournalApp', () => {
     ensureDayMock.mockResolvedValue(entry);
     applyAnswerMock.mockResolvedValue(updatedEntry);
     dbGetSettingMock.mockResolvedValue(null as unknown);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
     el.shadowRoot!.innerHTML = baseMarkup;
@@ -277,7 +277,7 @@ describe('JournalApp', () => {
     loadRuntimeI18nMock.mockResolvedValue(i18n);
     ensureDayMock.mockResolvedValueOnce(entry1).mockResolvedValueOnce(entry2);
     dbGetSettingMock.mockResolvedValue(null as unknown);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
     el.shadowRoot!.innerHTML = baseMarkup;
@@ -314,9 +314,10 @@ describe('JournalApp', () => {
     loadRuntimeI18nMock.mockResolvedValue(i18n);
     ensureDayMock.mockResolvedValueOnce(entry1).mockResolvedValueOnce(entry2);
     dbGetSettingMock.mockResolvedValue(null as unknown);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
+    el.props.date = '2026-02-18'; // Start at a known date
     el.shadowRoot!.innerHTML = baseMarkup;
     document.body.appendChild(el);
 
@@ -350,7 +351,7 @@ describe('JournalApp', () => {
     loadRuntimeI18nMock.mockResolvedValue(i18n);
     ensureDayMock.mockResolvedValueOnce(entry1).mockResolvedValueOnce(entry2);
     dbGetSettingMock.mockResolvedValue(null as unknown);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
     el.props.date = '2026-02-17'; // Start at previous date
@@ -373,7 +374,7 @@ describe('JournalApp', () => {
   test('bootstrap error shows error message', async () => {
     loadRuntimeI18nMock.mockResolvedValue(i18n);
     ensureDayMock.mockRejectedValue(new Error('Database unavailable'));
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
     el.shadowRoot!.innerHTML = baseMarkup;
@@ -399,7 +400,7 @@ describe('JournalApp', () => {
     loadRuntimeI18nMock.mockResolvedValue(i18n);
     ensureDayMock.mockResolvedValue(entry);
     dbGetSettingMock.mockResolvedValue('area.health' as unknown);
-    getGrowthAreasMock.mockReturnValue([
+    getGrowthAreasMock.mockResolvedValue([
       { id: 'area.focus', label: 'Focus' },
       { id: 'area.health', label: 'Health' },
     ]);

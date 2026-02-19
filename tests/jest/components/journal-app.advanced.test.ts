@@ -13,7 +13,7 @@ jest.unstable_mockModule('../../../src/i18n/runtime.ts', () => ({
   loadRuntimeI18n: loadRuntimeI18nMock,
 }));
 
-const getGrowthAreasMock = jest.fn();
+const getGrowthAreasMock = jest.fn<() => Promise<Array<{ id: string; label: string }>>>();
 const getJournalDayTemplatesMock = jest.fn();
 
 jest.unstable_mockModule('../../../src/helpers/helpers.ts', () => ({
@@ -34,7 +34,7 @@ jest.unstable_mockModule('../../../src/storage/indexeddb.ts', () => ({
 }));
 
 const ensureDayMock = jest.fn<() => Promise<IJournalEntry>>();
-const saveMock = jest.fn();
+const saveMock = jest.fn<() => Promise<void>>();
 const applyAnswerMock = jest.fn<(entry: IJournalEntry, answer: Record<string, unknown>) => Promise<IJournalEntry>>();
 
 class MockJournalService {
@@ -80,7 +80,7 @@ const baseMarkup =
   '<button id="next-day"></button>';
 
 async function flushMicrotasks() {
-  for (let i = 0; i < 5; i += 1) {
+  for (let i = 0; i < 20; i += 1) {
     // eslint-disable-next-line no-await-in-loop
     await Promise.resolve();
   }
@@ -108,7 +108,7 @@ describe('JournalApp additional scenarios', () => {
       fallback: null,
     });
     ensureDayMock.mockResolvedValue(entry);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
     dbGetSettingMock.mockResolvedValue(null);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
@@ -139,7 +139,7 @@ describe('JournalApp additional scenarios', () => {
       fallback: null,
     });
     ensureDayMock.mockResolvedValue(entry);
-    getGrowthAreasMock.mockReturnValue([
+    getGrowthAreasMock.mockResolvedValue([
       { id: 'area.focus', label: 'Focus' },
       { id: 'area.health', label: 'Health' },
       { id: 'area.growth', label: 'Growth' },
@@ -173,7 +173,7 @@ describe('JournalApp additional scenarios', () => {
     });
     ensureDayMock.mockResolvedValue(entry);
     dbGetSettingMock.mockResolvedValue('area.focus');
-    getGrowthAreasMock.mockReturnValue([
+    getGrowthAreasMock.mockResolvedValue([
       { id: 'area.focus', label: 'Focus' },
       { id: 'area.health', label: 'Health' },
     ]);
@@ -207,7 +207,7 @@ describe('JournalApp additional scenarios', () => {
       fallback: null,
     });
     ensureDayMock.mockResolvedValue(entry);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
     saveMock.mockResolvedValue(undefined);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
@@ -246,7 +246,7 @@ describe('JournalApp additional scenarios', () => {
       fallback: null,
     });
     ensureDayMock.mockResolvedValue(entry);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
     el.shadowRoot!.innerHTML = baseMarkup;
@@ -278,7 +278,7 @@ describe('JournalApp additional scenarios', () => {
       fallback: null,
     });
     ensureDayMock.mockResolvedValue(entry);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
     el.shadowRoot!.innerHTML = baseMarkup;
@@ -307,7 +307,7 @@ describe('JournalApp additional scenarios', () => {
       fallback: null,
     });
     ensureDayMock.mockResolvedValue(entry);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
     el.shadowRoot!.innerHTML = baseMarkup;
@@ -345,7 +345,7 @@ describe('JournalApp additional scenarios', () => {
     ensureDayMock.mockResolvedValue(entry);
     applyAnswerMock.mockResolvedValue(updatedEntry);
     saveMock.mockResolvedValue(undefined);
-    getGrowthAreasMock.mockReturnValue([]);
+    getGrowthAreasMock.mockResolvedValue([]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
     el.shadowRoot!.innerHTML = baseMarkup;
@@ -388,7 +388,7 @@ describe('JournalApp additional scenarios', () => {
     });
     ensureDayMock.mockResolvedValue(entry);
     dbGetSettingMock.mockResolvedValue('area.focus');
-    getGrowthAreasMock.mockReturnValue([{ id: 'area.focus', label: 'Focus' }]);
+    getGrowthAreasMock.mockResolvedValue([{ id: 'area.focus', label: 'Focus' }]);
 
     const el = document.createElement(tag) as InstanceType<typeof JournalApp>;
     el.shadowRoot!.innerHTML = baseMarkup;

@@ -13,7 +13,7 @@ import styles from 'bundle-text:./JournalApp.css';
 import { JournalDay } from '../index.ts';
 import { getGrowthAreas, getJournalDayTemplates } from '../../helpers/helpers.ts';
 import { JournalDB } from '../../storage/indexeddb.ts';
-import AreaValueMap from '../../data/maps/area-value-map.json' with { type: 'json' };
+import DataService from '../../services/data.service.ts';
 
 export interface JournalAppProps {
   date: string;
@@ -30,6 +30,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
   private today = new Date().toISOString().slice(0, 10);
   private SETTINGS_KEY = 'settings:growthArea';
   private db: JournalDB | null = null;
+  private dataService = DataService.getInstance();
 
   private logSaveTimer: number | undefined;
   observedAttributes = ['date', 'entry', 'i18n', 'loading', 'error'];
@@ -80,7 +81,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
       const readonly = this.props.date < this.today;
       this.props.readonly = readonly;
 
-      const growthAreas = getGrowthAreas(this.props.i18n);
+      const growthAreas = await getGrowthAreas(this.props.i18n);
       this.shadowRoot?.querySelector('#setting-growth-area')?.replaceChildren(
         ...growthAreas.map((area) => {
           const option = document.createElement('option');
@@ -269,9 +270,10 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
   private async onSettingChange(e: Event) {
     const sel = e.target as HTMLSelectElement | null;
     if (!sel) return;
+    const areaValueMap = await this.dataService.getAreaValueMap();
     // Prefer IndexedDB settings store when available, fallback to localStorage
     const applySettingAndMaybeUpdate = async (
-      value: keyof typeof AreaValueMap,
+      value: keyof typeof areaValueMap,
       persistToLocal = false,
     ) => {
       const day = this.shadowRoot?.querySelector('#day') as JournalDay | null;
@@ -280,13 +282,13 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
 
       // If current day is today, ensure the entry's valueChallenge is valid for the selected area
       if (this.props.date === this.today && this.props.entry) {
-        const allowed = AreaValueMap[value];
+        const allowed = areaValueMap[value];
         const allowedValues: string[] | undefined = Array.isArray(allowed)
           ? (allowed as string[])
           : undefined;
         const currentValue = this.props.entry.valueChallenge?.value;
         if (allowedValues && (!currentValue || !allowedValues.includes(currentValue))) {
-          const built = getJournalDayTemplates(this.props.i18n, undefined, allowedValues);
+          const built = await getJournalDayTemplates(this.props.i18n, undefined, allowedValues);
           if (built?.valueChallenge) {
             const updated: IJournalEntry = {
               ...this.props.entry!,
@@ -315,7 +317,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
     if (this.db) {
       try {
         await this.db.putSetting(this.SETTINGS_KEY, sel.value);
-        await applySettingAndMaybeUpdate(sel.value as keyof typeof AreaValueMap);
+        await applySettingAndMaybeUpdate(sel.value as keyof typeof areaValueMap);
         return;
       } catch {
         // fall through to localStorage fallback
@@ -323,7 +325,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
     }
 
     // Fallback: persist to localStorage and apply setting
-    await applySettingAndMaybeUpdate(sel.value as keyof typeof AreaValueMap, true);
+    await applySettingAndMaybeUpdate(sel.value as keyof typeof areaValueMap, true);
   }
 }
 
