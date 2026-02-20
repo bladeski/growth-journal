@@ -4,7 +4,7 @@ import {
   INumberQuestion,
   IRatingQuestion,
   ISingleSelectQuestion,
-  ITextQuestion,
+  ITextQuestion
 } from './index.ts';
 
 export type Question =

@@ -2,7 +2,7 @@ import type { IPropTypes } from './IPropTypes.ts';
 
 export interface IBaseComponent<
   TProps extends IPropTypes = Record<string, never>,
-  TEvents = unknown,
+  TEvents = unknown
 > extends HTMLElement {
   /** Strongly typed props */
   props: TProps;
@@ -26,7 +26,7 @@ export interface IBaseComponent<
   attributeChangedCallback(
     name: keyof TProps & string,
     oldValue: string | null,
-    newValue: string | null,
+    newValue: string | null
   ): void;
 
   /**

@@ -4,7 +4,7 @@ import {
   IJournalEntry,
   ResponseValue,
   SectionKind,
-  ValueChallengePair,
+  ValueChallengePair
 } from '../../models/index.ts';
 import { JournalService } from '../../services/journal.service.ts';
 import { BaseComponent } from '../Base/BaseComponent.ts';
@@ -88,11 +88,11 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
           option.value = area.id;
           option.textContent = area.label;
           return option;
-        }),
+        })
       );
       // Restore persisted growth area selection, prefer IndexedDB when available
       const settingEl = this.shadowRoot?.querySelector(
-        '#setting-growth-area',
+        '#setting-growth-area'
       ) as HTMLSelectElement | null;
       let savedGrowthArea: string | null = null;
       if (this.db) {
@@ -125,7 +125,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
           const e = evt as CustomEvent<{ value: string }>;
           const updated: IJournalEntry = {
             ...this.props.entry!,
-            log: e.detail.value,
+            log: e.detail.value
           };
           this.setProp('entry', updated);
           if (this.logSaveTimer) window.clearTimeout(this.logSaveTimer);
@@ -138,7 +138,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
           const e = evt as CustomEvent<{ valueChallenge: ValueChallengePair }>;
           const updated: IJournalEntry = {
             ...this.props.entry!,
-            valueChallenge: e.detail.valueChallenge,
+            valueChallenge: e.detail.valueChallenge
           };
           this.setProp('entry', updated);
           if (this.logSaveTimer) window.clearTimeout(this.logSaveTimer);
@@ -264,7 +264,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
     // Prefer IndexedDB settings store when available, fallback to localStorage
     const applySettingAndMaybeUpdate = async (
       value: keyof typeof areaValueMap,
-      persistToLocal = false,
+      persistToLocal = false
     ) => {
       const day = this.shadowRoot?.querySelector('#day') as JournalDay | null;
       if (day) day.props.growthArea = value;
@@ -282,7 +282,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
           if (built?.valueChallenge) {
             const updated: IJournalEntry = {
               ...this.props.entry!,
-              valueChallenge: built.valueChallenge,
+              valueChallenge: built.valueChallenge
             };
             this.setProp('entry', updated);
             if (day) day.props.entry = updated;

@@ -43,14 +43,16 @@
     }
   },
   "dependencies": {
-    "@bladeski/logger": "^1.0.3"
+    "@bladeski/logger": "^1.0.3",
+    "@tiptap/core": "^3.20.0",
+    "@tiptap/pm": "^3.20.0",
+    "@tiptap/starter-kit": "^3.20.0"
   },
   "devDependencies": {
-    "@parcel/packager-raw-url": "2.16.1",
-    "@parcel/resolver-default": "^2.16.4",
-    "@parcel/transformer-inline-string": "2.16.1",
-    "@parcel/transformer-pug": "2.16.1",
-    "@parcel/transformer-webmanifest": "2.16.1",
+    "@parcel/packager-raw-url": "2.16.4",
+    "@parcel/transformer-inline-string": "2.16.4",
+    "@parcel/transformer-pug": "2.16.4",
+    "@parcel/transformer-webmanifest": "2.16.4",
     "@playwright/test": "^1.56.1",
     "@types/jest": "^29.5.4",
     "@types/pug": "^2.0.10",
@@ -80,5 +82,13 @@
     "reflection"
   ],
   "author": "Jonathan Blades <jonoblades@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "alias": {
+    "process": {
+      "global": "{}"
+    }
+  },
+  "@parcel/resolver-default": {
+    "packageExports": true
+  }
 }

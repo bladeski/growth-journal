@@ -1,6 +1,6 @@
 export function whenUpgraded<T extends HTMLElement = HTMLElement>(
   el: Element,
-  tagName: string,
+  tagName: string
 ): Promise<T> {
   const ce = customElements.get(tagName);
   if (ce) {

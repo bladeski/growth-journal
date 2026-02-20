@@ -8,7 +8,7 @@ export function emptySectionState(tpl: ISectionTemplate): ISectionState {
   return {
     templateId: tpl.id,
     kind: tpl.kind,
-    responses: tpl.questions.map((q) => ({ questionId: q.id })),
+    responses: tpl.questions.map((q) => ({ questionId: q.id }))
   };
 }
 
@@ -18,7 +18,7 @@ export function createJournalEntry(dateISO: string): IJournalEntry {
     id: makeId(),
     date: dateISO.slice(0, 10),
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now
   };
 }
 

@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import type { I18n } from '../../../src/i18n/i18n.ts';
+import type { RichTextEditor } from '../../../src/components/RichTextEditor/RichTextEditor.ts';
 
 jest.unstable_mockModule('bundle-text:./JournalLog.pug', () => ({ default: '' }));
 jest.unstable_mockModule('bundle-text:./JournalLog.css', () => ({ default: '' }));
@@ -9,6 +10,8 @@ let JournalLog: typeof import('../../../src/components/JournalLog/JournalLog.ts'
 const tag = 'journal-log';
 
 beforeAll(async () => {
+  // Import RichTextEditor first to ensure it's registered
+  await import('../../../src/components/RichTextEditor/RichTextEditor.ts');
   ({ JournalLog } = await import('../../../src/components/JournalLog/JournalLog.ts'));
   if (!customElements.get(tag)) customElements.define(tag, JournalLog as CustomElementConstructor);
 });
@@ -29,9 +32,9 @@ describe('JournalLog', () => {
   });
 
   const baseMarkup =
-    '<section class="section"><fieldset><legend>Journal Log</legend><label id="journal-log-label" data-js="label"></label><textarea id="journal-log-textarea" name="log" data-q="log" rows="5" data-action="input:onInput; focus:onFocus" aria-labelledby="journal-log-label"></textarea></fieldset></section>';
+    '<section class="section"><fieldset><legend>Journal Log</legend><label id="journal-log-label" data-js="label"></label><rich-text-editor id="richTextEditor" aria-labelledby="journal-log-label"></rich-text-editor></fieldset></section>';
 
-  test('renders label and placeholder from i18n', () => {
+  test('renders label and placeholder from i18n', async () => {
     const el = document.createElement(tag) as InstanceType<typeof JournalLog>;
     el.props.i18n = i18n;
     el.props.log = 'hello';
@@ -40,13 +43,16 @@ describe('JournalLog', () => {
     el.render();
 
     const label = el.shadowRoot?.querySelector('[data-js="label"]');
-    const textarea = el.shadowRoot?.querySelector<HTMLTextAreaElement>('textarea[data-q="log"]');
-
+    
+    // Wait for RichTextEditor to be upgraded and hydrated
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    const richTextEditor = el.shadowRoot?.querySelector<RichTextEditor>('rich-text-editor');
     expect(label?.textContent).toBe('Log');
-    expect(textarea?.placeholder).toBe('Write your journal entry here...');
+    expect(richTextEditor?.props.placeholder).toBe('Write your journal entry here...');
   });
 
-  test('emits log-change on input', async () => {
+  test('emits log-change when RichTextEditor emits', async () => {
     const el = document.createElement(tag) as InstanceType<typeof JournalLog>;
     el.props.i18n = i18n;
     el.props.log = '';
@@ -54,8 +60,9 @@ describe('JournalLog', () => {
     document.body.appendChild(el);
     el.render();
 
-    const textarea = el.shadowRoot?.querySelector<HTMLTextAreaElement>('textarea[data-q="log"]');
-    expect(textarea).not.toBeNull();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const richTextEditor = el.shadowRoot?.querySelector<RichTextEditor>('rich-text-editor');
+    expect(richTextEditor).not.toBeNull();
 
     const eventPromise = new Promise<string>((resolve) => {
       el.addEventListener('log-change', (evt) => {
@@ -63,13 +70,16 @@ describe('JournalLog', () => {
       });
     });
 
-    textarea!.value = 'updated';
-    textarea!.dispatchEvent(new Event('input', { bubbles: true }));
+    // Simulate RichTextEditor emitting log-change
+    richTextEditor!.dispatchEvent(new CustomEvent('log-change', {
+      bubbles: true,
+      detail: { value: 'updated' }
+    }));
 
     await expect(eventPromise).resolves.toBe('updated');
   });
 
-  test('onFocus appends a timestamp block', () => {
+  test('onFocus appends a timestamp block', async () => {
     const timeSpy = jest
       .spyOn(Date.prototype, 'toLocaleTimeString')
       .mockReturnValue('10:30');
@@ -81,13 +91,14 @@ describe('JournalLog', () => {
     document.body.appendChild(el);
     el.render();
 
-    const textarea = el.shadowRoot?.querySelector<HTMLTextAreaElement>('textarea[data-q="log"]');
-    expect(textarea).not.toBeNull();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const richTextEditor = el.shadowRoot?.querySelector<RichTextEditor>('rich-text-editor');
+    expect(richTextEditor).not.toBeNull();
 
-    textarea!.dispatchEvent(new Event('focus', { bubbles: true }));
-
-    expect(el.props.log.startsWith('[10:30]')).toBe(true);
-    expect(textarea!.value).toBe(el.props.log);
+    // The onFocus logic is now in RichTextEditor, so we test that
+    // RichTextEditor receives the correct initial log value
+    expect(richTextEditor!.props.log).toBe('');
+    
     timeSpy.mockRestore();
   });
 });

@@ -3,6 +3,8 @@ import { BaseComponent } from '../Base/BaseComponent.ts';
 import template from 'bundle-text:./JournalLog.pug';
 import styles from 'bundle-text:./JournalLog.css';
 import { IPropTypes } from '../../models/index.ts';
+import { nextMicrotask, whenUpgraded } from '../../utils/elements.ts';
+import { RichTextEditor } from '../RichTextEditor/RichTextEditor.ts';
 
 export interface JournalLogProps extends IPropTypes {
   log: string;
@@ -40,36 +42,53 @@ export class JournalLog extends BaseComponent<JournalLogProps, JournalLogEvents>
       ta.value = this.props.log ?? '';
     }
     if (ta) ta.readOnly = !!this.props.readonly;
+    this.hydrateChildren();
+  }
+
+  private async hydrateChildren() {
+    if (!this.shadowRoot) return;
+    const { log, i18n } = this.props;
+
+    // Give the browser a microtask to upgrade child custom elements
+    await nextMicrotask();
+
+    const richTextEditor = this.shadowRoot.querySelector('#richTextEditor');
+    if (richTextEditor) {
+      await whenUpgraded(richTextEditor, 'rich-text-editor');
+      const editor = richTextEditor as RichTextEditor;
+      editor.props.i18n = i18n;
+      editor.props.log = log ?? '';
+      editor.props.readonly = this.props.readonly;
+      editor.props.placeholder = t(
+        i18n,
+        this.props.placeholderKey ?? 'Write your journal entry here...'
+      );
+      
+      // Listen for log-change events from RichTextEditor and re-emit
+      editor.addEventListener('log-change', (evt) => {
+        const detail = (evt as CustomEvent<{ value: string }>).detail;
+        this.setProp('log', detail.value);
+        this.emit('log-change', detail);
+      });
+      
+      editor.render();
+    }
   }
 
   override updateBindings(key?: keyof JournalLogProps & string): void {
     super.updateBindings(key);
     if (!this.shadowRoot) return;
-    if (!key || key === 'i18n' || key === 'labelKey' || key === 'placeholderKey') {
+    if (!key || key === 'i18n' || key === 'labelKey') {
       this.syncStrings();
-    }
-    if (!key || key === 'log') {
-      const ta = this.shadowRoot.querySelector<HTMLTextAreaElement>('textarea[data-q="log"]');
-      if (ta && ta.value !== (this.props.log ?? '')) {
-        ta.value = this.props.log ?? '';
-      }
-      if (ta) ta.readOnly = !!this.props.readonly;
     }
   }
 
   private syncStrings(): void {
     if (!this.shadowRoot) return;
     const label = t(this.props.i18n, this.props.labelKey ?? 'Log');
-    const placeholder = t(
-      this.props.i18n,
-      this.props.placeholderKey ?? 'Write your journal entry here...',
-    );
 
     const labelEl = this.shadowRoot.querySelector<HTMLElement>('[data-js="label"]');
     if (labelEl) labelEl.textContent = label;
-
-    const ta = this.shadowRoot.querySelector<HTMLTextAreaElement>('textarea[data-q="log"]');
-    if (ta) ta.placeholder = placeholder;
   }
 
   private onFocus() {

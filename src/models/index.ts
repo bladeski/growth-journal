@@ -9,7 +9,7 @@ import {
   IQuestionResponse,
   IRatingQuestion,
   ISingleSelectQuestion,
-  ITextQuestion,
+  ITextQuestion
 } from './IQuestion.ts';
 import { ISectionState } from './ISectionState.ts';
 import { ISectionTemplate } from './ISectionTemplate.ts';
@@ -50,5 +50,5 @@ export type {
   GenericMap,
   ValueChallengePair,
   JournalDayTemplates,
-  SectionTemplateWithMeta,
+  SectionTemplateWithMeta
 };

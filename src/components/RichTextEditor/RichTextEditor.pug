@@ -1,0 +1,14 @@
+#editor.input(data-action="update:onUpdate" aria-labelledby="journal-log-label")
+  #toolbar
+    .toolbar-group 
+      button(type="button" data-action="click:toolbarHeading" data-level="1") H1
+      button(type="button" data-action="click:toolbarHeading" data-level="2") H2
+      button(type="button" data-action="click:toolbarHeading" data-level="3") H3
+    .toolbar-group
+      button.bold(type="button" data-action="click:toolbarBold") B
+      button.italic(type="button" data-action="click:toolbarItalic") i
+      button.underline(type="button" data-action="click:toolbarUnderline") U
+    .toolbar-group 
+      button(type="button" data-action="click:toolbarBulletList") • List
+      button(type="button" data-action="click:toolbarOrderedList") 1. List
+  #placeholder {{placeholder}}

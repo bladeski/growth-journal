@@ -8,7 +8,7 @@ const DB_VERSION = 3;
 const STORES = {
   entries: 'entries',
   dictionaries: 'dictionaries',
-  settings: 'settings',
+  settings: 'settings'
 } as const;
 
 type DictionaryRow = {
@@ -197,7 +197,7 @@ function txDone(t: IDBTransaction): Promise<void> {
 function iterateByKey(
   os: IDBObjectStore,
   range: IDBKeyRange | undefined,
-  onValue: (value: unknown) => void,
+  onValue: (value: unknown) => void
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const req = os.openCursor(range);

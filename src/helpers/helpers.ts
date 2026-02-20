@@ -7,7 +7,7 @@ import {
   TemplateQuestion,
   GenericMap,
   ValueChallengePair,
-  TemplateSection,
+  TemplateSection
 } from '../models/index.ts';
 import DataService from '../services/data.service.ts';
 
@@ -17,7 +17,7 @@ function pickRandom<T>(items: readonly T[]): T {
 
 function pickRandomValueChallenge(
   map: GenericMap,
-  allowedValues?: readonly string[],
+  allowedValues?: readonly string[]
 ): ValueChallengePair {
   const values = Object.keys(map);
   const candidates =
@@ -40,7 +40,7 @@ function normalizeQuestion(q: TemplateQuestion): Question {
         promptKey: q.promptKey,
         required: q.required,
         placeholderKey: q.placeholderKey,
-        helpTextKey: q.helpTextKey,
+        helpTextKey: q.helpTextKey
       };
 
     // template.json uses `select`, app model uses `single-select`
@@ -55,8 +55,8 @@ function normalizeQuestion(q: TemplateQuestion): Question {
         options: (q.options ?? []).map((o) => ({
           id: o.value,
           labelKey: o.labelKey,
-          value: o.value,
-        })),
+          value: o.value
+        }))
       };
 
     default:
@@ -67,7 +67,7 @@ function normalizeQuestion(q: TemplateQuestion): Question {
         promptKey: q.promptKey,
         required: q.required,
         placeholderKey: q.placeholderKey,
-        helpTextKey: q.helpTextKey,
+        helpTextKey: q.helpTextKey
       };
   }
 }
@@ -79,7 +79,7 @@ function toSectionTemplate(section: TemplateSection): SectionTemplateWithMeta {
     titleKey: section.titleKey,
     descriptionKey: section.descriptionKey,
     version: section.version,
-    questions: section.questions.map(normalizeQuestion),
+    questions: section.questions.map(normalizeQuestion)
   };
 
   if (section.value != null) base.value = section.value;
@@ -95,14 +95,14 @@ function resolveQuestionStrings(i18n: I18n, q: Question): Question {
         ...q,
         promptKey: t(i18n, q.promptKey),
         placeholderKey: q.placeholderKey ? t(i18n, q.placeholderKey) : undefined,
-        helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
+        helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined
       };
 
     case 'number':
       return {
         ...q,
         promptKey: t(i18n, q.promptKey),
-        helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
+        helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined
       };
 
     case 'boolean':
@@ -111,7 +111,7 @@ function resolveQuestionStrings(i18n: I18n, q: Question): Question {
         promptKey: t(i18n, q.promptKey),
         helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
         trueLabelKey: q.trueLabelKey ? t(i18n, q.trueLabelKey) : undefined,
-        falseLabelKey: q.falseLabelKey ? t(i18n, q.falseLabelKey) : undefined,
+        falseLabelKey: q.falseLabelKey ? t(i18n, q.falseLabelKey) : undefined
       };
 
     case 'single-select':
@@ -122,14 +122,14 @@ function resolveQuestionStrings(i18n: I18n, q: Question): Question {
         helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
         options: q.options.map((o) => ({
           ...o,
-          labelKey: t(i18n, o.labelKey),
-        })),
+          labelKey: t(i18n, o.labelKey)
+        }))
       };
 
     case 'rating': {
       const nextLabelKeys: Record<number, string> | undefined = q.labelKeys
         ? (Object.fromEntries(
-            Object.entries(q.labelKeys).map(([k, v]) => [Number(k), t(i18n, v)]),
+            Object.entries(q.labelKeys).map(([k, v]) => [Number(k), t(i18n, v)])
           ) as Record<number, string>)
         : undefined;
 
@@ -137,7 +137,7 @@ function resolveQuestionStrings(i18n: I18n, q: Question): Question {
         ...q,
         promptKey: t(i18n, q.promptKey),
         helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
-        labelKeys: nextLabelKeys,
+        labelKeys: nextLabelKeys
       };
     }
   }
@@ -150,7 +150,7 @@ function resolveTemplateStrings(i18n: I18n, tpl: SectionTemplateWithMeta): Secti
     descriptionKey: tpl.descriptionKey ? t(i18n, tpl.descriptionKey) : undefined,
     value: tpl.value != null ? t(i18n, tpl.value) : undefined,
     challenge: tpl.challenge != null ? t(i18n, tpl.challenge) : undefined,
-    questions: tpl.questions.map((q) => resolveQuestionStrings(i18n, q)),
+    questions: tpl.questions.map((q) => resolveQuestionStrings(i18n, q))
   };
 }
 
@@ -161,7 +161,7 @@ function resolveTemplateStrings(i18n: I18n, tpl: SectionTemplateWithMeta): Secti
 export async function getJournalDayTemplates(
   i18n: I18n,
   existingValueChallenge?: ValueChallengePair,
-  allowedValues?: readonly string[],
+  allowedValues?: readonly string[]
 ): Promise<{ templates: JournalDayTemplates; valueChallenge: ValueChallengePair } | null> {
   const dataService = DataService.getInstance();
   const tplFile = await dataService.getTemplateFile();
@@ -188,14 +188,14 @@ export async function getJournalDayTemplates(
     toSectionTemplate({
       ...(morningRaw as TemplateSection),
       value: morningValue,
-      challenge: morningChallenge,
-    }),
+      challenge: morningChallenge
+    })
   );
   const middayTpl = resolveTemplateStrings(i18n, toSectionTemplate(middayRaw as TemplateSection));
   const eveningTpl = resolveTemplateStrings(i18n, toSectionTemplate(eveningRaw as TemplateSection));
   const accountabilityTpl = resolveTemplateStrings(
     i18n,
-    toSectionTemplate(accountabilityRaw as TemplateSection),
+    toSectionTemplate(accountabilityRaw as TemplateSection)
   );
 
   return {
@@ -203,9 +203,9 @@ export async function getJournalDayTemplates(
       morning: morningTpl,
       midday: middayTpl,
       evening: eveningTpl,
-      accountability: accountabilityTpl,
+      accountability: accountabilityTpl
     },
-    valueChallenge,
+    valueChallenge
   };
 }
 
@@ -215,6 +215,6 @@ export async function getGrowthAreas(i18n: I18n): Promise<Array<{ id: string; la
   const keys = Object.keys(areaValueMap) as (keyof typeof areaValueMap)[];
   return keys.map((key) => ({
     id: key,
-    label: t(i18n, key),
+    label: t(i18n, key)
   }));
 }

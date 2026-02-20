@@ -18,7 +18,7 @@ const logger = LoggingService.getInstance();
  */
 export abstract class BaseComponent<
   TProps extends IPropTypes = Record<string, never>,
-  TEvents = Record<string, never>,
+  TEvents = Record<string, never>
 >
   extends HTMLElement
   implements IBaseComponent<TProps, TEvents>
@@ -94,13 +94,15 @@ export abstract class BaseComponent<
   constructor(
     template?: string | ((locals?: { props: TProps }) => string),
     initialProps?: Partial<TProps>,
-    styles?: string[],
+    styles?: string[]
   ) {
     super();
     this.attachShadow({ mode: 'open' });
 
     // Always include base styles, then component-specific styles
-    const allStyles: string[] = [baseStyles as unknown as string];
+    const allStyles: string[] = [
+      initialProps?.hideBaseStyles ? '' : (baseStyles as unknown as string)
+    ];
     if (Array.isArray(styles) && styles.length > 0) {
       allStyles.push(...styles.filter(Boolean));
     }
@@ -108,9 +110,9 @@ export abstract class BaseComponent<
     // store styles (decide whether each is a path)
     if (allStyles.length > 0) {
       this.styles = allStyles;
-      const pathRegex = /(^\.\/|^\/|\.css$|^https?:\/\/)/i;
+      const pathRegex = /^(https?:\/\/.*|\.\/.*|\/.*?)\.css$/i;
       for (const s of this.styles) {
-        if (pathRegex.test(s)) this.stylesIsPath.add(s);
+        if (pathRegex.test(s.trim())) this.stylesIsPath.add(s);
       }
     }
 
@@ -122,7 +124,7 @@ export abstract class BaseComponent<
           this.updateBindings(prop as keyof TProps & string);
         }
         return res;
-      },
+      }
     };
 
     // create proxied props object and use it for this.props
@@ -419,7 +421,7 @@ export abstract class BaseComponent<
           // Use setProp to keep attributes and bindings in sync
           // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           this.setProp(propName as keyof TProps & string, v as TProps[keyof TProps & string]);
-        },
+        }
       });
     } catch (e) {
       // non-fatal: if defineProperty fails, continue without accessor
@@ -497,7 +499,7 @@ export abstract class BaseComponent<
             const url =
               typeof quotedUrl === 'string' && quotedUrl.length > 0 ? quotedUrl : unquotedUrl || '';
             return `${before} href="${url}"`;
-          },
+          }
         );
 
       this.shadowRoot.innerHTML += processed;
@@ -510,7 +512,7 @@ export abstract class BaseComponent<
         const anchors = this.shadowRoot.querySelectorAll('a[data-href]');
         if (anchors.length > 0) {
           logger.debug(
-            `BaseComponent runtime fallback: fixing ${anchors.length} anchor(s) with data-href`,
+            `BaseComponent runtime fallback: fixing ${anchors.length} anchor(s) with data-href`
           );
         }
         anchors.forEach((a) => {

@@ -44,7 +44,7 @@ export class JournalService {
 
   async applyAnswer(
     entry: IJournalEntry,
-    detail: { sectionKind: SectionKind; questionId: string; value: ResponseValue },
+    detail: { sectionKind: SectionKind; questionId: string; value: ResponseValue }
   ): Promise<IJournalEntry> {
     await this.ready;
     const copy: IJournalEntry = JSON.parse(JSON.stringify(entry));
@@ -61,7 +61,7 @@ export class JournalService {
     // copy[key] = copy[key] ?? emptySectionState(tpl);
     copy[key] = upsertResponse(copy[key]!, {
       questionId: detail.questionId,
-      response: detail.value,
+      response: detail.value
     });
     copy.updatedAt = new Date().toISOString();
     await this.storage.saveEntry(copy);

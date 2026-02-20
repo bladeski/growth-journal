@@ -96,7 +96,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
                 const boxes = q.options
                   .map(
                     (o) =>
-                      `<label for="${id}_${o.id}" id="${id}_${o.id}_label"><input id="${id}_${o.id}" name="${name}" type="checkbox" value="${o.id}" data-action="change:onMultiSelectChange" data-qid="${q.id}" aria-labelledby="${id}_${o.id}_label" ${q.helpTextKey ? `aria-describedby="${helpId}"` : ''} ${this.props.readonly ? 'disabled' : ''}>${t(i18n, o.labelKey)}</label>`,
+                      `<label for="${id}_${o.id}" id="${id}_${o.id}_label"><input id="${id}_${o.id}" name="${name}" type="checkbox" value="${o.id}" data-action="change:onMultiSelectChange" data-qid="${q.id}" aria-labelledby="${id}_${o.id}_label" ${q.helpTextKey ? `aria-describedby="${helpId}"` : ''} ${this.props.readonly ? 'disabled' : ''}>${t(i18n, o.labelKey)}</label>`
                   )
                   .join('');
                 return `<div class="q" data-qid="${q.id}" data-kind="multi-select">${label}<div class="checks">${boxes}</div></div>`;
@@ -118,7 +118,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
           .replace('__GJ_QUESTIONS__', qHtml);
       },
       undefined,
-      [styles],
+      [styles]
     );
   }
 
@@ -169,7 +169,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
 
       if (q.kind === 'text' || q.kind === 'long-text') {
         const el = root.querySelector<HTMLElement>(
-          `[data-qid="${q.id}"][data-action*="onTextInput"]`,
+          `[data-qid="${q.id}"][data-action*="onTextInput"]`
         );
         const input = el as HTMLInputElement | HTMLTextAreaElement | null;
         if (input) {
@@ -180,7 +180,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
 
       if (q.kind === 'number') {
         const input = root.querySelector<HTMLInputElement>(
-          `input[type="number"][data-qid="${q.id}"][data-action*="onNumberInput"]`,
+          `input[type="number"][data-qid="${q.id}"][data-action*="onNumberInput"]`
         );
         if (input) {
           input.value = r?.kind === 'number' ? String(r.value) : '';
@@ -190,10 +190,10 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
 
       if (q.kind === 'boolean') {
         const trueInp = root.querySelector<HTMLInputElement>(
-          `input[type="radio"][data-qid="${q.id}"][value="true"][data-action*="onBooleanInput"]`,
+          `input[type="radio"][data-qid="${q.id}"][value="true"][data-action*="onBooleanInput"]`
         );
         const falseInp = root.querySelector<HTMLInputElement>(
-          `input[type="radio"][data-qid="${q.id}"][value="false"][data-action*="onBooleanInput"]`,
+          `input[type="radio"][data-qid="${q.id}"][value="false"][data-action*="onBooleanInput"]`
         );
         const val = r?.kind === 'boolean' ? r.value : false;
         if (trueInp && falseInp) {
@@ -206,7 +206,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
 
       if (q.kind === 'single-select') {
         const select = root.querySelector<HTMLSelectElement>(
-          `select[data-qid="${q.id}"][data-action*="onSingleSelectChange"]`,
+          `select[data-qid="${q.id}"][data-action*="onSingleSelectChange"]`
         );
         if (select) {
           select.value = r?.kind === 'single-select' ? r.value : '';
@@ -217,7 +217,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
       if (q.kind === 'multi-select') {
         const selected = new Set(r?.kind === 'multi-select' ? r.value : []);
         const boxes = root.querySelectorAll<HTMLInputElement>(
-          `input[type="checkbox"][data-qid="${q.id}"][data-action*="onMultiSelectChange"]`,
+          `input[type="checkbox"][data-qid="${q.id}"][data-action*="onMultiSelectChange"]`
         );
         boxes.forEach((b) => {
           b.checked = selected.has(b.value);
@@ -227,7 +227,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
 
       if (q.kind === 'rating') {
         const range = root.querySelector<HTMLInputElement>(
-          `input[type="range"][data-qid="${q.id}"][data-action*="onRatingInput"]`,
+          `input[type="range"][data-qid="${q.id}"][data-action*="onRatingInput"]`
         );
         const label = root.querySelector<HTMLElement>(`.rating-label[data-qid="${q.id}"]`);
         const min = q.scaleMin ?? 1;
@@ -247,7 +247,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
 
   private renderLabel(
     q: ISectionTemplate['questions'][number],
-    r: ResponseValue | undefined,
+    r: ResponseValue | undefined
   ): string {
     const { i18n } = this.props;
 
@@ -276,7 +276,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
     this.emit('section-answer', {
       sectionKind: this.props.template.kind,
       questionId: qid,
-      value: response,
+      value: response
     });
   }
 
@@ -291,7 +291,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
     this.emit('section-answer', {
       sectionKind: this.props.template.kind,
       questionId: qid,
-      value: response,
+      value: response
     });
   }
 
@@ -305,7 +305,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
     this.emit('section-answer', {
       sectionKind: this.props.template.kind,
       questionId: qid,
-      value: response,
+      value: response
     });
   }
 
@@ -318,7 +318,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
     this.emit('section-answer', {
       sectionKind: this.props.template.kind,
       questionId: qid,
-      value: response,
+      value: response
     });
   }
 
@@ -327,7 +327,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
     const qid = tgt.dataset.qid;
     if (!qid) return;
     const checkboxes = this.shadowRoot?.querySelectorAll<HTMLInputElement>(
-      `input[type="checkbox"][data-qid="${qid}"]`,
+      `input[type="checkbox"][data-qid="${qid}"]`
     );
     if (!checkboxes) return;
     const selected = Array.from(checkboxes)
@@ -338,7 +338,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
     this.emit('section-answer', {
       sectionKind: this.props.template.kind,
       questionId: qid,
-      value: response,
+      value: response
     });
   }
 
@@ -353,7 +353,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
     this.emit('section-answer', {
       sectionKind: this.props.template.kind,
       questionId: qid,
-      value: response,
+      value: response
     });
   }
 

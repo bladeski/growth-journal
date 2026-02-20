@@ -4,7 +4,7 @@ import {
   IPropTypes,
   ISectionState,
   ISectionTemplate,
-  ValueChallengePair,
+  ValueChallengePair
 } from '../../models/index.ts';
 import { emptySectionState } from '../../models/logic.ts';
 import { nextMicrotask, whenUpgraded } from '../../utils/elements.ts';
@@ -51,7 +51,7 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
     if (!this.shadowRoot) return;
     const path = typeof evt.composedPath === 'function' ? evt.composedPath() : [];
     const opened = path.find(
-      (n) => n instanceof HTMLElement && n.tagName.toLowerCase() === 'journal-section',
+      (n) => n instanceof HTMLElement && n.tagName.toLowerCase() === 'journal-section'
     ) as HTMLElement | undefined;
     if (!opened) return;
 
@@ -138,8 +138,8 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
         new CustomEvent('value-challenge-change', {
           detail: { valueChallenge: this.valueChallenge },
           bubbles: true,
-          composed: true,
-        }),
+          composed: true
+        })
       );
     }
 
@@ -157,7 +157,7 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
         getState: () => entry.morningIntention,
         setState: (s) => {
           entry.morningIntention = s;
-        },
+        }
       },
       {
         selector: '#sec-midday',
@@ -165,7 +165,7 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
         getState: () => entry.middayCheckin,
         setState: (s) => {
           entry.middayCheckin = s;
-        },
+        }
       },
       {
         selector: '#sec-evening',
@@ -173,7 +173,7 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
         getState: () => entry.eveningReflection,
         setState: (s) => {
           entry.eveningReflection = s;
-        },
+        }
       },
       {
         selector: '#sec-accountability',
@@ -181,8 +181,8 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
         getState: () => entry.accountability,
         setState: (s) => {
           entry.accountability = s;
-        },
-      },
+        }
+      }
     ];
 
     for (const row of rows) {

@@ -8,8 +8,8 @@ export function openDB(
     db: IDBDatabase,
     oldVersion: number,
     newVersion: number | null,
-    tx: IDBTransaction,
-  ) => void,
+    tx: IDBTransaction
+  ) => void
 ): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(name, version);

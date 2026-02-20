@@ -67,11 +67,11 @@ class LocalStorageAdapter implements StoragePort {
   }
   async byDateRange(start: string, end: string) {
     const dates = (await this.listDates()).filter(
-      (d) => d >= start.slice(0, 10) && d <= end.slice(0, 10),
+      (d) => d >= start.slice(0, 10) && d <= end.slice(0, 10)
     );
     const entries = await Promise.all(dates.map((d) => this.getEntry(d)));
     return (entries.filter(Boolean) as IJournalEntry[]).sort((a, b) =>
-      a.date.localeCompare(b.date),
+      a.date.localeCompare(b.date)
     );
   }
   async byTag(tag: string) {
