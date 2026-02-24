@@ -1,33 +1,25 @@
 /// <reference lib="webworker" />
 declare const self: ServiceWorkerGlobalScope;
 
-// Load logging proxy dynamically to avoid import-time failures inside the
-// Service Worker execution environment. Some logger builds reference DOM
-// globals that are unavailable in workers; importing at runtime prevents
-// module evaluation from aborting the entire worker script.
-let Logger: Console | LoggingService = console;
+import { LoggingService } from '@bladeski/logger/dist/index.js';
 
-void import('./sw-logger-proxy.ts')
-  .then((mod) => {
-    try {
-      const LoggingService = mod.LoggingService;
-      if (LoggingService && typeof LoggingService.initialize === 'function') {
-        LoggingService.initialize({
-          applicationName: 'GrowthJournalServiceWorker',
-          enableConsoleCore: false,
-          autoRegisterIndexedDBAdvancedLogger: true,
-        });
-      }
-      if (LoggingService && typeof LoggingService.getInstance === 'function') {
-        Logger = LoggingService.getInstance();
-      }
-    } catch (e) {
-      console.error('Failed to initialize LoggingService in SW', e);
-    }
-  })
-  .catch((e) => {
-    console.error('Failed to import sw-logger-proxy in SW', e);
-  });
+// Initialize logging proxy in the SW scope. Use console as a safe fallback.
+let Logger: Console | LoggingService = console;
+try {
+  if (LoggingService && typeof LoggingService.initialize === 'function') {
+    LoggingService.initialize({
+      applicationName: 'GrowthJournalServiceWorker',
+      enableConsoleCore: false,
+      enableLocalStorageCore: false,
+      autoRegisterIndexedDBAdvancedLogger: true,
+    });
+  }
+  if (LoggingService && typeof LoggingService.getInstance === 'function') {
+    Logger = LoggingService.getInstance();
+  }
+} catch (e) {
+  console.error('Failed to initialize LoggingService in SW', e);
+}
 
 const CACHE_NAME = 'growth-journal-v1';
 const urlsToCache = ['/', '/index.html', '/manifest.json'];
@@ -228,7 +220,6 @@ async function syncJournalEntries() {
   Logger.info('Syncing journal entries...');
 }
 
-import { LoggingService } from '@bladeski/logger';
 // Simple message-based IndexedDB handling for client requests
 import type { ISwMessage } from './models/index.ts';
 

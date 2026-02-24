@@ -6,6 +6,13 @@ fieldset {
   height: 100%;
 }
 
-textarea {
-  height: 100%;
+rich-text-editor {
+  flex-grow: 1;
+  flex-shrink: 1;
+  height: 0;
+}
+
+.add-entry {
+  width: max-content;
+  background-color: var(--color-primary-light);
 }

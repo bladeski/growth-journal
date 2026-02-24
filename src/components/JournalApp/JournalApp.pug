@@ -2,28 +2,29 @@ style.
   .hidden { display: none; }
 
 main.app
-  #error.hidden
+  #error.hidden(role="alert" aria-live="assertive")
     | {{error}}
-  #loading Loading…
+  #loading(role="status" aria-live="polite" aria-label="Loading journal") Loading…
   #content.hidden
     header
       .heading
         img(src="/src/images/logo.svg", alt="Growth Journal Logo. A stylised image of a sprout.")
         h1 Growth Journal
       .settings
-        .date-picker-bar
-          button#prev-day.btn.btn-icon(data-action="click:prevDay") <
-          button#next-day.btn.btn-icon(data-action="click:nextDay") >
+        .date-picker-bar(role="group" aria-label="Date navigation")
+          button#prev-day.btn.btn-icon(data-action="click:prevDay" aria-label="Previous day") <
+          button#next-day.btn.btn-icon(data-action="click:nextDay" aria-label="Next day") >
           label(for="date-picker") Date:
-          input#date-picker(type="date" data-action="change:onDateChange")
-        button#settings-btn.btn(data-action="click:openSettings") Settings
-    dialog#settings
-      h2 Settings
-        button.btn.btn-icon(data-action="click:closeSettings") ╳
+          input#date-picker(type="date" data-action="change:onDateChange" aria-label="Select journal date")
+        button#settings-btn.btn(data-action="click:openSettings" aria-label="Open settings") Settings
+    dialog#settings(aria-labelledby="settings-title")
+      h2#settings-title Settings
+        button.btn.btn-icon(data-action="click:closeSettings" aria-label="Close settings") ╳
       .setting
         label(for="setting-growth-area") Growth Area:
         select#setting-growth-area(
           data-action="change:onSettingChange"
           name="growthArea"
+          aria-label="Select growth area"
         )
     journal-day#day

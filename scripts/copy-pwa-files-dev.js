@@ -6,6 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const src = path.join(root, 'src');
 const devDist = path.join(root, 'dev-dist');
+const swDist = path.join(root, 'dev-dist-sw');
 
 async function exists(p) {
   try {
@@ -35,7 +36,7 @@ async function copyDir(srcDir, destDir) {
 async function newestSwFile(dir) {
   if (!(await exists(dir))) return null;
   const files = await fs.readdir(dir);
-  const swFiles = files.filter((f) => /^sw\..*\.js$/i.test(f));
+  const swFiles = files.filter((f) => /^sw(?:\..+)?\.js$/i.test(f));
   if (swFiles.length === 0) return null;
 
   let newest = null;
@@ -54,11 +55,11 @@ async function newestSwFile(dir) {
 async function main() {
   await copyFile(path.join(src, 'manifest.json'), devDist);
 
-  const swCandidate = await newestSwFile(devDist);
+  const swCandidate = await newestSwFile(swDist);
   if (swCandidate) {
     await copyFile(swCandidate, devDist, 'sw.js');
   } else {
-    await copyFile(path.join(src, 'sw.ts'), devDist, 'sw.js');
+    throw new Error('No built service worker found in dev-dist-sw. Run npm run build:sw:dev first.');
   }
 
   const iconsDir = path.join(src, 'icons');

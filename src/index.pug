@@ -22,7 +22,7 @@ html(lang="en")
     title Growth Journal
     link(rel="preconnect" href="https://fonts.googleapis.com")
     link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
-    link(href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Inter:wght@300;600&display=swap" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet")
     link(rel="stylesheet" href="./styles/styles.css")
     link(rel="preload" href="./styles/base.css" as="style" onload="this.onload=null;this.rel='stylesheet'")
     noscript
@@ -47,7 +47,7 @@ html(lang="en")
         }catch(e){}
       })();
   body
-    #app
+    #app(role="application" aria-label="Growth Journal Application")
       journal-app#journal-app
     // PWA UI elements (hidden by default). PWAManager will show them when appropriate.
     #pwa-ui

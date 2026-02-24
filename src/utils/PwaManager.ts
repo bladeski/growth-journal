@@ -57,7 +57,7 @@ export class PWAManager {
         // Use Parcel's bundling to produce a proper JS worker file in dev and prod.
         // new URL(..., import.meta.url) lets the bundler provide the correct served URL
         // for the worker source (src/sw.ts). Register as a module so TS/ESM code works.
-        const swUrl = new URL('../sw.ts', import.meta.url);
+        const swUrl = new URL('sw.js', window.location.origin);
         const registration = await navigator.serviceWorker.register(swUrl.toString(), {
           type: 'module',
         });
@@ -116,9 +116,8 @@ export class PWAManager {
    */
   private setupBeforeInstallPrompt(): void {
     window.addEventListener('beforeinstallprompt', (e) => {
-      logger.info('PWAManager: beforeinstallprompt fired');
-      // Prevent the automatic prompt so we can show it on a user gesture
-      e.preventDefault();
+      logger.debug('PWAManager: beforeinstallprompt fired');
+
       this.deferredPrompt = e;
       this.showInstallButton();
       // Helpful debug: expose on window for quick manual invocation in console
@@ -139,7 +138,7 @@ export class PWAManager {
 
     const container = document.querySelector('.install-container') as HTMLElement | null;
     if (!container) return;
-    logger.info('PWAManager: showing install container');
+    logger.debug('PWAManager: showing install container');
     container.style.display = 'flex';
 
     const installBtn = document.getElementById('install-button');
@@ -182,7 +181,7 @@ export class PWAManager {
       const choiceResult = await this.deferredPrompt.userChoice;
 
       if (choiceResult.outcome === 'accepted') {
-        logger.info('User accepted the install prompt');
+        logger.debug('User accepted the install prompt');
         // Hide the install UI after acceptance
         const container = document.querySelector('.install-container') as HTMLElement | null;
         if (container) {
@@ -196,7 +195,7 @@ export class PWAManager {
           // ignore
         }
       } else {
-        logger.info('User dismissed the install prompt');
+        logger.debug('User dismissed the install prompt');
       }
 
       this.deferredPrompt = null;
