@@ -52,26 +52,26 @@ export class JournalLog extends BaseComponent<JournalLogProps, JournalLogEvents>
     // Give the browser a microtask to upgrade child custom elements
     await nextMicrotask();
 
-    const richTextEditor = this.shadowRoot.querySelector('#richTextEditor');
+    const richTextEditor = this.shadowRoot.querySelector('#richTextEditor') as RichTextEditor;
     if (richTextEditor) {
       await whenUpgraded(richTextEditor, 'rich-text-editor');
-      const editor = richTextEditor as RichTextEditor;
-      editor.props.i18n = i18n;
-      editor.props.log = log ?? '';
-      editor.props.readonly = this.props.readonly;
-      editor.props.placeholder = t(
+      richTextEditor.props.i18n = i18n;
+      richTextEditor.props.log = log ?? '';
+      richTextEditor.props.readonly = this.props.readonly;
+      richTextEditor.props.label = t(i18n, this.props.labelKey ?? 'Log');
+      richTextEditor.props.placeholder = t(
         i18n,
-        this.props.placeholderKey ?? 'Write your journal entry here...'
+        this.props.placeholderKey ?? 'Write your journal entry here...',
       );
-      
+
       // Listen for log-change events from RichTextEditor and re-emit
-      editor.addEventListener('log-change', (evt) => {
+      richTextEditor.addEventListener('log-change', (evt) => {
         const detail = (evt as CustomEvent<{ value: string }>).detail;
         this.setProp('log', detail.value);
         this.emit('log-change', detail);
       });
-      
-      editor.render();
+
+      richTextEditor.render();
     }
   }
 
@@ -87,8 +87,11 @@ export class JournalLog extends BaseComponent<JournalLogProps, JournalLogEvents>
     if (!this.shadowRoot) return;
     const label = t(this.props.i18n, this.props.labelKey ?? 'Log');
 
-    const labelEl = this.shadowRoot.querySelector<HTMLElement>('[data-js="label"]');
-    if (labelEl) labelEl.textContent = label;
+    // Update RichTextEditor label
+    const richTextEditor = this.shadowRoot.querySelector('#richTextEditor') as RichTextEditor;
+    if (richTextEditor && richTextEditor.props) {
+      richTextEditor.props.label = label;
+    }
   }
 
   private onFocus() {
@@ -124,6 +127,23 @@ export class JournalLog extends BaseComponent<JournalLogProps, JournalLogEvents>
     const value = (evt.target as HTMLTextAreaElement).value;
     this.setProp('log', value);
     this.emit('log-change', { value });
+  }
+
+  private onAddJournalEntry() {
+    const domParser = new DOMParser();
+    const hasExistingContent =
+      domParser.parseFromString(this.props.log ?? '', 'text/html').body.textContent.length > 0;
+    const existing = this.props.log ?? '';
+    const time = this.getTime();
+    const entryTemplate = `${hasExistingContent ? '<hr>' : ''}<strong><em>[${time}]</em></strong><span style="">&nbsp;</span>`;
+    const next = hasExistingContent ? `${existing}${entryTemplate}` : `${entryTemplate}`;
+    const editor = this.shadowRoot?.querySelector<RichTextEditor>('rich-text-editor');
+    if (editor) {
+      editor.updateContent(next);
+    } else {
+      this.setProp('log', next);
+      this.updateBindings('log');
+    }
   }
 
   private getTime(): string {

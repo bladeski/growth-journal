@@ -32,7 +32,7 @@ describe('JournalLog', () => {
   });
 
   const baseMarkup =
-    '<section class="section"><fieldset><legend>Journal Log</legend><label id="journal-log-label" data-js="label"></label><rich-text-editor id="richTextEditor" aria-labelledby="journal-log-label"></rich-text-editor></fieldset></section>';
+    '<section class="section"><fieldset><legend>Journal Log</legend><button class="add-entry" type="button" data-action="click:onAddJournalEntry" aria-label="Add new journal entry">+ Add Entry</button><rich-text-editor id="richTextEditor"></rich-text-editor></fieldset></section>';
 
   test('renders label and placeholder from i18n', async () => {
     const el = document.createElement(tag) as InstanceType<typeof JournalLog>;
@@ -41,14 +41,12 @@ describe('JournalLog', () => {
     el.shadowRoot!.innerHTML = baseMarkup;
     document.body.appendChild(el);
     el.render();
-
-    const label = el.shadowRoot?.querySelector('[data-js="label"]');
     
     // Wait for RichTextEditor to be upgraded and hydrated
     await new Promise(resolve => setTimeout(resolve, 100));
     
     const richTextEditor = el.shadowRoot?.querySelector<RichTextEditor>('rich-text-editor');
-    expect(label?.textContent).toBe('Log');
+    expect(richTextEditor?.props.label).toBe('Log');
     expect(richTextEditor?.props.placeholder).toBe('Write your journal entry here...');
   });
 

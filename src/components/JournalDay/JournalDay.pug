@@ -1,11 +1,11 @@
-section.day
+section.day(aria-label="Journal entry for {{date}}")
   header.day-header
     h2.day-title {{date}}
-    .value-challenge
-      span.value-label Value: {{valueChallenge.value}}
-      span.challenge-label Challenge: {{valueChallenge.challenge}}
+    .value-challenge(role="group" aria-label="Today's focus")
+      span.value-label(aria-label="Value") Value: {{valueChallenge.value}}
+      span.challenge-label(aria-label="Challenge") Challenge: {{valueChallenge.challenge}}
   .grid
-    .questions
+    .questions(role="region" aria-label="Daily reflection questions")
       journal-section#sec-morning
       journal-section#sec-midday
       journal-section#sec-evening

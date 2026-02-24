@@ -7,5 +7,12 @@ fieldset {
 }
 
 rich-text-editor {
-  height: 100%;
+  flex-grow: 1;
+  flex-shrink: 1;
+  height: 0;
+}
+
+.add-entry {
+  width: max-content;
+  background-color: var(--color-primary-light);
 }

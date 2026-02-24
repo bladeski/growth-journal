@@ -5,6 +5,7 @@ import styles from 'bundle-text:./RichTextEditor.css';
 import { IPropTypes } from '../../models/index.ts';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
+import { TextStyleKit } from '@tiptap/extension-text-style';
 
 enum HeadingLevel {
   h1 = 1,
@@ -12,12 +13,13 @@ enum HeadingLevel {
   h3 = 3,
   h4 = 4,
   h5 = 5,
-  h6 = 6
+  h6 = 6,
 }
 
 export interface RichTextEditorProps extends IPropTypes {
   log: string;
   i18n: I18n;
+  label?: string; // optional label text
   placeholder?: string; // optional override
   readonly?: boolean;
 }
@@ -37,6 +39,7 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
     super(templateFn, undefined, [styles]);
     // defaults
     this.props.log = this.props.log ?? '';
+    this.props.label = this.props.label ?? '';
   }
 
   connectedCallback(): void {
@@ -46,55 +49,92 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
   /** Keep textarea in sync with props.log */
   override render(): void {
     super.render();
+    StarterKit.configure({
+      horizontalRule: {
+        HTMLAttributes: { class: 'horizontal-rule' },
+      },
+    });
     if (!this.editor) {
       this.editor = new Editor({
-        element: this.shadowRoot?.querySelector('#editor'),
+        element: this.shadowRoot?.querySelector('#editor-content'),
         editable: !this.props.readonly,
-        extensions: [StarterKit],
+        extensions: [StarterKit, TextStyleKit],
         content: this.props.log ?? '',
         onUpdate: ({ editor }) => this.onUpdate(editor),
-        onSelectionUpdate: ({ editor }) => this.onSelectionUpdate(editor)
+        onSelectionUpdate: ({ editor }) => this.onSelectionUpdate(editor),
       });
       this.shadowRoot
-        ?.getElementById('editor')
+        ?.getElementById('editor-content')
         ?.classList.toggle('empty', this.editor?.isEmpty ?? true);
     }
   }
 
-  // override updateBindings(key?: keyof RichTextEditorProps & string): void {
-  //   super.updateBindings(key);
-  //   if (!this.shadowRoot) return;
-  //   this.editor?.setEditable(!this.props.readonly);
-  // }
-
-  private onFocus() {
-    const time = this.getTime();
-    if (!this.props.readonly) {
-      const existing = this.props.log ?? '';
-
-      // Replace trailing timestamp line [hh:mm] if present, otherwise append a new timestamp block
-      const lines = existing.split(/\r?\n/);
-      // find last non-empty line
-      let lastIdx = lines.length - 1;
-      while (lastIdx >= 0 && lines[lastIdx].trim() === '') lastIdx--;
-
-      const timeTokenRegex = /^\[\d{1,2}:\d{2}(?:\s?[APMapm]{2})?\]$/;
-      let next = '';
-
-      if (lastIdx >= 0 && timeTokenRegex.test(lines[lastIdx].trim())) {
-        // replace the last timestamp line with the updated time (keep single trailing space)
-        lines[lastIdx] = `[${time}] `;
-        next = lines.join('\n');
-      } else if (existing.trim() === '') {
-        next = `[${time}] `;
-      } else {
-        next = `${existing}\n\n[${time}] `;
-      }
-
-      this.setProp('log', next);
-      this.updateBindings('log');
+  updateContent(log: string): void {
+    if (this.editor && log !== this.props.log) {
+      this.editor.commands.setContent(log);
+      this.setProp('log', log);
+      this.emit('log-change', { value: log });
+      this.editor.commands.focus();
     }
   }
+
+  // private onFocus() {
+  //   const time = this.getTime();
+  //   if (!this.props.readonly && this.editor) {
+  //     const timeTokenRegex = /^\[\d{1,2}:\d{2}(?:\s?[APMapm]{2})?\]\s*$/;
+  //     const newTimestamp = `[${time}] `;
+
+  //     // Get the last node with content
+  //     const lastNode = this.editor.state.doc.lastChild;
+  //     const isTimestampNode = lastNode && timeTokenRegex.test(lastNode.textContent.trim());
+  //     const { state, commands } = this.editor;
+
+  //     if (isTimestampNode) {
+  //       // Update the existing timestamp node by replacing its text
+
+  //       // commands.setTextSelection({ from: lastNodeStart, to: state.doc.content.size });
+  //       // commands.deleteSelection();
+  //       // lastNode.type.name
+
+  //       this.editor
+  //         .chain()
+  //         .focus('end')
+  //         .deleteRange({ from: state.doc.content.size - lastNode.nodeSize, to: state.doc.content.size })
+  //         // .deleteNode(lastNode.type.name)
+  //         // .deleteSelection()
+  //         .focus('end')
+  //         .setBold()
+  //         .setItalic()
+  //         .insertContent(newTimestamp)
+  //         .toggleBold()
+  //         .unsetItalic()
+  //         .focus('end')
+  //         .run();
+  //       // commands.updateAttributes('paragraph', { class: 'timestamp' });
+  //     } else {
+  //       // Create a new timestamp paragraph
+  //       // commands.setHorizontalRule();
+  //       // commands.insertContent(newTimestamp);
+  //       this.editor
+  //         .chain()
+  //         .setHorizontalRule()
+  //         .setBold()
+  //         .setItalic()
+  //         .setMark('textStyle', { class: 'timestamp' })
+  //         .insertContent(newTimestamp)
+  //         .unsetBold()
+  //         .unsetItalic()
+  //         .focus('end')
+  //         .run();
+  //       // commands.updateAttributes('paragraph', { class: 'timestamp' });
+  //     }
+
+  //     // this.editor.commands;
+  //     const updatedContent = this.editor.getHTML() ?? '';
+  //     this.setProp('log', updatedContent);
+  //     this.updateBindings('log');
+  //   }
+  // }
 
   private toolbarHeading(event: Event) {
     const target = event.currentTarget as HTMLElement;
@@ -106,7 +146,7 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
       const btnLevel = parseInt(btn.getAttribute('data-level')!) as HeadingLevel;
       btn.classList.toggle(
         'active',
-        this.editor?.isActive('heading', { level: btnLevel }) ?? false
+        this.editor?.isActive('heading', { level: btnLevel }) ?? false,
       );
     });
   }
@@ -134,7 +174,7 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
     this.editor?.chain().focus().toggleBulletList().run();
     target.classList.toggle('active', this.editor?.isActive('bulletList') ?? false);
     const orderedListBtn = this.shadowRoot?.querySelector(
-      'button[data-action="click:toolbarOrderedList"]'
+      'button[data-action="click:toolbarOrderedList"]',
     );
     if (orderedListBtn)
       orderedListBtn.classList.toggle('active', this.editor?.isActive('orderedList') ?? false);
@@ -145,10 +185,20 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
     this.editor?.chain().focus().toggleOrderedList().run();
     target.classList.toggle('active', this.editor?.isActive('orderedList') ?? false);
     const bulletListBtn = this.shadowRoot?.querySelector(
-      'button[data-action="click:toolbarBulletList"]'
+      'button[data-action="click:toolbarBulletList"]',
     );
     if (bulletListBtn)
       bulletListBtn.classList.toggle('active', this.editor?.isActive('bulletList') ?? false);
+  }
+
+  private toolbarUndo() {
+    this.editor?.chain().focus().undo().run();
+    this.setToolbarState();
+  }
+
+  private toolbarRedo() {
+    this.editor?.chain().focus().redo().run();
+    this.setToolbarState();
   }
 
   private onUpdate(editor: Editor) {
@@ -156,40 +206,58 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
     this.setProp('log', value);
     this.emit('log-change', { value });
     this.shadowRoot
-      ?.getElementById('editor')
+      ?.getElementById('editor-content')
       ?.classList.toggle('empty', this.editor?.isEmpty ?? true);
+    this.setToolbarState();
   }
 
   private onSelectionUpdate(editor: Editor) {
-    // Update active state for heading buttons
-    const buttons = this.shadowRoot?.querySelectorAll('button[data-level]');
-    buttons?.forEach((btn) => {
-      const btnLevel = parseInt(btn.getAttribute('data-level')!) as HeadingLevel;
-      btn.classList.toggle('active', editor.isActive('heading', { level: btnLevel }));
-    });
-
-    // Update active state for bold, italic, underline, bullet list, and ordered list buttons
-    const boldBtn = this.shadowRoot?.querySelector('button[data-action="click:toolbarBold"]');
-    if (boldBtn) boldBtn.classList.toggle('active', editor.isActive('bold'));
-    const italicBtn = this.shadowRoot?.querySelector('button[data-action="click:toolbarItalic"]');
-    if (italicBtn) italicBtn.classList.toggle('active', editor.isActive('italic'));
-    const underlineBtn = this.shadowRoot?.querySelector(
-      'button[data-action="click:toolbarUnderline"]'
-    );
-    if (underlineBtn) underlineBtn.classList.toggle('active', editor.isActive('underline'));
-    const bulletListBtn = this.shadowRoot?.querySelector(
-      'button[data-action="click:toolbarBulletList"]'
-    );
-    if (bulletListBtn) bulletListBtn.classList.toggle('active', editor.isActive('bulletList'));
-    const orderedListBtn = this.shadowRoot?.querySelector(
-      'button[data-action="click:toolbarOrderedList"]'
-    );
-    if (orderedListBtn) orderedListBtn.classList.toggle('active', editor.isActive('orderedList'));
+    this.setToolbarState();
   }
 
   private getTime(): string {
     const now = new Date();
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  private setToolbarState() {
+    // Update active state for heading buttons
+    const buttons = this.shadowRoot?.querySelectorAll('button[data-level]');
+    buttons?.forEach((btn) => {
+      const btnLevel = parseInt(btn.getAttribute('data-level')!) as HeadingLevel;
+      btn.classList.toggle(
+        'active',
+        this.editor?.isActive('heading', { level: btnLevel }) ?? false,
+      );
+    });
+    // Update active state for bold, italic, underline, bullet list, and ordered list buttons
+    const boldBtn = this.shadowRoot?.querySelector('button[data-action="click:toolbarBold"]');
+    if (boldBtn) boldBtn.classList.toggle('active', this.editor?.isActive('bold') ?? false);
+    const italicBtn = this.shadowRoot?.querySelector('button[data-action="click:toolbarItalic"]');
+    if (italicBtn) italicBtn.classList.toggle('active', this.editor?.isActive('italic') ?? false);
+    const underlineBtn = this.shadowRoot?.querySelector(
+      'button[data-action="click:toolbarUnderline"]',
+    );
+    if (underlineBtn)
+      underlineBtn.classList.toggle('active', this.editor?.isActive('underline') ?? false);
+    const bulletListBtn = this.shadowRoot?.querySelector(
+      'button[data-action="click:toolbarBulletList"]',
+    );
+    if (bulletListBtn)
+      bulletListBtn.classList.toggle('active', this.editor?.isActive('bulletList') ?? false);
+    const orderedListBtn = this.shadowRoot?.querySelector(
+      'button[data-action="click:toolbarOrderedList"]',
+    );
+    if (orderedListBtn)
+      orderedListBtn.classList.toggle('active', this.editor?.isActive('orderedList') ?? false);
+    const redoBtn = this.shadowRoot?.querySelector(
+      'button[data-action="click:toolbarRedo"]',
+    ) as HTMLButtonElement;
+    if (redoBtn) redoBtn.disabled = !(this.editor?.can().redo() ?? false);
+    const undoBtn = this.shadowRoot?.querySelector(
+      'button[data-action="click:toolbarUndo"]',
+    ) as HTMLButtonElement;
+    if (undoBtn) undoBtn.disabled = !(this.editor?.can().undo() ?? false);
   }
 }
 

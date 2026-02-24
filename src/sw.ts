@@ -1,33 +1,25 @@
 /// <reference lib="webworker" />
 declare const self: ServiceWorkerGlobalScope;
 
-// Load logging proxy dynamically to avoid import-time failures inside the
-// Service Worker execution environment. Some logger builds reference DOM
-// globals that are unavailable in workers; importing at runtime prevents
-// module evaluation from aborting the entire worker script.
-let Logger: Console | LoggingService = console;
+import { LoggingService } from '@bladeski/logger/dist/index.js';
 
-void import('./sw-logger-proxy.ts')
-  .then((mod) => {
-    try {
-      const LoggingService = mod.LoggingService;
-      if (LoggingService && typeof LoggingService.initialize === 'function') {
-        LoggingService.initialize({
-          applicationName: 'GrowthJournalServiceWorker',
-          enableConsoleCore: false,
-          autoRegisterIndexedDBAdvancedLogger: true
-        });
-      }
-      if (LoggingService && typeof LoggingService.getInstance === 'function') {
-        Logger = LoggingService.getInstance();
-      }
-    } catch (e) {
-      console.error('Failed to initialize LoggingService in SW', e);
-    }
-  })
-  .catch((e) => {
-    console.error('Failed to import sw-logger-proxy in SW', e);
-  });
+// Initialize logging proxy in the SW scope. Use console as a safe fallback.
+let Logger: Console | LoggingService = console;
+try {
+  if (LoggingService && typeof LoggingService.initialize === 'function') {
+    LoggingService.initialize({
+      applicationName: 'GrowthJournalServiceWorker',
+      enableConsoleCore: false,
+      enableLocalStorageCore: false,
+      autoRegisterIndexedDBAdvancedLogger: true,
+    });
+  }
+  if (LoggingService && typeof LoggingService.getInstance === 'function') {
+    Logger = LoggingService.getInstance();
+  }
+} catch (e) {
+  console.error('Failed to initialize LoggingService in SW', e);
+}
 
 const CACHE_NAME = 'growth-journal-v1';
 const urlsToCache = ['/', '/index.html', '/manifest.json'];
@@ -64,7 +56,7 @@ self.addEventListener('install', (event: ExtendableEvent) => {
         Logger.info('Basic assets cached successfully');
       } catch (err) {
         Logger.warn('cache.addAll failed for basic assets, will attempt best-effort adds', {
-          error: err
+          error: err,
         });
         for (const url of normalizedUrls) {
           try {
@@ -118,7 +110,7 @@ self.addEventListener('install', (event: ExtendableEvent) => {
       } catch (e) {
         Logger.warn('Failed to fetch/parse index.html for asset discovery', { error: e });
       }
-    })()
+    })(),
   );
 
   // Immediately activate the new service worker instead of waiting
@@ -157,8 +149,8 @@ self.addEventListener('fetch', (event: FetchEvent) => {
         .catch(() =>
           caches
             .match('/index.html')
-            .then((cached) => cached || new Response('Offline', { status: 503 }))
-        )
+            .then((cached) => cached || new Response('Offline', { status: 503 })),
+        ),
     );
     return;
   }
@@ -189,7 +181,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 
       // No cache - await network
       return networkFetch.then((resp) => resp || new Response('Not found', { status: 404 }));
-    })
+    }),
   );
 });
 
@@ -203,9 +195,9 @@ self.addEventListener('activate', (event: ExtendableEvent) => {
             Logger.info('Deleting old cache', { cacheName });
             return caches.delete(cacheName);
           }
-        })
+        }),
       );
-    })
+    }),
   );
   // Claim clients immediately so the new SW controls pages without a navigation
   const swSelf2 = self as unknown as ServiceWorkerGlobalScope & {
@@ -228,7 +220,6 @@ async function syncJournalEntries() {
   Logger.info('Syncing journal entries...');
 }
 
-import { LoggingService } from '@bladeski/logger';
 // Simple message-based IndexedDB handling for client requests
 import type { ISwMessage } from './models/index.ts';
 
@@ -452,7 +443,7 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
         const r = os.put({
           locale: payload.locale,
           resources: payload.resources,
-          fetchedAt: new Date().toISOString()
+          fetchedAt: new Date().toISOString(),
         });
         return new Promise((res, rej) => {
           r.onsuccess = () => res(r.result);
@@ -513,9 +504,9 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
       .then((db) =>
         Promise.all(
           ['entries', 'dictionaries', 'settings'].map((s) =>
-            readAllFromStore(db, s).then((items) => ({ store: s, items }))
-          )
-        )
+            readAllFromStore(db, s).then((items) => ({ store: s, items })),
+          ),
+        ),
       )
       .then((results) => {
         const payloadOut: Record<string, unknown[]> = {};
@@ -538,10 +529,10 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
               storeName,
               Array.isArray(payload[storeName])
                 ? (payload[storeName] as Record<string, unknown>[])
-                : []
-            )
-          )
-        )
+                : [],
+            ),
+          ),
+        ),
       )
       .then(() => respond({ success: true }))
       .catch((err) => respond({ success: false, error: String(err) }));
@@ -555,9 +546,9 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
       .then((db) =>
         Promise.all(
           ['intentions', 'morning', 'midday', 'evening', 'weekly', 'monthly'].map((s) =>
-            readAllFromStore(db, s).then((items) => ({ store: s, items }))
-          )
-        )
+            readAllFromStore(db, s).then((items) => ({ store: s, items })),
+          ),
+        ),
       )
       .then((results) => {
         const payload: Record<string, unknown[]> = {};
@@ -566,8 +557,8 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
           Logger.info('SW: ExportAll prepared payload', {
             stores: Object.keys(payload),
             sizes: Object.fromEntries(
-              Object.keys(payload).map((k) => [k, (payload[k] || []).length])
-            )
+              Object.keys(payload).map((k) => [k, (payload[k] || []).length]),
+            ),
           });
         } catch (e) {
           /* ignore logging errors */
@@ -593,10 +584,10 @@ self.addEventListener('message', (event: ExtendableMessageEvent) => {
               storeName,
               Array.isArray(payload[storeName])
                 ? (payload[storeName] as Record<string, unknown>[])
-                : []
-            )
-          )
-        )
+                : [],
+            ),
+          ),
+        ),
       )
       .then(() => respond({ success: true }))
       .catch((err) => respond({ success: false, error: String(err) }));
@@ -655,7 +646,7 @@ function readAllFromStore(db: IDBDatabase, storeName: string): Promise<Record<st
 function writeAllToStore(
   db: IDBDatabase,
   storeName: string,
-  items: Record<string, unknown>[]
+  items: Record<string, unknown>[],
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(storeName, 'readwrite');

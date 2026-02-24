@@ -62,6 +62,8 @@ button,
     cursor: not-allowed;
     opacity: 0.6;
     border-color: var(--color-border);
+    background-color: var(--bg-overlay-light);
+    color: var(--color-text-muted);
   }
 
   &.btn-primary {
@@ -386,6 +388,27 @@ textarea:focus {
   gap: var(--spacing-md);
   justify-content: center;
   flex-wrap: wrap;
+}
+
+[data-tooltip] {
+  cursor: help;
+  anchor-name: --tooltip-anchor;
+  anchor-scope: --tooltip-anchor;
+
+  &:hover::after {
+    position: absolute;
+    position-anchor: --tooltip-anchor;
+    position-area: bottom;
+    font-size: var(--font-size-xs);
+    background-color: var(--color-text);
+    color: var(--color-background);
+    border-radius: var(--border-radius-sm);
+    padding: var(--space-xs);
+    width: max-content;
+    z-index: 10;
+    content: attr(data-tooltip);
+    line-height: 1;
+  }
 }
 
 /* Responsive: collapse to single column on narrow screens */

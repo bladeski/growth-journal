@@ -15,11 +15,12 @@ function start(cmd, args, opts = {}) {
 async function main() {
   await run('npm', ['run', 'build:dictionaries:dev']);
 
-  const buildSw = start('npm', ['run', 'build:sw:dev']);
+  await run('npm', ['run', 'build:sw:dev']);
+  await run('npm', ['run', 'copy-pwa-files:dev']);
+
   const parcel = start('parcel', ['src/index.pug', '--port', '3000', '--dist-dir', 'dev-dist']);
 
   const shutdown = () => {
-    if (!buildSw.killed) buildSw.kill();
     if (!parcel.killed) parcel.kill();
   };
 
