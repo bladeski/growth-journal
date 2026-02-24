@@ -7,8 +7,10 @@ export const LoggingService = {
   debug: () => {},
   getInstance: () => ({
     info: () => {},
+    warn: () => {},
     warning: () => {},
     error: () => {},
+    debug: () => {},
   }),
 };
 
