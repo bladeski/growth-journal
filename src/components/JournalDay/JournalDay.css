@@ -38,6 +38,7 @@
   > #log {
     grid-column: 2;
     grid-row: 1 / -1;
+    overflow: hidden;
   }
 
   .questions {

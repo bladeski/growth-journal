@@ -100,7 +100,9 @@ export abstract class BaseComponent<
     this.attachShadow({ mode: 'open' });
 
     // Always include base styles, then component-specific styles
-    const allStyles: string[] = [baseStyles as unknown as string];
+    const allStyles: string[] = [
+      initialProps?.hideBaseStyles ? '' : (baseStyles as unknown as string),
+    ];
     if (Array.isArray(styles) && styles.length > 0) {
       allStyles.push(...styles.filter(Boolean));
     }
@@ -108,9 +110,9 @@ export abstract class BaseComponent<
     // store styles (decide whether each is a path)
     if (allStyles.length > 0) {
       this.styles = allStyles;
-      const pathRegex = /(^\.\/|^\/|\.css$|^https?:\/\/)/i;
+      const pathRegex = /^(https?:\/\/.*|\.\/.*|\/.*?)\.css$/i;
       for (const s of this.styles) {
-        if (pathRegex.test(s)) this.stylesIsPath.add(s);
+        if (pathRegex.test(s.trim())) this.stylesIsPath.add(s);
       }
     }
 
@@ -481,12 +483,40 @@ export abstract class BaseComponent<
       // add styles before injecting content
       this.ensureStyles();
 
-      // Replace mustache placeholders with data-bind spans so we can update them later
+      // Replace mustache placeholders: {{key}} in attributes get replaced with values,
+      // {{key}} in text content get replaced with data-bind spans for reactive updates
       const rawHtml = this.templateFn({ props: this.props });
-      const processed = rawHtml
-        .replace(/\{\{\s*(\w+)\s*\}\}/g, (_m, key) => {
-          return `<span data-bind="${key}"></span>`;
-        })
+      let lastIndex = 0;
+      const parts: string[] = [];
+      const regex = /\{\{\s*(\w+)\s*\}\}/g;
+      let match;
+
+      while ((match = regex.exec(rawHtml)) !== null) {
+        const [fullMatch, key] = match;
+        const beforeMatch = rawHtml.slice(lastIndex, match.index);
+        parts.push(beforeMatch);
+
+        // Check if this {{key}} is inside an attribute by looking backwards
+        const textBeforeMatch = rawHtml.slice(0, match.index);
+        const lastOpenTag = textBeforeMatch.lastIndexOf('<');
+        const lastCloseTag = textBeforeMatch.lastIndexOf('>');
+        const isInAttribute = lastOpenTag > lastCloseTag;
+
+        if (isInAttribute) {
+          // In attribute: replace with actual value
+          const value = (this.props as Record<string, unknown>)[key];
+          parts.push(value == null ? '' : String(value));
+        } else {
+          // In text content: replace with data-bind span
+          parts.push(`<span data-bind="${key}"></span>`);
+        }
+
+        lastIndex = regex.lastIndex;
+      }
+
+      parts.push(rawHtml.slice(lastIndex));
+      const processed = parts
+        .join('')
         // Replace `data-href` attributes on anchors. Handle three forms:
         // - data-href="..."
         // - data-href='...'

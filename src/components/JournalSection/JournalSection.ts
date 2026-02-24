@@ -53,7 +53,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
               ${prompt}
               ${
                 q.helpTextKey
-                  ? `<span class="help-icon" id="${helpId}" role="note" aria-live="polite" tabindex="0" data-help="${help}">
+                  ? `<span class="help-icon" id="${helpId}" role="note" aria-live="polite" tabindex="0" data-tooltip="${help}">
                     🛈
                 </span>`
                   : ''
@@ -113,9 +113,9 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
           .join('');
 
         return shellTemplate
-          .replace('__GJ_TITLE__', title)
-          .replace('__GJ_DESC__', descHtml)
-          .replace('__GJ_QUESTIONS__', qHtml);
+          .replaceAll('__GJ_TITLE__', title)
+          .replaceAll('__GJ_DESC__', descHtml)
+          .replaceAll('__GJ_QUESTIONS__', qHtml);
       },
       undefined,
       [styles],
@@ -260,7 +260,7 @@ export class JournalSection extends BaseComponent<JournalSectionProps, JournalSe
       ${
         q.helpTextKey
           ? `
-        <span class="help-icon" data-help="${t(i18n, q.helpTextKey)}">
+        <span class="help-icon" data-tooltip="${t(i18n, q.helpTextKey)}">
           🛈
         </span>`
           : ''

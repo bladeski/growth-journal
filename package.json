@@ -25,7 +25,7 @@
     "test:playwright": "playwright test",
     "test:ci": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --reporters=default",
     "build:sw": "parcel build --target sw",
-    "build:sw:dev": "parcel build --target sw --dist-dir dev-dist"
+    "build:sw:dev": "parcel build --target sw-dev"
   },
   "targets": {
     "default": {
@@ -35,7 +35,16 @@
     "sw": {
       "context": "web-worker",
       "source": "src/sw.ts",
-      "distDir": "dist",
+      "distDir": "dist-sw",
+      "publicUrl": "./",
+      "includeNodeModules": {
+        "@bladeski/logger": true
+      }
+    },
+    "sw-dev": {
+      "context": "web-worker",
+      "source": "src/sw.ts",
+      "distDir": "dev-dist-sw",
       "publicUrl": "./",
       "includeNodeModules": {
         "@bladeski/logger": true
@@ -43,15 +52,19 @@
     }
   },
   "dependencies": {
-    "@bladeski/logger": "^1.0.3"
+    "@bladeski/logger": "^1.0.3",
+    "@tiptap/core": "^3.20.0",
+    "@tiptap/extension-text-style": "^3.20.0",
+    "@tiptap/pm": "^3.20.0",
+    "@tiptap/starter-kit": "^3.20.0"
   },
   "devDependencies": {
-    "@parcel/packager-raw-url": "2.16.1",
-    "@parcel/resolver-default": "^2.16.4",
-    "@parcel/transformer-inline-string": "2.16.1",
-    "@parcel/transformer-pug": "2.16.1",
-    "@parcel/transformer-webmanifest": "2.16.1",
+    "@parcel/packager-raw-url": "2.16.4",
+    "@parcel/transformer-inline-string": "2.16.4",
+    "@parcel/transformer-pug": "2.16.4",
+    "@parcel/transformer-webmanifest": "2.16.4",
     "@playwright/test": "^1.56.1",
+    "@tiptap/cli": "^3.19.0",
     "@types/jest": "^29.5.4",
     "@types/pug": "^2.0.10",
     "@types/serviceworker": "^0.0.167",
@@ -80,5 +93,13 @@
     "reflection"
   ],
   "author": "Jonathan Blades <jonoblades@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "alias": {
+    "process": {
+      "global": "{}"
+    }
+  },
+  "@parcel/resolver-default": {
+    "packageExports": true
+  }
 }
