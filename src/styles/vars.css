@@ -167,3 +167,25 @@
     --bg-surface-white: rgba(255, 255, 255, 0.02);
   }
 }
+
+/* Hindi (Devanagari) */
+:lang(hi) {
+  --font-family-heading: "Noto Sans Devanagari", "Mangal", system-ui, sans-serif;
+  --font-family-body: "Noto Sans Devanagari", "Mangal", system-ui, sans-serif;
+  --font-family-ui: "Noto Sans Devanagari", "Mangal", system-ui, sans-serif;
+  line-height: 1.35; /* room for matras */
+}
+
+/* Chinese (Simplified) */
+:lang(zh-CN), :lang(zh-Hans) {
+  --font-family-heading: "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-family-body: "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-family-ui: "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+/* Chinese (Traditional) */
+:lang(zh-TW), :lang(zh-HK), :lang(zh-Hant) {
+  --font-family-heading: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --font-family-body: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --font-family-ui: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+}

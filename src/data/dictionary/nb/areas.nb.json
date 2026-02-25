@@ -1,0 +1,23 @@
+{
+  "area-none": "Ingen",
+  "area-emotional-wellbeing": "Emosjonelt velvære",
+  "area-physical-health": "Fysisk helse",
+  "area-relationships": "Relasjoner",
+  "area-career": "Karriere og arbeidsprestasjon",
+  "area-communication": "Kommunikasjon",
+  "area-productivity": "Produktivitet og vaner",
+  "area-financial-health": "Økonomisk helse",
+  "area-creativity-learning": "Kreativitet og læring",
+  "area-leadership": "Lederskap",
+  "area-self-confidence": "Selvtillit",
+  "area-stress-management": "Stresshåndtering",
+  "area-time-management": "Tidsstyring",
+  "area-decision-making": "Beslutningstaking",
+  "area-purpose": "Formål og mening",
+  "area-community": "Fellesskap og bidrag",
+  "area-digital-wellbeing": "Digitalt velvære",
+  "area-resilience": "Motstandsdyktighet",
+  "area-self-discipline": "Selvdisiplin",
+  "area-boundaries": "Grenser",
+  "area-life-balance": "Livsbalanse"
+}

@@ -74,6 +74,28 @@ async function fetchDictionary(locale: string): Promise<Resources | null> {
   return null;
 }
 
+function loadInternationalFont(language: string) {
+  const fontMap = {
+    ar: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic&display=swap',
+    ur: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic&display=swap',
+    hi: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&display=swap',
+    bn: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&display=swap',
+    'zh-CN': 'https://fonts.googleapis.com/css2?family=Noto+Sans+SC&display=swap',
+    'zh-HK': 'https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap',
+    ja: 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap',
+  };
+
+  if (Object.keys(fontMap).some((key) => language.startsWith(key))) {
+    const fontUrl = fontMap[language as keyof typeof fontMap];
+    if (fontUrl) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = fontUrl;
+      document.head.appendChild(link);
+    }
+  }
+}
+
 /**
  * Resolve an I18n instance using:
  * 1) IndexedDB cached dictionary
@@ -144,6 +166,8 @@ export async function loadRuntimeI18n(preferred?: string[] | string): Promise<I1
         }
         return { locale, resources: fetched, fallback: defaultI18n };
       }
+
+      loadInternationalFont(locale);
     } catch {
       // try next candidate
     }

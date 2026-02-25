@@ -11,10 +11,11 @@ export interface I18n {
 
 /**
  * Simple template formatter: "Hello {name}" + { name: "Jon" }.
+ * Supports variable names in any alphabet (Latin, Cyrillic, Arabic, Chinese, etc.)
  */
 export function format(msg: string, vars?: Record<string, string | number>): string {
   if (!vars) return msg;
-  return msg.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? `{${k}}`));
+  return msg.replace(/\{([\p{L}\p{N}_]+)\}/gu, (_, k) => String(vars[k] ?? `{${k}}`));
 }
 
 /**

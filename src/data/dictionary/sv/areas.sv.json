@@ -1,0 +1,23 @@
+{
+  "area-none": "Ingen",
+  "area-emotional-wellbeing": "Emotionellt välbefinnande",
+  "area-physical-health": "Fysisk hälsa",
+  "area-relationships": "Relationer",
+  "area-career": "Karriär och arbetsinsats",
+  "area-communication": "Kommunikation",
+  "area-productivity": "Produktivitet och vanor",
+  "area-financial-health": "Ekonomisk hälsa",
+  "area-creativity-learning": "Kreativitet och lärande",
+  "area-leadership": "Ledarskap",
+  "area-self-confidence": "Självförtroende",
+  "area-stress-management": "Stresshantering",
+  "area-time-management": "Tidsplanering",
+  "area-decision-making": "Beslutsfattande",
+  "area-purpose": "Syfte och mening",
+  "area-community": "Gemenskap och bidrag",
+  "area-digital-wellbeing": "Digitalt välbefinnande",
+  "area-resilience": "Motståndskraft",
+  "area-self-discipline": "Självdisciplin",
+  "area-boundaries": "Gränser",
+  "area-life-balance": "Livsbalans"
+}
