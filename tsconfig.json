@@ -13,6 +13,6 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "scripts/build-dictionaries.js"],
   "exclude": ["node_modules", "dist"]
 }

@@ -4,9 +4,9 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const projectRoot = path.resolve(__dirname, '../../');
-const dictionaryDir = path.join(__dirname, '../data/dictionary');
-const defaultOutputDir = path.join(__dirname, '../../dist/data/');
+const projectRoot = path.resolve(__dirname, '../');
+const dictionaryDir = path.join(__dirname, '../src/data/dictionary');
+const defaultOutputDir = path.join(__dirname, '../dist/data/');
 const outputDir = process.argv[2] ? path.resolve(projectRoot, process.argv[2]) : defaultOutputDir;
 const dictionariesDir = path.join(outputDir, 'dictionaries');
 

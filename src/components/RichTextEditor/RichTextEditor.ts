@@ -58,6 +58,12 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
       this.editor = new Editor({
         element: this.shadowRoot?.querySelector('#editor-content'),
         editable: !this.props.readonly,
+        editorProps: {
+          attributes: {
+            class: 'editor-content',
+            'aria-label': this.props.label || 'Rich text editor',
+          },
+        },
         extensions: [StarterKit, TextStyleKit],
         content: this.props.log ?? '',
         onUpdate: ({ editor }) => this.onUpdate(editor),
@@ -77,64 +83,6 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
       this.editor.commands.focus();
     }
   }
-
-  // private onFocus() {
-  //   const time = this.getTime();
-  //   if (!this.props.readonly && this.editor) {
-  //     const timeTokenRegex = /^\[\d{1,2}:\d{2}(?:\s?[APMapm]{2})?\]\s*$/;
-  //     const newTimestamp = `[${time}] `;
-
-  //     // Get the last node with content
-  //     const lastNode = this.editor.state.doc.lastChild;
-  //     const isTimestampNode = lastNode && timeTokenRegex.test(lastNode.textContent.trim());
-  //     const { state, commands } = this.editor;
-
-  //     if (isTimestampNode) {
-  //       // Update the existing timestamp node by replacing its text
-
-  //       // commands.setTextSelection({ from: lastNodeStart, to: state.doc.content.size });
-  //       // commands.deleteSelection();
-  //       // lastNode.type.name
-
-  //       this.editor
-  //         .chain()
-  //         .focus('end')
-  //         .deleteRange({ from: state.doc.content.size - lastNode.nodeSize, to: state.doc.content.size })
-  //         // .deleteNode(lastNode.type.name)
-  //         // .deleteSelection()
-  //         .focus('end')
-  //         .setBold()
-  //         .setItalic()
-  //         .insertContent(newTimestamp)
-  //         .toggleBold()
-  //         .unsetItalic()
-  //         .focus('end')
-  //         .run();
-  //       // commands.updateAttributes('paragraph', { class: 'timestamp' });
-  //     } else {
-  //       // Create a new timestamp paragraph
-  //       // commands.setHorizontalRule();
-  //       // commands.insertContent(newTimestamp);
-  //       this.editor
-  //         .chain()
-  //         .setHorizontalRule()
-  //         .setBold()
-  //         .setItalic()
-  //         .setMark('textStyle', { class: 'timestamp' })
-  //         .insertContent(newTimestamp)
-  //         .unsetBold()
-  //         .unsetItalic()
-  //         .focus('end')
-  //         .run();
-  //       // commands.updateAttributes('paragraph', { class: 'timestamp' });
-  //     }
-
-  //     // this.editor.commands;
-  //     const updatedContent = this.editor.getHTML() ?? '';
-  //     this.setProp('log', updatedContent);
-  //     this.updateBindings('log');
-  //   }
-  // }
 
   private toolbarHeading(event: Event) {
     const target = event.currentTarget as HTMLElement;

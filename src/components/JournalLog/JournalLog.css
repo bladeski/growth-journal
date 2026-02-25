@@ -14,5 +14,6 @@ rich-text-editor {
 
 .add-entry {
   width: max-content;
-  background-color: var(--color-primary-light);
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary-contrast);
 }

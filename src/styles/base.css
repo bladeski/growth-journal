@@ -45,10 +45,10 @@ button,
     color 0.2s ease;
 
   &:hover:not(&:disabled) {
-    background-color: var(--color-primary-light);
-    border-color: var(--color-primary);
+    background-color: var(--color-secondary-light);
+    /* border-color: var(--color-secondary); */
     box-shadow: var(--card-shadow);
-    color: var(--color-primary-contrast);
+    color: var(--color-secondary-contrast);
   }
 
   &:active:not(&:disabled) {
@@ -181,35 +181,6 @@ h6 {
   color: var(--color-accent);
 }
 
-.form-group {
-  margin-bottom: var(--spacing-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-}
-
-.form-group:has(:required) .label-text::after {
-  content: ' *';
-  color: var(--color-danger);
-  font-weight: 600;
-}
-
-.label-text {
-  display: block;
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: var(--spacing-sm);
-  font-size: 1.2rem;
-}
-
-.label-hint {
-  display: block;
-  font-size: 1rem;
-  color: var(--color-text-muted);
-  font-style: italic;
-  line-height: 1.4;
-}
-
 fieldset,
 details {
   display: flex;
@@ -293,7 +264,7 @@ details {
     }
   }
 
-  & > *:not(summary) {
+  &>*:not(summary) {
     margin-top: var(--spacing-xl);
   }
 }
@@ -328,6 +299,15 @@ select {
   }
 }
 
+/* Customize specific parts of the date picker */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background-color: var(--color-secondary-light);
+  cursor: pointer;
+  color: var(--color-secondary-contrast);
+  border-radius: 50%;
+  padding: 5px;
+}
+
 textarea {
   width: 100%;
   padding: var(--spacing-md);
@@ -349,57 +329,19 @@ textarea:focus {
   box-shadow: var(--card-shadow);
 }
 
-/* Two-column checkin body: left tips rail + right main form */
-.checkin-body {
-  display: grid;
-  grid-template-columns: minmax(var(--checkin-tips-width), 1fr) minmax(500px, 1100px) minmax(
-      var(--checkin-tips-width),
-      1fr
-    );
-  gap: var(--checkin-body-gap);
-  align-items: start;
-  width: 100%;
-  padding: var(--spacing-lg);
-}
-
-/* Main column containing the question + form */
-.checkin-main {
-  min-width: 0;
-}
-
-.checkin-main .form-container {
-  width: 100%;
-  max-width: 900px;
-  box-shadow: var(--form-shadow);
-  background: var(--color-surface);
-  padding: var(--spacing-lg);
-  border-radius: var(--border-radius);
-  border: var(--form-border);
-}
-
-/* Keep messages above form and visible when populated */
-.checkin-main .error-message,
-.checkin-main .success-message {
-  margin-bottom: var(--spacing-md);
-}
-
-.form-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
 [data-tooltip] {
   cursor: help;
   anchor-name: --tooltip-anchor;
   anchor-scope: --tooltip-anchor;
 
   &:hover::after {
+    pointer-events: none;
     position: absolute;
     position-anchor: --tooltip-anchor;
     position-area: bottom;
     font-size: var(--font-size-xs);
+    font-weight: 400;
+    font-style: normal;
     background-color: var(--color-text);
     color: var(--color-background);
     border-radius: var(--border-radius-sm);
@@ -408,24 +350,5 @@ textarea:focus {
     z-index: 10;
     content: attr(data-tooltip);
     line-height: 1;
-  }
-}
-
-/* Responsive: collapse to single column on narrow screens */
-@media (max-width: 800px) {
-  .checkin-body {
-    display: block;
-  }
-
-  .checkin-tips {
-    position: static;
-    width: 100%;
-    margin: 0 0 var(--spacing-md) 0;
-    top: auto;
-  }
-
-  .checkin-main .form-container {
-    max-width: 100%;
-    padding: var(--spacing-md);
   }
 }

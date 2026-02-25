@@ -4,8 +4,8 @@
   "description": "A Progressive Web App for daily growth journaling and reflection.",
   "type": "module",
   "scripts": {
-    "build:dictionaries": "node src/scripts/build-dictionaries.js",
-    "build:dictionaries:dev": "node src/scripts/build-dictionaries.js dev-dist/data",
+    "build:dictionaries": "node scripts/build-dictionaries.js",
+    "build:dictionaries:dev": "node scripts/build-dictionaries.js dev-dist/data",
     "dev": "node scripts/dev.js",
     "build": "parcel build src/index.pug --public-url ./ && npm run build:dictionaries",
     "release": "standard-version",

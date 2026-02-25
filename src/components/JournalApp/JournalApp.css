@@ -67,5 +67,10 @@ header {
 
 journal-day {
   flex-grow: 1;
-  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  journal-day {
+    overflow: hidden;
+  }
 }
