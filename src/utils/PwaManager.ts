@@ -57,7 +57,7 @@ export class PWAManager {
         // Use Parcel's bundling to produce a proper JS worker file in dev and prod.
         // new URL(..., import.meta.url) lets the bundler provide the correct served URL
         // for the worker source (src/sw.ts). Register as a module so TS/ESM code works.
-        const swUrl = new URL('sw.js', window.location.origin);
+        const swUrl = new URL('sw.js', document.baseURI);
         const registration = await navigator.serviceWorker.register(swUrl.toString(), {
           type: 'module',
         });
