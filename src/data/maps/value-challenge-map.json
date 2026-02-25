@@ -4,115 +4,195 @@
     "ch-integrity-2",
     "ch-integrity-3",
     "ch-integrity-4",
-    "ch-integrity-5"
+    "ch-integrity-5",
+    "ch-integrity-6",
+    "ch-integrity-7",
+    "ch-integrity-8",
+    "ch-integrity-9",
+    "ch-integrity-10"
   ],
   "val-compassion": [
     "ch-compassion-1",
     "ch-compassion-2",
     "ch-compassion-3",
     "ch-compassion-4",
-    "ch-compassion-5"
+    "ch-compassion-5",
+    "ch-compassion-6",
+    "ch-compassion-7",
+    "ch-compassion-8",
+    "ch-compassion-9",
+    "ch-compassion-10"
   ],
   "val-curiosity": [
     "ch-curiosity-1",
     "ch-curiosity-2",
     "ch-curiosity-3",
     "ch-curiosity-4",
-    "ch-curiosity-5"
+    "ch-curiosity-5",
+    "ch-curiosity-6",
+    "ch-curiosity-7",
+    "ch-curiosity-8",
+    "ch-curiosity-9",
+    "ch-curiosity-10"
   ],
-  "val-courage": ["ch-courage-1", "ch-courage-2", "ch-courage-3", "ch-courage-4", "ch-courage-5"],
+  "val-courage": ["ch-courage-1", "ch-courage-2", "ch-courage-3", "ch-courage-4", "ch-courage-5", "ch-courage-6", "ch-courage-7", "ch-courage-8", "ch-courage-9", "ch-courage-10"],
   "val-discipline": [
     "ch-discipline-1",
     "ch-discipline-2",
     "ch-discipline-3",
     "ch-discipline-4",
-    "ch-discipline-5"
+    "ch-discipline-5",
+    "ch-discipline-6",
+    "ch-discipline-7",
+    "ch-discipline-8",
+    "ch-discipline-9",
+    "ch-discipline-10"
   ],
   "val-gratitude": [
     "ch-gratitude-1",
     "ch-gratitude-2",
     "ch-gratitude-3",
     "ch-gratitude-4",
-    "ch-gratitude-5"
+    "ch-gratitude-5",
+    "ch-gratitude-6",
+    "ch-gratitude-7",
+    "ch-gratitude-8",
+    "ch-gratitude-9",
+    "ch-gratitude-10"
   ],
-  "val-empathy": ["ch-empathy-1", "ch-empathy-2", "ch-empathy-3", "ch-empathy-4", "ch-empathy-5"],
+  "val-empathy": ["ch-empathy-1", "ch-empathy-2", "ch-empathy-3", "ch-empathy-4", "ch-empathy-5", "ch-empathy-6", "ch-empathy-7", "ch-empathy-8", "ch-empathy-9", "ch-empathy-10"],
   "val-creativity": [
     "ch-creativity-1",
     "ch-creativity-2",
     "ch-creativity-3",
     "ch-creativity-4",
-    "ch-creativity-5"
+    "ch-creativity-5",
+    "ch-creativity-6",
+    "ch-creativity-7",
+    "ch-creativity-8",
+    "ch-creativity-9",
+    "ch-creativity-10"
   ],
   "val-humility": [
     "ch-humility-1",
     "ch-humility-2",
     "ch-humility-3",
     "ch-humility-4",
-    "ch-humility-5"
+    "ch-humility-5",
+    "ch-humility-6",
+    "ch-humility-7",
+    "ch-humility-8",
+    "ch-humility-9",
+    "ch-humility-10"
   ],
   "val-responsibility": [
     "ch-responsibility-1",
     "ch-responsibility-2",
     "ch-responsibility-3",
     "ch-responsibility-4",
-    "ch-responsibility-5"
+    "ch-responsibility-5",
+    "ch-responsibility-6",
+    "ch-responsibility-7",
+    "ch-responsibility-8",
+    "ch-responsibility-9",
+    "ch-responsibility-10"
   ],
   "val-authenticity": [
     "ch-authenticity-1",
     "ch-authenticity-2",
     "ch-authenticity-3",
     "ch-authenticity-4",
-    "ch-authenticity-5"
+    "ch-authenticity-5",
+    "ch-authenticity-6",
+    "ch-authenticity-7",
+    "ch-authenticity-8",
+    "ch-authenticity-9",
+    "ch-authenticity-10"
   ],
   "val-patience": [
     "ch-patience-1",
     "ch-patience-2",
     "ch-patience-3",
     "ch-patience-4",
-    "ch-patience-5"
+    "ch-patience-5",
+    "ch-patience-6",
+    "ch-patience-7",
+    "ch-patience-8",
+    "ch-patience-9",
+    "ch-patience-10"
   ],
   "val-kindness": [
     "ch-kindness-1",
     "ch-kindness-2",
     "ch-kindness-3",
     "ch-kindness-4",
-    "ch-kindness-5"
+    "ch-kindness-5",
+    "ch-kindness-6",
+    "ch-kindness-7",
+    "ch-kindness-8",
+    "ch-kindness-9",
+    "ch-kindness-10"
   ],
   "val-growth-mindset": [
     "ch-growth-mindset-1",
     "ch-growth-mindset-2",
     "ch-growth-mindset-3",
     "ch-growth-mindset-4",
-    "ch-growth-mindset-5"
+    "ch-growth-mindset-5",
+    "ch-growth-mindset-6",
+    "ch-growth-mindset-7",
+    "ch-growth-mindset-8",
+    "ch-growth-mindset-9",
+    "ch-growth-mindset-10"
   ],
-  "val-balance": ["ch-balance-1", "ch-balance-2", "ch-balance-3", "ch-balance-4", "ch-balance-5"],
-  "val-respect": ["ch-respect-1", "ch-respect-2", "ch-respect-3", "ch-respect-4", "ch-respect-5"],
+  "val-balance": ["ch-balance-1", "ch-balance-2", "ch-balance-3", "ch-balance-4", "ch-balance-5", "ch-balance-6", "ch-balance-7", "ch-balance-8", "ch-balance-9", "ch-balance-10"],
+  "val-respect": ["ch-respect-1", "ch-respect-2", "ch-respect-3", "ch-respect-4", "ch-respect-5", "ch-respect-6", "ch-respect-7", "ch-respect-8", "ch-respect-9", "ch-respect-10"],
   "val-perseverance": [
     "ch-perseverance-1",
     "ch-perseverance-2",
     "ch-perseverance-3",
     "ch-perseverance-4",
-    "ch-perseverance-5"
+    "ch-perseverance-5",
+    "ch-perseverance-6",
+    "ch-perseverance-7",
+    "ch-perseverance-8",
+    "ch-perseverance-9",
+    "ch-perseverance-10"
   ],
   "val-mindfulness": [
     "ch-mindfulness-1",
     "ch-mindfulness-2",
     "ch-mindfulness-3",
     "ch-mindfulness-4",
-    "ch-mindfulness-5"
+    "ch-mindfulness-5",
+    "ch-mindfulness-6",
+    "ch-mindfulness-7",
+    "ch-mindfulness-8",
+    "ch-mindfulness-9",
+    "ch-mindfulness-10"
   ],
   "val-generosity": [
     "ch-generosity-1",
     "ch-generosity-2",
     "ch-generosity-3",
     "ch-generosity-4",
-    "ch-generosity-5"
+    "ch-generosity-5",
+    "ch-generosity-6",
+    "ch-generosity-7",
+    "ch-generosity-8",
+    "ch-generosity-9",
+    "ch-generosity-10"
   ],
   "val-self-awareness": [
     "ch-self-awareness-1",
     "ch-self-awareness-2",
     "ch-self-awareness-3",
     "ch-self-awareness-4",
-    "ch-self-awareness-5"
+    "ch-self-awareness-5",
+    "ch-self-awareness-6",
+    "ch-self-awareness-7",
+    "ch-self-awareness-8",
+    "ch-self-awareness-9",
+    "ch-self-awareness-10"
   ]
 }
