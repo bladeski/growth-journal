@@ -48,7 +48,7 @@ fs.writeFileSync(languagesFile, JSON.stringify(languages, null, 2));
 console.log(`✓ Generated ${languagesFile}`);
 
 // Copy maps and templates directories
-const dataDir = path.join(__dirname, '../data');
+const dataDir = path.join(__dirname, '../src/data');
 
 function copyDirectory(src, dest) {
   if (!fs.existsSync(dest)) {
