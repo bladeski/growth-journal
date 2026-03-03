@@ -36,4 +36,5 @@ section {
   width: max-content;
   background-color: var(--color-secondary-light);
   color: var(--color-secondary-contrast);
+  margin-bottom: var(--spacing-md);
 }

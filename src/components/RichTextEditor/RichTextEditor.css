@@ -1,7 +1,6 @@
 .editor-wrapper {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
   height: 100%;
 }
 
@@ -43,6 +42,7 @@
 }
 
 #toolbar {
+  margin-top: var(--spacing-md);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
