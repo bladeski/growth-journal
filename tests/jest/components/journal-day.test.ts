@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { afterEach, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import type { I18n } from '../../../src/i18n/i18n.ts';
 import type { IJournalEntry } from '../../../src/models/index.ts';
 import type { ISectionTemplate } from '../../../src/models/ISectionTemplate.ts';
@@ -10,13 +10,29 @@ const getJournalDayTemplatesMock = jest.fn();
 
 jest.unstable_mockModule('../../../src/helpers/helpers.ts', () => ({
   getJournalDayTemplates: getJournalDayTemplatesMock,
+  getDayLabels: () => ({
+    focusAriaLabel: "Today's focus",
+    questionsAriaLabel: 'Daily reflection questions',
+    valueLabelPrefix: 'Value:',
+    challengeLabelPrefix: 'Challenge:',
+  }),
+  getDayEntryAriaLabel: (_i18n: unknown, date: string) => `Journal entry for ${date}`,
 }));
 
-const logRenderMock = jest.fn();
-class MockJournalLog extends HTMLElement {
-  props: Record<string, unknown> = {};
-  render = logRenderMock;
+const getAreaValueMapMock = jest.fn<() => Promise<Record<string, unknown>>>();
+
+class MockDataService {
+  static getInstance() {
+    return new MockDataService();
+  }
+  async getAreaValueMap() {
+    return getAreaValueMapMock();
+  }
 }
+
+jest.unstable_mockModule('../../../src/services/data.service.ts', () => ({
+  default: MockDataService,
+}));
 
 const sectionRenderMock = jest.fn();
 class MockJournalSection extends HTMLElement {
@@ -25,16 +41,9 @@ class MockJournalSection extends HTMLElement {
   setOpen = jest.fn();
 }
 
-if (!customElements.get('journal-log')) {
-  customElements.define('journal-log', MockJournalLog as CustomElementConstructor);
-}
 if (!customElements.get('journal-section')) {
   customElements.define('journal-section', MockJournalSection as CustomElementConstructor);
 }
-
-jest.unstable_mockModule('../../../src/components/JournalLog/JournalLog.ts', () => {
-  return { JournalLog: MockJournalLog };
-});
 
 jest.unstable_mockModule('../../../src/components/JournalSection/JournalSection.ts', () => {
   return { JournalSection: MockJournalSection };
@@ -62,20 +71,20 @@ function buildTemplate(kind: ISectionTemplate['kind']): ISectionTemplate {
   return {
     id: `${kind}-tpl`,
     kind,
-    titleKey: 'title',
-    questions: [{ id: `${kind}-q`, kind: 'text', promptKey: 'prompt' }],
+    title: 'title',
+    questions: [{ id: `${kind}-q`, kind: 'text', prompt: 'prompt' }],
     version: 1,
   };
 }
 
 const baseMarkup =
-  '<div class="value-label"></div>' +
-  '<div class="challenge-label"></div>' +
-  '<journal-log id="log"></journal-log>' +
+  '<span class="value-label"><span data-bind="valueLabelPrefix"></span> <span data-bind="valueText"></span></span>' +
+  '<span class="challenge-label"><span data-bind="challengeLabelPrefix"></span> <span data-bind="challengeText"></span></span>' +
   '<journal-section id="sec-morning"></journal-section>' +
   '<journal-section id="sec-midday"></journal-section>' +
   '<journal-section id="sec-evening"></journal-section>' +
-  '<journal-section id="sec-accountability"></journal-section>';
+  '<journal-section id="sec-accountability"></journal-section>' +
+  '<journal-section id="sec-log"></journal-section>';
 
 async function flushMicrotasks() {
   for (let i = 0; i < 5; i += 1) {
@@ -94,6 +103,9 @@ describe('JournalDay', () => {
   });
 
   test('emits value-challenge-change when missing and not readonly', async () => {
+    getAreaValueMapMock.mockResolvedValue({
+      'val-a': ['ch-a'],
+    });
     getJournalDayTemplatesMock.mockReturnValue({
       valueChallenge: { value: 'val-a', challenge: 'ch-a' },
       templates: {
@@ -101,6 +113,7 @@ describe('JournalDay', () => {
         midday: buildTemplate('midday-checkin'),
         evening: buildTemplate('evening-reflection'),
         accountability: buildTemplate('accountability'),
+        log: buildTemplate('journal-log'),
       },
     });
 
@@ -138,6 +151,9 @@ describe('JournalDay', () => {
   });
 
   test('does not emit value-challenge-change when readonly', async () => {
+    getAreaValueMapMock.mockResolvedValue({
+      'val-a': ['ch-a'],
+    });
     getJournalDayTemplatesMock.mockReturnValue({
       valueChallenge: { value: 'val-a', challenge: 'ch-a' },
       templates: {
@@ -145,6 +161,7 @@ describe('JournalDay', () => {
         midday: buildTemplate('midday-checkin'),
         evening: buildTemplate('evening-reflection'),
         accountability: buildTemplate('accountability'),
+        log: buildTemplate('journal-log'),
       },
     });
 

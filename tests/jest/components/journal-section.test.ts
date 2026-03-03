@@ -1,6 +1,6 @@
 import type { I18n } from '../../../src/i18n/i18n.ts';
 import type { ISectionState, ISectionTemplate } from '../../../src/models/index.ts';
-import { jest } from '@jest/globals';
+import { afterEach, beforeAll, describe, expect, jest, test } from '@jest/globals';
 
 jest.unstable_mockModule('bundle-text:./JournalSection.pug', () => ({ default: '' }));
 jest.unstable_mockModule('bundle-text:./JournalSection.css', () => ({ default: '' }));
@@ -23,6 +23,13 @@ const i18n: I18n = {
     'q.text': 'Text prompt',
     'q.rate': 'Rate prompt',
     'rating.ok': 'OK',
+    'q.num': 'Number prompt',
+    'q.bool': 'Boolean prompt',
+    'q.select': 'Select prompt',
+    'opt1.label': 'Option 1',
+    'q.multi': 'Multi prompt',
+    'a.label': 'Option A',
+    'b.label': 'Option B',
   },
   fallback: null,
 };
@@ -31,16 +38,16 @@ function buildTemplate(): ISectionTemplate {
   return {
     id: 'tpl-1',
     kind: 'morning-reset',
-    titleKey: 'sec.title',
+    title: 'Section Title',
     questions: [
-      { id: 'q-text', kind: 'text', promptKey: 'q.text' },
+      { id: 'q-text', kind: 'text', prompt: 'Text prompt' },
       {
         id: 'q-rate',
         kind: 'rating',
-        promptKey: 'q.rate',
+        prompt: 'Rate prompt',
         scaleMin: 1,
         scaleMax: 5,
-        labelKeys: { 3: 'rating.ok' },
+        labels: { 3: 'OK' },
       },
     ],
     version: 1,
@@ -141,7 +148,7 @@ describe('JournalSection', () => {
     const el = document.createElement(tag) as InstanceType<typeof JournalSection>;
     el.props.template = {
       ...buildTemplate(),
-      questions: [...buildTemplate().questions, { id: 'q-num', kind: 'number', promptKey: 'q.num' }],
+      questions: [...buildTemplate().questions, { id: 'q-num', kind: 'number', prompt: 'Number prompt' }],
     };
     el.props.state = buildState();
     el.props.i18n = i18n;
@@ -168,7 +175,7 @@ describe('JournalSection', () => {
     const el = document.createElement(tag) as InstanceType<typeof JournalSection>;
     el.props.template = {
       ...buildTemplate(),
-      questions: [...buildTemplate().questions, { id: 'q-bool', kind: 'boolean', promptKey: 'q.bool' }],
+      questions: [...buildTemplate().questions, { id: 'q-bool', kind: 'boolean', prompt: 'Boolean prompt' }],
     };
     el.props.state = buildState();
     el.props.i18n = i18n;
@@ -195,7 +202,7 @@ describe('JournalSection', () => {
     const el = document.createElement(tag) as InstanceType<typeof JournalSection>;
     el.props.template = {
       ...buildTemplate(),
-      questions: [...buildTemplate().questions, { id: 'q-select', kind: 'single-select', promptKey: 'q.select', options: [{ id: 'opt1', labelKey: 'opt1.label' }] }],
+      questions: [...buildTemplate().questions, { id: 'q-select', kind: 'single-select', prompt: 'Select prompt', options: [{ id: 'opt1', label: 'Option 1', value: 'opt1' }] }],
     };
     el.props.state = buildState();
     el.props.i18n = i18n;
@@ -222,7 +229,7 @@ describe('JournalSection', () => {
     const el = document.createElement(tag) as InstanceType<typeof JournalSection>;
     el.props.template = {
       ...buildTemplate(),
-      questions: [...buildTemplate().questions, { id: 'q-multi', kind: 'multi-select', promptKey: 'q.multi', options: [{ id: 'a', labelKey: 'a.label' }, { id: 'b', labelKey: 'b.label' }] }],
+      questions: [...buildTemplate().questions, { id: 'q-multi', kind: 'multi-select', prompt: 'Multi prompt', options: [{ id: 'a', label: 'Option A', value: 'a' }, { id: 'b', label: 'Option B', value: 'b' }] }],
     };
     el.props.state = buildState();
     el.props.i18n = i18n;

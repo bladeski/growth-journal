@@ -8,6 +8,7 @@ import {
   INumberQuestion,
   IQuestionResponse,
   IRatingQuestion,
+  IRichTextQuestion,
   ISingleSelectQuestion,
   ITextQuestion,
 } from './IQuestion.ts';
@@ -35,6 +36,7 @@ export type {
   ISingleSelectQuestion,
   IMultiSelectQuestion,
   IRatingQuestion,
+  IRichTextQuestion,
   IQuestionResponse,
   ISectionState,
   ISectionTemplate,

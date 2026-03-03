@@ -65,7 +65,7 @@
     "@parcel/transformer-webmanifest": "2.16.4",
     "@playwright/test": "^1.56.1",
     "@tiptap/cli": "^3.19.0",
-    "@types/jest": "^29.5.4",
+    "@types/jest": "^30.0.0",
     "@types/pug": "^2.0.10",
     "@types/serviceworker": "^0.0.167",
     "@typescript-eslint/eslint-plugin": "^7.0.0",

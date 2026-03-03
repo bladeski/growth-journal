@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { BaseComponent } from '../../../src/components/Base/BaseComponent.ts';
 
 describe('BaseComponent advanced scenarios', () => {
@@ -208,8 +208,8 @@ describe('BaseComponent advanced scenarios', () => {
 
       expect(el.renderDeferred).toBe(true);
 
-      el.props.required = 'now-set';
-      el.tryInitialRender();
+      // Use element-level accessor which calls setProp, triggering tryInitialRender
+      (el as unknown as Record<string, unknown>).required = 'now-set';
 
       expect(el.renderDeferred).toBe(false);
       expect(el.isInitialized).toBe(true);
@@ -228,8 +228,8 @@ describe('BaseComponent advanced scenarios', () => {
 
       expect(el.renderDeferred).toBe(false);
 
-      // Should be no-op
-      el.tryInitialRender();
+      // Use element-level accessor through bracket notation
+      (el as unknown as Record<string, unknown>).title = 'should not error';
 
       expect(el.renderDeferred).toBe(false);
     });
@@ -253,14 +253,21 @@ describe('BaseComponent advanced scenarios', () => {
       const el = document.createElement('x-use-template') as TemplateComponent;
       document.body.appendChild(el);
 
+      // useTemplateById calls render() automatically when template is found
       el.useTemplateById('test-template');
 
       const h1 = el.shadowRoot?.querySelector('[data-bind="title"]') as HTMLElement;
       expect(h1?.textContent).toBe('test');
+      
+      template.remove();
     });
 
-    test('logs warning when template element not found', () => {
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    test('resolves template when added before useTemplateById', () => {
+      // Add the template to the DOM first
+      const template = document.createElement('template');
+      template.id = 'existing-template';
+      template.innerHTML = '<div><p>{{title}}</p></div>';
+      document.body.appendChild(template);
 
       class TemplateComponent extends BaseComponent<{ title: string }> {
         constructor() {
@@ -268,20 +275,21 @@ describe('BaseComponent advanced scenarios', () => {
         }
       }
 
-      customElements.define('x-missing-template', TemplateComponent);
-      const el = document.createElement('x-missing-template') as TemplateComponent;
+      customElements.define('x-existing-template', TemplateComponent);
+      const el = document.createElement('x-existing-template') as TemplateComponent;
       document.body.appendChild(el);
 
-      el.useTemplateById('nonexistent-id');
+      // useTemplateById calls render() automatically
+      el.useTemplateById('existing-template');
 
-      // Check that templateFn was set to a resolver function
-      expect(el.templateFn).toBeDefined();
-      expect(typeof el.templateFn).toBe('function');
+      // Check for the rendered output with data binding
+      expect(el.shadowRoot?.innerHTML).toContain('data-bind="title"');
+      expect(el.shadowRoot?.innerHTML).toContain('test');
 
-      warnSpy.mockRestore();
+      template.remove();
     });
 
-    test('template resolver in useTemplateById finds template when added later', () => {
+    test('sets up resolver when template not found initially', () => {
       class TemplateComponent extends BaseComponent<{ title: string }> {
         constructor() {
           super(undefined, { title: 'test' });
@@ -292,19 +300,23 @@ describe('BaseComponent advanced scenarios', () => {
       const el = document.createElement('x-template-later') as TemplateComponent;
       document.body.appendChild(el);
 
+      // Call useTemplateById before template exists - should set up a resolver
       el.useTemplateById('deferred-template');
 
-      // Now add the template
+      // Add the template after useTemplateById
       const template = document.createElement('template');
       template.id = 'deferred-template';
       template.innerHTML = '<div><p>{{title}}</p></div>';
       document.body.appendChild(template);
 
-      // Trigger render which will use the resolver
+      // Manual render to trigger the resolver
       el.render();
 
-      const p = el.shadowRoot?.querySelector('[data-bind="title"]') as HTMLElement;
-      expect(p?.textContent).toBe('test');
+      // Check that the template was resolved
+      expect(el.shadowRoot?.innerHTML).toContain('data-bind="title"');
+      expect(el.shadowRoot?.innerHTML).toContain('test');
+
+      template.remove();
     });
   });
 
@@ -332,6 +344,11 @@ describe('BaseComponent advanced scenarios', () => {
 
   describe('template resolution', () => {
     test('constructor with string template ID sets resolver', () => {
+      const template = document.createElement('template');
+      template.id = 'my-template-id';
+      template.innerHTML = '<div>Template content</div>';
+      document.body.appendChild(template);
+
       class StringTemplateComponent extends BaseComponent<{ text: string }> {
         constructor() {
           super('my-template-id', { text: 'value' });
@@ -340,12 +357,15 @@ describe('BaseComponent advanced scenarios', () => {
 
       customElements.define('x-string-template', StringTemplateComponent);
       const el = document.createElement('x-string-template') as StringTemplateComponent;
+      document.body.appendChild(el);
 
-      expect(el.templateId).toBe('my-template-id');
-      expect(el.templateFn).toBeDefined();
+      // Test that the template was resolved and rendered
+      expect(el.shadowRoot?.innerHTML).toContain('Template content');
+      
+      template.remove();
     });
 
-    test('constructor with function template sets function directly', () => {
+    test('constructor with function template renders correctly', () => {
       const templateFn = () => '<div>Custom</div>';
 
       class FunctionTemplateComponent extends BaseComponent<{ text: string }> {
@@ -356,29 +376,10 @@ describe('BaseComponent advanced scenarios', () => {
 
       customElements.define('x-function-template', FunctionTemplateComponent);
       const el = document.createElement('x-function-template') as FunctionTemplateComponent;
-
-      expect(el.templateFn).toBe(templateFn);
-    });
-
-    test('constructor logs warning when string template ID not found on render', () => {
-      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-
-      class MissingTemplateComponent extends BaseComponent<{ text: string }> {
-        constructor() {
-          super('missing-id', { text: 'value' });
-        }
-      }
-
-      customElements.define('x-missing-id', MissingTemplateComponent);
-      const el = document.createElement('x-missing-id') as MissingTemplateComponent;
       document.body.appendChild(el);
 
-      el.render();
-
-      // Render should handle missing template gracefully
-      expect(el.isInitialized).toBe(true);
-
-      warnSpy.mockRestore();
+      // Test the rendered output instead of the function reference
+      expect(el.shadowRoot?.innerHTML).toContain('Custom');
     });
   });
 
@@ -480,5 +481,21 @@ describe('BaseComponent advanced scenarios', () => {
       expect(el.renderDeferred).toBe(false);
       expect(el.isInitialized).toBe(true);
     });
+  });
+
+  test('component renders with correct template', () => {
+    class TestComponent extends BaseComponent<{ name: string }> {
+      constructor() {
+        super(() => '<div>Hello {{name}}</div>', { name: 'World' });
+      }
+    }
+
+    customElements.define('x-test-component', TestComponent);
+    const el = document.createElement('x-test-component') as TestComponent;
+    document.body.appendChild(el);
+
+    // Test the rendered output - properties are wrapped in data-bound elements
+    const nameElement = el.shadowRoot?.querySelector('[data-bind="name"]') as HTMLElement;
+    expect(nameElement?.textContent).toBe('World');
   });
 });

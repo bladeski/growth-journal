@@ -5,4 +5,5 @@ export type QuestionKind =
   | 'boolean'
   | 'single-select'
   | 'multi-select'
-  | 'rating';
+  | 'rating'
+  | 'rich-text';

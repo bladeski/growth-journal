@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { afterEach, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import type { I18n } from '../../../src/i18n/i18n.ts';
 import type { IJournalEntry } from '../../../src/models/index.ts';
 
@@ -14,11 +14,29 @@ jest.unstable_mockModule('../../../src/i18n/runtime.ts', () => ({
 }));
 
 const getGrowthAreasMock = jest.fn<() => Promise<Array<{ id: string; label: string }>>>();
+const getAreaValuePairsMock = jest.fn<() => Promise<Record<string, unknown>>>();
 const getJournalDayTemplatesMock = jest.fn();
 
 jest.unstable_mockModule('../../../src/helpers/helpers.ts', () => ({
   getGrowthAreas: getGrowthAreasMock,
+  getAreaValuePairs: getAreaValuePairsMock,
   getJournalDayTemplates: getJournalDayTemplatesMock,
+  getAppLabels: () => ({
+    loadingText: 'Loading\u2026',
+    loadingAriaLabel: 'Loading journal',
+    appTitle: 'Growth Journal',
+    logoAlt: 'Growth Journal Logo. A stylised image of a sprout.',
+    dateNavAriaLabel: 'Date navigation',
+    prevDayAriaLabel: 'Previous day',
+    nextDayAriaLabel: 'Next day',
+    dateLabel: 'Date:',
+    selectDateAriaLabel: 'Select journal date',
+    settingsLabel: 'Settings',
+    openSettingsAriaLabel: 'Open settings',
+    closeSettingsAriaLabel: 'Close settings',
+    growthAreaLabel: 'Growth Area:',
+    selectGrowthAreaAriaLabel: 'Select growth area',
+  }),
 }));
 
 const dbGetSettingMock = jest.fn<(key: string) => Promise<unknown>>();

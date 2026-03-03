@@ -138,14 +138,14 @@
   },
   "journal-entry": {
     "id": "feedface-1234-5678-9abc-def0000000010",
-    "kind": "journal-entry",
+    "kind": "journal-log",
     "titleKey": "sec.feedface-1234-5678-9abc-def0000000010.title",
     "descriptionKey": "sec.feedface-1234-5678-9abc-def0000000010.desc",
     "version": 1,
     "questions": [
       {
         "id": "journal-entry-text",
-        "kind": "text",
+        "kind": "rich-text",
         "promptKey": "q.feedface-text.prompt",
         "placeholderKey": "q.feedface-text.placeholder"
       }

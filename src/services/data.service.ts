@@ -5,6 +5,7 @@ export default class DataService {
   private static instance: DataService;
   private areaValueMap?: GenericMap;
   private valueChallengeMap?: GenericMap;
+  private templateFile?: TemplateFile;
 
   private baseUrl =
     typeof document !== 'undefined' && document.baseURI
@@ -47,9 +48,13 @@ export default class DataService {
   }
 
   public async getTemplateFile(): Promise<TemplateFile | null> {
+    if (this.templateFile) {
+      return this.templateFile;
+    }
     try {
       const res = await fetch(`${this.baseUrl}templates/template.json`);
-      return await (res.json() as Promise<TemplateFile>);
+      this.templateFile = await (res.json() as Promise<TemplateFile>);
+      return this.templateFile;
     } catch (err) {
       console.error('Error fetching template file:', err);
       return null;

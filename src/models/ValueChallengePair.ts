@@ -7,4 +7,5 @@ export type JournalDayTemplates = {
   midday: ISectionTemplate;
   evening: ISectionTemplate;
   accountability: ISectionTemplate;
+  log: ISectionTemplate;
 };

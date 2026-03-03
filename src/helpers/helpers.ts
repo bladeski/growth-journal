@@ -3,10 +3,9 @@ import { ISectionTemplate } from '../models/ISectionTemplate.ts';
 import { Question } from '../models/Question.ts';
 import {
   JournalDayTemplates,
-  SectionTemplateWithMeta,
-  TemplateQuestion,
   GenericMap,
   ValueChallengePair,
+  TemplateQuestion,
   TemplateSection,
 } from '../models/index.ts';
 import DataService from '../services/data.service.ts';
@@ -31,127 +30,68 @@ function pickRandomValueChallenge(
   return { value, challenge };
 }
 
-function normalizeQuestion(q: TemplateQuestion): Question {
+function normalizeQuestion(i18n: I18n, q: TemplateQuestion): Question {
   switch (q.kind) {
     case 'text':
       return {
         id: q.id,
         kind: 'text',
-        promptKey: q.promptKey,
+        prompt: t(i18n, q.promptKey),
         required: q.required,
-        placeholderKey: q.placeholderKey,
-        helpTextKey: q.helpTextKey,
+        placeholder: q.placeholderKey ? t(i18n, q.placeholderKey) : undefined,
+        helpText: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
       };
 
-    // template.json uses `select`, app model uses `single-select`
     case 'select':
     case 'single-select':
       return {
         id: q.id,
         kind: 'single-select',
-        promptKey: q.promptKey,
+        prompt: t(i18n, q.promptKey),
         required: q.required,
-        helpTextKey: q.helpTextKey,
+        helpText: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
         options: (q.options ?? []).map((o) => ({
           id: o.value,
-          labelKey: o.labelKey,
+          label: t(i18n, o.labelKey),
           value: o.value,
         })),
       };
 
+    case 'rich-text':
+      return {
+        id: q.id,
+        kind: 'rich-text',
+        prompt: t(i18n, q.promptKey),
+        required: q.required,
+        placeholder: q.placeholderKey ? t(i18n, q.placeholderKey) : undefined,
+        helpText: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
+      };
+
     default:
-      // Fall back to a text question to avoid hard crashes in the UI
       return {
         id: q.id,
         kind: 'text',
-        promptKey: q.promptKey,
+        prompt: t(i18n, q.promptKey),
         required: q.required,
-        placeholderKey: q.placeholderKey,
-        helpTextKey: q.helpTextKey,
+        placeholder: q.placeholderKey ? t(i18n, q.placeholderKey) : undefined,
+        helpText: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
       };
   }
 }
 
-function toSectionTemplate(section: TemplateSection): SectionTemplateWithMeta {
-  const base: SectionTemplateWithMeta = {
+function toSectionTemplate(i18n: I18n, section: TemplateSection): ISectionTemplate {
+  const base: ISectionTemplate = {
     id: section.id,
     kind: section.kind as ISectionTemplate['kind'],
-    titleKey: section.titleKey,
-    descriptionKey: section.descriptionKey,
+    title: t(i18n, section.titleKey),
+    description: section.descriptionKey ? t(i18n, section.descriptionKey) : '',
     version: section.version,
-    questions: section.questions.map(normalizeQuestion),
+    questions: section.questions.map((q) => normalizeQuestion(i18n, q)),
   };
 
-  if (section.value != null) base.value = section.value;
-  if (section.challenge != null) base.challenge = section.challenge;
+  if (section.value != null) base.value = t(i18n, section.value);
+  if (section.challenge != null) base.challenge = t(i18n, section.challenge);
   return base;
-}
-
-function resolveQuestionStrings(i18n: I18n, q: Question): Question {
-  switch (q.kind) {
-    case 'text':
-    case 'long-text':
-      return {
-        ...q,
-        promptKey: t(i18n, q.promptKey),
-        placeholderKey: q.placeholderKey ? t(i18n, q.placeholderKey) : undefined,
-        helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
-      };
-
-    case 'number':
-      return {
-        ...q,
-        promptKey: t(i18n, q.promptKey),
-        helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
-      };
-
-    case 'boolean':
-      return {
-        ...q,
-        promptKey: t(i18n, q.promptKey),
-        helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
-        trueLabelKey: q.trueLabelKey ? t(i18n, q.trueLabelKey) : undefined,
-        falseLabelKey: q.falseLabelKey ? t(i18n, q.falseLabelKey) : undefined,
-      };
-
-    case 'single-select':
-    case 'multi-select':
-      return {
-        ...q,
-        promptKey: t(i18n, q.promptKey),
-        helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
-        options: q.options.map((o) => ({
-          ...o,
-          labelKey: t(i18n, o.labelKey),
-        })),
-      };
-
-    case 'rating': {
-      const nextLabelKeys: Record<number, string> | undefined = q.labelKeys
-        ? (Object.fromEntries(
-            Object.entries(q.labelKeys).map(([k, v]) => [Number(k), t(i18n, v)]),
-          ) as Record<number, string>)
-        : undefined;
-
-      return {
-        ...q,
-        promptKey: t(i18n, q.promptKey),
-        helpTextKey: q.helpTextKey ? t(i18n, q.helpTextKey) : undefined,
-        labelKeys: nextLabelKeys,
-      };
-    }
-  }
-}
-
-function resolveTemplateStrings(i18n: I18n, tpl: SectionTemplateWithMeta): SectionTemplateWithMeta {
-  return {
-    ...tpl,
-    titleKey: t(i18n, tpl.titleKey),
-    descriptionKey: tpl.descriptionKey ? t(i18n, tpl.descriptionKey) : undefined,
-    value: tpl.value != null ? t(i18n, tpl.value) : undefined,
-    challenge: tpl.challenge != null ? t(i18n, tpl.challenge) : undefined,
-    questions: tpl.questions.map((q) => resolveQuestionStrings(i18n, q)),
-  };
 }
 
 /**
@@ -170,8 +110,6 @@ export async function getJournalDayTemplates(
   const valueChallenge =
     existingValueChallenge ?? pickRandomValueChallenge(valueChallengeMap, allowedValues);
 
-  const { value, challenge } = valueChallenge;
-
   const morningRaw = tplFile['morning'];
   const middayRaw = tplFile['midday'];
   const eveningRaw = tplFile['evening'];
@@ -179,24 +117,21 @@ export async function getJournalDayTemplates(
 
   if (!morningRaw || !middayRaw || !eveningRaw || !accountabilityRaw) return null;
 
-  const morningValue = morningRaw.value === '{{ value }}' ? value : morningRaw.value;
-  const morningChallenge =
-    morningRaw.challenge === '{{ challenge }}' ? challenge : morningRaw.challenge;
+  const logRaw = tplFile['journal-entry'];
+  if (!logRaw) return null;
 
-  const morningTpl = resolveTemplateStrings(
-    i18n,
-    toSectionTemplate({
-      ...(morningRaw as TemplateSection),
-      value: morningValue,
-      challenge: morningChallenge,
-    }),
-  );
-  const middayTpl = resolveTemplateStrings(i18n, toSectionTemplate(middayRaw as TemplateSection));
-  const eveningTpl = resolveTemplateStrings(i18n, toSectionTemplate(eveningRaw as TemplateSection));
-  const accountabilityTpl = resolveTemplateStrings(
-    i18n,
-    toSectionTemplate(accountabilityRaw as TemplateSection),
-  );
+  const morningValue = morningRaw.value ?? valueChallenge.value;
+  const morningChallenge = morningRaw.challenge ?? valueChallenge.challenge;
+
+  const morningTpl = toSectionTemplate(i18n, {
+    ...morningRaw,
+    value: morningValue,
+    challenge: morningChallenge,
+  });
+  const middayTpl = toSectionTemplate(i18n, middayRaw);
+  const eveningTpl = toSectionTemplate(i18n, eveningRaw);
+  const accountabilityTpl = toSectionTemplate(i18n, accountabilityRaw);
+  const logTpl = toSectionTemplate(i18n, logRaw);
 
   return {
     templates: {
@@ -204,9 +139,36 @@ export async function getJournalDayTemplates(
       midday: middayTpl,
       evening: eveningTpl,
       accountability: accountabilityTpl,
+      log: logTpl,
     },
     valueChallenge,
   };
+}
+
+export async function getValueChallengePairs(i18n: I18n): Promise<ValueChallengePair[]> {
+  const dataService = DataService.getInstance();
+  const areaValueMap = await dataService.getValueChallengeMap();
+  const pairs: ValueChallengePair[] = [];
+  for (const [area, values] of Object.entries(areaValueMap)) {
+    const areaLabel = t(i18n, area);
+    for (const value of values) {
+      const valueLabel = t(i18n, value);
+      pairs.push({ value: valueLabel, challenge: areaLabel });
+    }
+  }
+  return pairs;
+}
+
+export async function getAreaValuePairs(i18n: I18n): Promise<{ area: string; values: string[] }[]> {
+  const dataService = DataService.getInstance();
+  const areaValueMap = await dataService.getAreaValueMap();
+  const pairs: { area: string; values: string[] }[] = [];
+  for (const [area, values] of Object.entries(areaValueMap)) {
+    const areaLabel = t(i18n, area);
+    const valueLabels = values.map((v) => t(i18n, v));
+    pairs.push({ area: areaLabel, values: valueLabels });
+  }
+  return pairs;
 }
 
 export async function getGrowthAreas(i18n: I18n): Promise<Array<{ id: string; label: string }>> {
@@ -218,3 +180,72 @@ export async function getGrowthAreas(i18n: I18n): Promise<Array<{ id: string; la
     label: t(i18n, key),
   }));
 }
+
+// ── UI-label helpers ──────────────────────────────────────────────────
+// Keep translation concerns out of components: each function returns a
+// plain object whose keys match the {{handlebars}} props in the
+// corresponding Pug template.
+
+function tr(i18n: I18n, key: string, fallback: string): string {
+  const translated = t(i18n, key);
+  return translated === key ? fallback : translated;
+}
+
+export interface AppLabels {
+  loadingText: string;
+  loadingAriaLabel: string;
+  appTitle: string;
+  logoAlt: string;
+  dateNavAriaLabel: string;
+  prevDayAriaLabel: string;
+  nextDayAriaLabel: string;
+  dateLabel: string;
+  selectDateAriaLabel: string;
+  settingsLabel: string;
+  openSettingsAriaLabel: string;
+  closeSettingsAriaLabel: string;
+  growthAreaLabel: string;
+  selectGrowthAreaAriaLabel: string;
+}
+
+export function getAppLabels(i18n: I18n): AppLabels {
+  return {
+    loadingText: tr(i18n, 'app.loading', 'Loading\u2026'),
+    loadingAriaLabel: tr(i18n, 'app.loadingAria', 'Loading journal'),
+    appTitle: tr(i18n, 'app.title', 'Growth Journal'),
+    logoAlt: tr(i18n, 'app.logoAlt', 'Growth Journal Logo. A stylised image of a sprout.'),
+    dateNavAriaLabel: tr(i18n, 'app.dateNavAria', 'Date navigation'),
+    prevDayAriaLabel: tr(i18n, 'app.prevDayAria', 'Previous day'),
+    nextDayAriaLabel: tr(i18n, 'app.nextDayAria', 'Next day'),
+    dateLabel: tr(i18n, 'app.dateLabel', 'Date:'),
+    selectDateAriaLabel: tr(i18n, 'app.selectDateAria', 'Select journal date'),
+    settingsLabel: tr(i18n, 'app.settings', 'Settings'),
+    openSettingsAriaLabel: tr(i18n, 'app.openSettingsAria', 'Open settings'),
+    closeSettingsAriaLabel: tr(i18n, 'app.closeSettingsAria', 'Close settings'),
+    growthAreaLabel: tr(i18n, 'app.growthAreaLabel', 'Growth Area:'),
+    selectGrowthAreaAriaLabel: tr(i18n, 'app.selectGrowthAreaAria', 'Select growth area'),
+  };
+}
+
+export interface DayLabels {
+  focusAriaLabel: string;
+  questionsAriaLabel: string;
+  valueLabelPrefix: string;
+  challengeLabelPrefix: string;
+}
+
+export function getDayLabels(i18n: I18n): DayLabels {
+  return {
+    focusAriaLabel: tr(i18n, 'journal.day.focusAria', "Today's focus"),
+    questionsAriaLabel: tr(i18n, 'journal.day.questionsAria', 'Daily reflection questions'),
+    valueLabelPrefix: tr(i18n, 'journal.day.valueLabel', 'Value:'),
+    challengeLabelPrefix: tr(i18n, 'journal.day.challengeLabel', 'Challenge:'),
+  };
+}
+
+/** Build the `entryAriaLabel` that includes the date. */
+export function getDayEntryAriaLabel(i18n: I18n, date: string): string {
+  return `${tr(i18n, 'journal.day.entryAria', 'Journal entry for')} ${date}`;
+}
+
+

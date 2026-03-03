@@ -1,16 +1,19 @@
-import { I18n, t } from '../../i18n/i18n.ts';
 import { BaseComponent } from '../Base/BaseComponent.ts';
 import template from 'bundle-text:./JournalLog.pug';
 import styles from 'bundle-text:./JournalLog.css';
 import { IPropTypes } from '../../models/index.ts';
+import { I18n, t } from '../../i18n/i18n.ts';
 import { nextMicrotask, whenUpgraded } from '../../utils/elements.ts';
 import { RichTextEditor } from '../RichTextEditor/RichTextEditor.ts';
 
 export interface JournalLogProps extends IPropTypes {
   log: string;
   i18n: I18n;
-  labelKey?: string; // optional override
-  placeholderKey?: string; // optional override
+  journalLogLegend?: string;
+  addEntryLabel?: string;
+  addEntryAria?: string;
+  label?: string; // optional override
+  placeholder?: string; // optional override
   readonly?: boolean;
 }
 
@@ -35,6 +38,11 @@ export class JournalLog extends BaseComponent<JournalLogProps, JournalLogEvents>
 
   /** Keep textarea in sync with props.log */
   override render(): void {
+    const strings = this.getLocalizedStrings();
+    this.props.journalLogLegend = strings.legendText;
+    this.props.addEntryLabel = strings.addEntryLabel;
+    this.props.addEntryAria = strings.addEntryAria;
+
     super.render();
     this.syncStrings();
     const ta = this.shadowRoot?.querySelector<HTMLTextAreaElement>('textarea[data-q="log"]');
@@ -47,7 +55,7 @@ export class JournalLog extends BaseComponent<JournalLogProps, JournalLogEvents>
 
   private async hydrateChildren() {
     if (!this.shadowRoot) return;
-    const { log, i18n } = this.props;
+    const { log } = this.props;
 
     // Give the browser a microtask to upgrade child custom elements
     await nextMicrotask();
@@ -55,14 +63,11 @@ export class JournalLog extends BaseComponent<JournalLogProps, JournalLogEvents>
     const richTextEditor = this.shadowRoot.querySelector('#richTextEditor') as RichTextEditor;
     if (richTextEditor) {
       await whenUpgraded(richTextEditor, 'rich-text-editor');
-      richTextEditor.props.i18n = i18n;
       richTextEditor.props.log = log ?? '';
       richTextEditor.props.readonly = this.props.readonly;
-      richTextEditor.props.label = t(i18n, this.props.labelKey ?? 'Log');
-      richTextEditor.props.placeholder = t(
-        i18n,
-        this.props.placeholderKey ?? 'Write your journal entry here...',
-      );
+      richTextEditor.props.label = this.props.label ?? 'Log';
+      richTextEditor.props.placeholder =
+        this.props.placeholder ?? 'Write your journal entry here...';
 
       // Listen for log-change events from RichTextEditor and re-emit
       richTextEditor.addEventListener('log-change', (evt) => {
@@ -78,20 +83,47 @@ export class JournalLog extends BaseComponent<JournalLogProps, JournalLogEvents>
   override updateBindings(key?: keyof JournalLogProps & string): void {
     super.updateBindings(key);
     if (!this.shadowRoot) return;
-    if (!key || key === 'i18n' || key === 'labelKey') {
+    if (!key || key === 'label' || key === 'placeholder') {
       this.syncStrings();
     }
   }
 
   private syncStrings(): void {
     if (!this.shadowRoot) return;
-    const label = t(this.props.i18n, this.props.labelKey ?? 'Log');
+    const strings = this.getLocalizedStrings();
+    const label = this.props.label ?? 'Log';
+    const placeholder = this.props.placeholder ?? strings.placeholder;
 
     // Update RichTextEditor label
     const richTextEditor = this.shadowRoot.querySelector('#richTextEditor') as RichTextEditor;
     if (richTextEditor && richTextEditor.props) {
       richTextEditor.props.label = label;
+      richTextEditor.props.placeholder = placeholder;
     }
+  }
+
+  private getLocalizedStrings(): {
+    legendText: string;
+    addEntryLabel: string;
+    addEntryAria: string;
+    placeholder: string;
+  } {
+    const i18n = this.props.i18n;
+    const tr = (key: string, fallback: string): string => {
+      if (!i18n) return fallback;
+      const translated = t(i18n, key);
+      return translated === key ? fallback : translated;
+    };
+
+    return {
+      legendText: tr(
+        'journal.log.legend',
+        tr('sec.feedface-1234-5678-9abc-def0000000010.title', 'Journal Log'),
+      ),
+      addEntryLabel: tr('journal.log.addEntry', 'Add Entry'),
+      addEntryAria: tr('journal.log.addEntryAria', 'Add new journal entry'),
+      placeholder: tr('q.feedface-text.prompt', 'Write your journal entry here...'),
+    };
   }
 
   private onFocus() {

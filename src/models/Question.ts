@@ -3,6 +3,7 @@ import {
   IMultiSelectQuestion,
   INumberQuestion,
   IRatingQuestion,
+  IRichTextQuestion,
   ISingleSelectQuestion,
   ITextQuestion,
 } from './index.ts';
@@ -13,4 +14,5 @@ export type Question =
   | IBooleanQuestion
   | ISingleSelectQuestion
   | IMultiSelectQuestion
-  | IRatingQuestion;
+  | IRatingQuestion
+  | IRichTextQuestion;

@@ -264,7 +264,7 @@ details {
     }
   }
 
-  &>*:not(summary) {
+  & > *:not(summary) {
     margin-top: var(--spacing-xl);
   }
 }
@@ -300,7 +300,7 @@ select {
 }
 
 /* Customize specific parts of the date picker */
-input[type="date"]::-webkit-calendar-picker-indicator {
+input[type='date']::-webkit-calendar-picker-indicator {
   background-color: var(--color-secondary-light);
   cursor: pointer;
   color: var(--color-secondary-contrast);

@@ -1,14 +1,13 @@
-import { MsgKey } from '../i18n/i18n.ts';
 import { IChoiceOption } from './IChoiceOption.ts';
 import { ResponseValue } from './ResponseValue.ts';
 
 export interface IQuestionBase {
   id: string;
-  promptKey: MsgKey; // e.g., 'q.intention.prompt'
+  prompt: string; // e.g., 'q.intention.prompt'
   required?: boolean;
-  helpTextKey?: MsgKey; // optional help text key
+  helpText?: string; // optional help text key
   icon?: string;
-  placeholderKey?: MsgKey; // optional placeholder key
+  placeholder?: string; // optional placeholder key
 }
 
 export interface ITextQuestion extends IQuestionBase {
@@ -27,8 +26,8 @@ export interface INumberQuestion extends IQuestionBase {
 
 export interface IBooleanQuestion extends IQuestionBase {
   kind: 'boolean';
-  trueLabelKey?: MsgKey; // e.g., 'yes'
-  falseLabelKey?: MsgKey; // e.g., 'no'
+  trueLabel?: string; // e.g., 'yes'
+  falseLabel?: string; // e.g., 'no'
 }
 
 export interface ISingleSelectQuestion extends IQuestionBase {
@@ -47,10 +46,14 @@ export interface IRatingQuestion extends IQuestionBase {
   scaleMin?: number;
   scaleMax?: number;
   /**
-   * Per-value label keys, e.g., {1:'rating.1', 5:'rating.5'}.
+   * Per-value labels, e.g., {1:'rating.1', 5:'rating.5'}.
    * If not present for a value, show the number.
    */
-  labelKeys?: Record<number, MsgKey>;
+  labels?: Record<number, string>;
+}
+
+export interface IRichTextQuestion extends IQuestionBase {
+  kind: 'rich-text';
 }
 
 export interface IQuestionResponse {

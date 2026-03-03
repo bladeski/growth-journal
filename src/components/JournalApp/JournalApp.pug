@@ -4,27 +4,27 @@ style.
 main.app
   #error.hidden(role="alert" aria-live="assertive")
     | {{error}}
-  #loading(role="status" aria-live="polite" aria-label="Loading journal") Loading…
+  #loading(role="status" aria-live="polite" aria-label="{{loadingAriaLabel}}") {{loadingText}}
   #content.hidden
     header
       .heading
-        img(src="/src/images/logo.svg", alt="Growth Journal Logo. A stylised image of a sprout.")
-        h1 Growth Journal
+        img(src="/src/images/logo.svg", alt="{{logoAlt}}")
+        h1 {{appTitle}}
       .settings
-        .date-picker-bar(role="group" aria-label="Date navigation")
-          button#prev-day.btn.btn-icon(data-action="click:prevDay" aria-label="Previous day") <
-          button#next-day.btn.btn-icon(data-action="click:nextDay" aria-label="Next day") >
-          label(for="date-picker") Date:
-          input#date-picker(type="date" data-action="change:onDateChange" aria-label="Select journal date")
-        button#settings-btn.btn(data-action="click:openSettings" aria-label="Open settings") Settings
+        .date-picker-bar(role="group" aria-label="{{dateNavAriaLabel}}")
+          button#prev-day.btn.btn-icon(data-action="click:prevDay" aria-label="{{prevDayAriaLabel}}") <
+          button#next-day.btn.btn-icon(data-action="click:nextDay" aria-label="{{nextDayAriaLabel}}") >
+          label(for="date-picker") {{dateLabel}}
+          input#date-picker(type="date" data-action="change:onDateChange" aria-label="{{selectDateAriaLabel}}")
+        button#settings-btn.btn(data-action="click:openSettings" aria-label="{{openSettingsAriaLabel}}") {{settingsLabel}}
     dialog#settings(aria-labelledby="settings-title")
-      h2#settings-title Settings
-        button.btn.btn-icon(data-action="click:closeSettings" aria-label="Close settings") ╳
+      h2#settings-title {{settingsLabel}}
+        button.btn.btn-icon(data-action="click:closeSettings" aria-label="{{closeSettingsAriaLabel}}") ╳
       .setting
-        label(for="setting-growth-area") Growth Area:
+        label(for="setting-growth-area") {{growthAreaLabel}}
         select#setting-growth-area(
           data-action="change:onSettingChange"
           name="growthArea"
-          aria-label="Select growth area"
+          aria-label="{{selectGrowthAreaAriaLabel}}"
         )
     journal-day#day

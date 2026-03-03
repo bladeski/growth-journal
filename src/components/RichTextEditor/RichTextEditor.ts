@@ -1,4 +1,3 @@
-import { I18n, t } from '../../i18n/i18n.ts';
 import { BaseComponent } from '../Base/BaseComponent.ts';
 import template from 'bundle-text:./RichTextEditor.pug';
 import styles from 'bundle-text:./RichTextEditor.css';
@@ -6,6 +5,7 @@ import { IPropTypes } from '../../models/index.ts';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import { TextStyleKit } from '@tiptap/extension-text-style';
+import { type I18n, t } from '../../i18n/i18n.ts';
 
 enum HeadingLevel {
   h1 = 1,
@@ -18,10 +18,11 @@ enum HeadingLevel {
 
 export interface RichTextEditorProps extends IPropTypes {
   log: string;
-  i18n: I18n;
   label?: string; // optional label text
   placeholder?: string; // optional override
   readonly?: boolean;
+  i18n?: I18n;
+  [key: string]: unknown;
 }
 
 export interface RichTextEditorEvents {
@@ -30,7 +31,7 @@ export interface RichTextEditorEvents {
 
 export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextEditorEvents> {
   static tag = 'rich-text-editor';
-  static requiredProps = ['log', 'i18n'];
+  static requiredProps = ['log'];
 
   private editor?: Editor;
 
@@ -48,6 +49,11 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
 
   /** Keep textarea in sync with props.log */
   override render(): void {
+    // Spread translated toolbar labels into props
+    if (this.props.i18n) {
+      Object.assign(this.props, RichTextEditor.getLabels(this.props.i18n));
+    }
+
     super.render();
     StarterKit.configure({
       horizontalRule: {
@@ -67,7 +73,7 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
         extensions: [StarterKit, TextStyleKit],
         content: this.props.log ?? '',
         onUpdate: ({ editor }) => this.onUpdate(editor),
-        onSelectionUpdate: ({ editor }) => this.onSelectionUpdate(editor),
+        onSelectionUpdate: () => this.onSelectionUpdate(),
       });
       this.shadowRoot
         ?.getElementById('editor-content')
@@ -159,7 +165,7 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
     this.setToolbarState();
   }
 
-  private onSelectionUpdate(editor: Editor) {
+  private onSelectionUpdate() {
     this.setToolbarState();
   }
 
@@ -206,6 +212,33 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
       'button[data-action="click:toolbarUndo"]',
     ) as HTMLButtonElement;
     if (undoBtn) undoBtn.disabled = !(this.editor?.can().undo() ?? false);
+  }
+
+  /** Resolve toolbar labels from i18n, falling back to English defaults. */
+  private static tr(i18n: I18n, key: string, fallback: string): string {
+    const resolved = t(i18n, key);
+    return resolved === key ? fallback : resolved;
+  }
+
+  private static getLabels(i18n: I18n) {
+    const r = RichTextEditor.tr;
+    return {
+      toolbarAriaLabel: r(i18n, 'rte.toolbar', 'Text formatting'),
+      headingGroupAriaLabel: r(i18n, 'rte.headingGroup', 'Heading styles'),
+      textStylesGroupAriaLabel: r(i18n, 'rte.textStylesGroup', 'Text styles'),
+      listsGroupAriaLabel: r(i18n, 'rte.listsGroup', 'Lists'),
+      historyGroupAriaLabel: r(i18n, 'rte.historyGroup', 'History'),
+      heading1Tooltip: r(i18n, 'rte.heading1', 'Heading 1'),
+      heading2Tooltip: r(i18n, 'rte.heading2', 'Heading 2'),
+      heading3Tooltip: r(i18n, 'rte.heading3', 'Heading 3'),
+      boldTooltip: r(i18n, 'rte.bold', 'Bold'),
+      italicTooltip: r(i18n, 'rte.italic', 'Italic'),
+      underlineTooltip: r(i18n, 'rte.underline', 'Underline'),
+      bulletListTooltip: r(i18n, 'rte.bulletList', 'Bullet list'),
+      numberedListTooltip: r(i18n, 'rte.numberedList', 'Numbered list'),
+      undoTooltip: r(i18n, 'rte.undo', 'Undo'),
+      redoTooltip: r(i18n, 'rte.redo', 'Redo'),
+    };
   }
 }
 

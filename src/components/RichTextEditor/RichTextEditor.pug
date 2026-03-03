@@ -1,19 +1,19 @@
 .editor-wrapper
   label#editor-label(for="editor-content") {{label}}
-  #toolbar(role="toolbar" aria-label="Text formatting" aria-controls="editor-content")
-    .toolbar-group(role="group" aria-label="Heading styles")
-      button(type="button" data-action="click:toolbarHeading" data-level="1" data-tooltip="Heading 1" aria-label="Heading 1") H1
-      button(type="button" data-action="click:toolbarHeading" data-level="2" data-tooltip="Heading 2" aria-label="Heading 2") H2
-      button(type="button" data-action="click:toolbarHeading" data-level="3" data-tooltip="Heading 3" aria-label="Heading 3") H3
-    .toolbar-group(role="group" aria-label="Text styles")
-      button.bold(type="button" data-action="click:toolbarBold" data-tooltip="Bold" aria-label="Bold") B
-      button.italic(type="button" data-action="click:toolbarItalic" data-tooltip="Italic" aria-label="Italic") i
-      button.underline(type="button" data-action="click:toolbarUnderline" data-tooltip="Underline" aria-label="Underline") U
-    .toolbar-group(role="group" aria-label="Lists")
-      button(type="button" data-action="click:toolbarBulletList" data-tooltip="Bullet list" aria-label="Bullet list") • List
-      button(type="button" data-action="click:toolbarOrderedList" data-tooltip="Numbered list" aria-label="Numbered list") 1. List
-    .toolbar-group(role="group" aria-label="History")
-      button(type="button" data-action="click:toolbarUndo" data-tooltip="Undo" aria-label="Undo" disabled) ↺
-      button(type="button" data-action="click:toolbarRedo" data-tooltip="Redo" aria-label="Redo" disabled) ↻
+  #toolbar(role="toolbar" aria-label="{{toolbarAriaLabel}}" aria-controls="editor-content")
+    .toolbar-group(role="group" aria-label="{{headingGroupAriaLabel}}")
+      button(type="button" data-action="click:toolbarHeading" data-level="1" data-tooltip="{{heading1Tooltip}}" aria-label="{{heading1Tooltip}}") H1
+      button(type="button" data-action="click:toolbarHeading" data-level="2" data-tooltip="{{heading2Tooltip}}" aria-label="{{heading2Tooltip}}") H2
+      button(type="button" data-action="click:toolbarHeading" data-level="3" data-tooltip="{{heading3Tooltip}}" aria-label="{{heading3Tooltip}}") H3
+    .toolbar-group(role="group" aria-label="{{textStylesGroupAriaLabel}}")
+      button.bold(type="button" data-action="click:toolbarBold" data-tooltip="{{boldTooltip}}" aria-label="{{boldTooltip}}") B
+      button.italic(type="button" data-action="click:toolbarItalic" data-tooltip="{{italicTooltip}}" aria-label="{{italicTooltip}}") i
+      button.underline(type="button" data-action="click:toolbarUnderline" data-tooltip="{{underlineTooltip}}" aria-label="{{underlineTooltip}}") U
+    .toolbar-group(role="group" aria-label="{{listsGroupAriaLabel}}")
+      button(type="button" data-action="click:toolbarBulletList" data-tooltip="{{bulletListTooltip}}" aria-label="{{bulletListTooltip}}") • List
+      button(type="button" data-action="click:toolbarOrderedList" data-tooltip="{{numberedListTooltip}}" aria-label="{{numberedListTooltip}}") 1. List
+    .toolbar-group(role="group" aria-label="{{historyGroupAriaLabel}}")
+      button(type="button" data-action="click:toolbarUndo" data-tooltip="{{undoTooltip}}" aria-label="{{undoTooltip}}" disabled) ↺
+      button(type="button" data-action="click:toolbarRedo" data-tooltip="{{redoTooltip}}" aria-label="{{redoTooltip}}" disabled) ↻
   #editor-content.input(role="textbox" aria-labelledby="editor-label" aria-multiline="true")
     #placeholder(aria-hidden="true") {{placeholder}}

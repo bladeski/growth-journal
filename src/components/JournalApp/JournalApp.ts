@@ -11,9 +11,13 @@ import { BaseComponent } from '../Base/BaseComponent.ts';
 import template from 'bundle-text:./JournalApp.pug';
 import styles from 'bundle-text:./JournalApp.css';
 import { JournalDay } from '../index.ts';
-import { getGrowthAreas, getJournalDayTemplates } from '../../helpers/helpers.ts';
+import {
+  getAppLabels,
+  getAreaValuePairs,
+  getGrowthAreas,
+  getJournalDayTemplates,
+} from '../../helpers/helpers.ts';
 import { JournalDB } from '../../storage/indexeddb.ts';
-import DataService from '../../services/data.service.ts';
 
 export interface JournalAppProps {
   date: string;
@@ -30,7 +34,6 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
   private today = new Date().toISOString().slice(0, 10);
   private SETTINGS_KEY = 'settings:growthArea';
   private db: JournalDB | null = null;
-  private dataService = DataService.getInstance();
 
   private logSaveTimer: number | undefined;
   observedAttributes = ['date', 'entry', 'i18n', 'loading', 'error'];
@@ -56,6 +59,10 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
     try {
       const runtime = await loadRuntimeI18n();
       this.setProp('i18n', runtime);
+      // Re-render so translated labels propagate to bindings.
+      // setProp only updates bindings for the changed prop ('i18n'),
+      // but the derived label props need a full render() pass.
+      this.render();
     } catch {
       // ignore i18n load errors
     }
@@ -121,19 +128,6 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
         day.props.readonly = readonly;
         day.render();
 
-        day.addEventListener('log-change', (evt: Event) => {
-          const e = evt as CustomEvent<{ value: string }>;
-          const updated: IJournalEntry = {
-            ...this.props.entry!,
-            log: e.detail.value,
-          };
-          this.setProp('entry', updated);
-          if (this.logSaveTimer) window.clearTimeout(this.logSaveTimer);
-          this.logSaveTimer = window.setTimeout(async () => {
-            await this.service.save(updated);
-          }, 500);
-        });
-
         day.addEventListener('value-challenge-change', (evt: Event) => {
           const e = evt as CustomEvent<{ valueChallenge: ValueChallengePair }>;
           const updated: IJournalEntry = {
@@ -153,8 +147,23 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
             questionId: string;
             value: ResponseValue;
           }>;
-          const updated = await this.service.applyAnswer(this.props.entry!, e.detail);
-          this.setProp('entry', updated);
+          if (e.detail.sectionKind === 'journal-log') {
+            // Handle log save with debounce (same as old log-change handler)
+            const richTextValue = e.detail.value;
+            const logStr = richTextValue.kind === 'rich-text' ? richTextValue.value : '';
+            const updated: IJournalEntry = {
+              ...this.props.entry!,
+              log: logStr,
+            };
+            this.setProp('entry', updated);
+            if (this.logSaveTimer) window.clearTimeout(this.logSaveTimer);
+            this.logSaveTimer = window.setTimeout(async () => {
+              await this.service.save(updated);
+            }, 500);
+          } else {
+            const updated = await this.service.applyAnswer(this.props.entry!, e.detail);
+            this.setProp('entry', updated);
+          }
         });
       }
     } catch (err: unknown) {
@@ -178,6 +187,9 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
   }
 
   override render() {
+    // Spread translated labels into props — translation logic lives in helpers
+    Object.assign(this.props, getAppLabels(this.props.i18n));
+
     super.render();
 
     this.updateErrorVisibility();
@@ -260,19 +272,16 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
   private async onSettingChange(e: Event) {
     const sel = e.target as HTMLSelectElement | null;
     if (!sel) return;
-    const areaValueMap = await this.dataService.getAreaValueMap();
+    const areaValueMap = await getAreaValuePairs(this.props.i18n);
     // Prefer IndexedDB settings store when available, fallback to localStorage
-    const applySettingAndMaybeUpdate = async (
-      value: keyof typeof areaValueMap,
-      persistToLocal = false,
-    ) => {
+    const applySettingAndMaybeUpdate = async (value: string, persistToLocal = false) => {
       const day = this.shadowRoot?.querySelector('#day') as JournalDay | null;
       if (day) day.props.growthArea = value;
       if (day) day.render();
 
       // If current day is today, ensure the entry's valueChallenge is valid for the selected area
       if (this.props.date === this.today && this.props.entry) {
-        const allowed = areaValueMap[value];
+        const allowed = areaValueMap[value as keyof typeof areaValueMap];
         const allowedValues: string[] | undefined = Array.isArray(allowed)
           ? (allowed as string[])
           : undefined;
@@ -307,7 +316,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
     if (this.db) {
       try {
         await this.db.putSetting(this.SETTINGS_KEY, sel.value);
-        await applySettingAndMaybeUpdate(sel.value as keyof typeof areaValueMap);
+        await applySettingAndMaybeUpdate(sel.value as string);
         return;
       } catch {
         // fall through to localStorage fallback
@@ -315,7 +324,7 @@ export class JournalApp extends BaseComponent<JournalAppProps> {
     }
 
     // Fallback: persist to localStorage and apply setting
-    await applySettingAndMaybeUpdate(sel.value as keyof typeof areaValueMap, true);
+    await applySettingAndMaybeUpdate(sel.value as string, true);
   }
 }
 

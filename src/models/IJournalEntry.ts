@@ -6,6 +6,7 @@ export interface IJournalEntry {
   createdAt: string;
   updatedAt: string;
   log?: string;
+  journalLog?: ISectionState;
   morningIntention?: ISectionState;
   middayCheckin?: ISectionState;
   eveningReflection?: ISectionState;

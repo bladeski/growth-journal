@@ -45,8 +45,11 @@ export abstract class BaseComponent<
   /** Whether the initial template render has been completed. */
   private initialized = false;
 
-  /** Map of propName to bound DOM elements inside the shadow root. */
+  /** Map of propName to bound DOM elements inside the shadow root (text). */
   private bindings = new Map<string, HTMLElement[]>();
+
+  /** Map of propName to bound attribute entries (element + attribute name). */
+  private attrBindings = new Map<string, Array<{ el: Element; attr: string }>>();
 
   /** Optional array of raw styles strings or paths provided at construction. */
   private styles?: string[];
@@ -491,8 +494,11 @@ export abstract class BaseComponent<
       const regex = /\{\{\s*(\w+)\s*\}\}/g;
       let match;
 
+      // Collect attribute bindings so we can track them for reactive updates
+      const pendingAttrBindings: Array<{ propKey: string; attrName: string; markerId: string }> = [];
+
       while ((match = regex.exec(rawHtml)) !== null) {
-        const [fullMatch, key] = match;
+        const key = match[1]; // Extract the property name from the capture group
         const beforeMatch = rawHtml.slice(lastIndex, match.index);
         parts.push(beforeMatch);
 
@@ -503,9 +509,19 @@ export abstract class BaseComponent<
         const isInAttribute = lastOpenTag > lastCloseTag;
 
         if (isInAttribute) {
-          // In attribute: replace with actual value
-          const value = (this.props as Record<string, unknown>)[key];
-          parts.push(value == null ? '' : String(value));
+          // Determine which attribute this placeholder is inside
+          const tagFragment = rawHtml.slice(lastOpenTag + 1, match.index);
+          const attrMatch = tagFragment.match(/([\w-]+)\s*=\s*["'][^"']*$/);
+          if (attrMatch) {
+            // Use a unique marker so we can reliably identify each element later
+            const markerId = `__attrb_${pendingAttrBindings.length}__`;
+            parts.push(markerId);
+            pendingAttrBindings.push({ propKey: key, attrName: attrMatch[1], markerId });
+          } else {
+            // Fallback: substitute with actual value
+            const value = (this.props as Record<string, unknown>)[key];
+            parts.push(value == null ? '' : String(value));
+          }
         } else {
           // In text content: replace with data-bind span
           parts.push(`<span data-bind="${key}"></span>`);
@@ -552,7 +568,7 @@ export abstract class BaseComponent<
         logger.warn('BaseComponent: runtime data-href fallback failed', { error: e });
       }
 
-      // collect bindings and set initial values
+      // collect text bindings and set initial values
       const boundEls = this.shadowRoot.querySelectorAll<HTMLElement>('[data-bind]');
       boundEls.forEach((el) => {
         const key = el.getAttribute('data-bind');
@@ -564,13 +580,35 @@ export abstract class BaseComponent<
         el.textContent = v == null ? '' : String(v);
       });
 
+      // collect attribute bindings using unique markers for reliable matching
+      for (const { propKey, attrName, markerId } of pendingAttrBindings) {
+        const v = (this.props as Record<string, unknown>)[propKey];
+        const valueStr = v == null ? '' : String(v);
+        // Find the element with the unique marker and replace it with the actual value
+        const el = this.shadowRoot.querySelector(`[${attrName}="${markerId}"]`);
+        if (el) {
+          el.setAttribute(attrName, valueStr);
+          if (!this.attrBindings.has(propKey)) this.attrBindings.set(propKey, []);
+          const list = this.attrBindings.get(propKey)!;
+          if (!list.some((b) => b.el === el && b.attr === attrName)) {
+            list.push({ el, attr: attrName });
+          }
+        }
+      }
+
       this.bindActions();
       this.initialized = true;
     } else {
-      // subsequent render: update all bound nodes from current props
+      // subsequent render: update all bound text nodes from current props
       for (const [key, els] of this.bindings.entries()) {
         const v = (this.props as Record<string, unknown>)[key];
         for (const el of els) el.textContent = v == null ? '' : String(v);
+      }
+      // update all bound attributes from current props
+      for (const [key, entries] of this.attrBindings.entries()) {
+        const v = (this.props as Record<string, unknown>)[key];
+        const valueStr = v == null ? '' : String(v);
+        for (const { el, attr } of entries) el.setAttribute(attr, valueStr);
       }
     }
   }
@@ -584,14 +622,28 @@ export abstract class BaseComponent<
     if (!this.shadowRoot || !this.initialized) return;
 
     if (key) {
+      // text bindings
       const els = this.bindings.get(key as string) || [];
       const v = (this.props as Record<string, unknown>)[key as string];
       for (const el of els) el.textContent = v == null ? '' : String(v);
+
+      // attribute bindings
+      const attrEntries = this.attrBindings.get(key as string);
+      if (attrEntries) {
+        const valueStr = v == null ? '' : String(v);
+        for (const { el, attr } of attrEntries) el.setAttribute(attr, valueStr);
+      }
     } else {
-      // update all
+      // update all text
       for (const [k, els] of this.bindings.entries()) {
         const v = (this.props as Record<string, unknown>)[k];
         for (const el of els) el.textContent = v == null ? '' : String(v);
+      }
+      // update all attributes
+      for (const [k, entries] of this.attrBindings.entries()) {
+        const v = (this.props as Record<string, unknown>)[k];
+        const valueStr = v == null ? '' : String(v);
+        for (const { el, attr } of entries) el.setAttribute(attr, valueStr);
       }
     }
   }

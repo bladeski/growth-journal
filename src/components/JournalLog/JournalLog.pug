@@ -1,5 +1,5 @@
 section.section
   fieldset
-    legend Journal Log
-    button.add-entry(type="button" data-action="click:onAddJournalEntry" aria-label="Add new journal entry") + Add Entry
+    legend {{journalLogLegend}}
+    button.add-entry(type="button" data-action="click:onAddJournalEntry" aria-label="{{addEntryAria}}") + {{addEntryLabel}}
     rich-text-editor#richTextEditor

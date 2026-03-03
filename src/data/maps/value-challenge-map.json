@@ -35,7 +35,18 @@
     "ch-curiosity-9",
     "ch-curiosity-10"
   ],
-  "val-courage": ["ch-courage-1", "ch-courage-2", "ch-courage-3", "ch-courage-4", "ch-courage-5", "ch-courage-6", "ch-courage-7", "ch-courage-8", "ch-courage-9", "ch-courage-10"],
+  "val-courage": [
+    "ch-courage-1",
+    "ch-courage-2",
+    "ch-courage-3",
+    "ch-courage-4",
+    "ch-courage-5",
+    "ch-courage-6",
+    "ch-courage-7",
+    "ch-courage-8",
+    "ch-courage-9",
+    "ch-courage-10"
+  ],
   "val-discipline": [
     "ch-discipline-1",
     "ch-discipline-2",
@@ -60,7 +71,18 @@
     "ch-gratitude-9",
     "ch-gratitude-10"
   ],
-  "val-empathy": ["ch-empathy-1", "ch-empathy-2", "ch-empathy-3", "ch-empathy-4", "ch-empathy-5", "ch-empathy-6", "ch-empathy-7", "ch-empathy-8", "ch-empathy-9", "ch-empathy-10"],
+  "val-empathy": [
+    "ch-empathy-1",
+    "ch-empathy-2",
+    "ch-empathy-3",
+    "ch-empathy-4",
+    "ch-empathy-5",
+    "ch-empathy-6",
+    "ch-empathy-7",
+    "ch-empathy-8",
+    "ch-empathy-9",
+    "ch-empathy-10"
+  ],
   "val-creativity": [
     "ch-creativity-1",
     "ch-creativity-2",
@@ -145,8 +167,30 @@
     "ch-growth-mindset-9",
     "ch-growth-mindset-10"
   ],
-  "val-balance": ["ch-balance-1", "ch-balance-2", "ch-balance-3", "ch-balance-4", "ch-balance-5", "ch-balance-6", "ch-balance-7", "ch-balance-8", "ch-balance-9", "ch-balance-10"],
-  "val-respect": ["ch-respect-1", "ch-respect-2", "ch-respect-3", "ch-respect-4", "ch-respect-5", "ch-respect-6", "ch-respect-7", "ch-respect-8", "ch-respect-9", "ch-respect-10"],
+  "val-balance": [
+    "ch-balance-1",
+    "ch-balance-2",
+    "ch-balance-3",
+    "ch-balance-4",
+    "ch-balance-5",
+    "ch-balance-6",
+    "ch-balance-7",
+    "ch-balance-8",
+    "ch-balance-9",
+    "ch-balance-10"
+  ],
+  "val-respect": [
+    "ch-respect-1",
+    "ch-respect-2",
+    "ch-respect-3",
+    "ch-respect-4",
+    "ch-respect-5",
+    "ch-respect-6",
+    "ch-respect-7",
+    "ch-respect-8",
+    "ch-respect-9",
+    "ch-respect-10"
+  ],
   "val-perseverance": [
     "ch-perseverance-1",
     "ch-perseverance-2",

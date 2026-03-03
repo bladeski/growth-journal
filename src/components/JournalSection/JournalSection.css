@@ -22,3 +22,18 @@ section {
     }
   }
 }
+
+.rich-text-q {
+  height: 100%;
+
+  rich-text-editor {
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+}
+
+.add-entry {
+  width: max-content;
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary-contrast);
+}

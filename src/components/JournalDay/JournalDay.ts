@@ -11,9 +11,8 @@ import { nextMicrotask, whenUpgraded } from '../../utils/elements.ts';
 import { BaseComponent } from '../Base/BaseComponent.ts';
 import template from 'bundle-text:./JournalDay.pug';
 import styles from 'bundle-text:./JournalDay.css';
-import { JournalLog } from '../JournalLog/JournalLog.ts';
 import { JournalSection } from '../JournalSection/JournalSection.ts';
-import { getJournalDayTemplates } from '../../helpers/helpers.ts';
+import { getDayLabels, getDayEntryAriaLabel, getJournalDayTemplates } from '../../helpers/helpers.ts';
 import DataService from '../../services/data.service.ts';
 
 export interface JournalDayProps extends IPropTypes {
@@ -22,6 +21,14 @@ export interface JournalDayProps extends IPropTypes {
   date?: string;
   readonly?: boolean;
   growthArea?: string;
+  // Translated UI strings (set before render)
+  entryAriaLabel?: string;
+  focusAriaLabel?: string;
+  questionsAriaLabel?: string;
+  valueLabelPrefix?: string;
+  challengeLabelPrefix?: string;
+  valueText?: string;
+  challengeText?: string;
 }
 
 export class JournalDay extends BaseComponent<JournalDayProps> {
@@ -30,7 +37,6 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
 
   private sectionOpenedBound = false;
   private valueChallenge: ValueChallengePair | undefined;
-  private dataService = DataService.getInstance();
 
   constructor() {
     const templateFn = () => template;
@@ -55,9 +61,13 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
     ) as HTMLElement | undefined;
     if (!opened) return;
 
+    // The log section operates independently of the accordion
+    const logEl = this.shadowRoot.querySelector('#sec-log');
+    if (opened === logEl) return;
+
     const sections = Array.from(this.shadowRoot.querySelectorAll('journal-section'));
     for (const sec of sections) {
-      if (sec === opened) continue;
+      if (sec === opened || sec === logEl) continue;
       const controllable = sec as unknown as { setOpen?: (open: boolean) => void };
       controllable.setOpen?.(false);
     }
@@ -70,22 +80,23 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
       return;
     }
 
+    const i18n = this.props.i18n;
+
     // Update the date binding before calling super (so {{date}} resolves)
     this.props.date = this.props.entry.date;
+
+    // Spread translated labels into props — translation logic lives in helpers
+    Object.assign(this.props, getDayLabels(i18n));
+    this.props.entryAriaLabel = getDayEntryAriaLabel(i18n, this.props.date);
 
     super.render();
     // Hydrate after structural render
     this.hydrateChildren()
       .then(() => {
-        const valueLabel = this.shadowRoot?.querySelector('.value-label');
-        const challengeLabel = this.shadowRoot?.querySelector('.challenge-label');
-
-        const { i18n } = this.props;
-
-        if (valueLabel && this.valueChallenge)
-          valueLabel.textContent = `Value: ${t(i18n, this.valueChallenge.value) ?? ''}`;
-        if (challengeLabel && this.valueChallenge)
-          challengeLabel.textContent = `Challenge: ${t(i18n, this.valueChallenge.challenge) ?? ''}`;
+        if (this.valueChallenge) {
+          this.props.valueText = t(this.props.i18n, this.valueChallenge.value ?? '');
+          this.props.challengeText = t(this.props.i18n, this.valueChallenge.challenge ?? '');
+        }
       })
       .catch(() => {
         // swallow errors to avoid breaking render loop
@@ -99,16 +110,6 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
     // Give the browser a microtask to upgrade child custom elements
     await nextMicrotask();
 
-    const logEl = this.shadowRoot.querySelector('#log');
-    if (logEl) {
-      await whenUpgraded(logEl, 'journal-log');
-      const log = logEl as JournalLog;
-      log.props.i18n = i18n;
-      log.props.log = entry.log ?? '';
-      log.props.readonly = this.props.readonly;
-      log.render();
-    }
-
     // Use valueChallenge from entry if present, otherwise undefined
     const valueChallengeToUse = entry.valueChallenge;
     let isNewValueChallenge = false;
@@ -117,7 +118,8 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
     }
     // Determine allowed values for value-challenge selection from the passed-in growthArea prop
     let allowedValues: string[] | undefined;
-    const areaValueMap = await this.dataService.getAreaValueMap();
+    const dataService = DataService.getInstance();
+    const areaValueMap = await dataService.getAreaValueMap();
     const area: keyof typeof areaValueMap = (this.props.growthArea ??
       (typeof localStorage !== 'undefined'
         ? (localStorage.getItem('settings:growthArea') ?? 'area-none')
@@ -127,7 +129,7 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
       if (Array.isArray(vals)) allowedValues = vals as string[];
     }
 
-    const built = await getJournalDayTemplates(i18n, valueChallengeToUse, allowedValues);
+    const built = await getJournalDayTemplates(this.props.i18n, valueChallengeToUse, allowedValues);
     if (!built) return;
     this.valueChallenge = built.valueChallenge;
 
@@ -143,7 +145,20 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
       );
     }
 
-    const { morning, midday, evening, accountability } = built.templates;
+    const { morning, midday, evening, accountability, log: logTemplate } = built.templates;
+
+    // Build a synthetic ISectionState for the log from entry.log (string)
+    const logQuestionId = logTemplate.questions[0]?.id ?? 'journal-entry-text';
+    const logState: ISectionState = entry.journalLog ?? {
+      templateId: logTemplate.id,
+      kind: logTemplate.kind,
+      responses: [
+        {
+          questionId: logQuestionId,
+          ...(entry.log ? { response: { kind: 'rich-text' as const, value: entry.log } } : {}),
+        },
+      ],
+    };
 
     const rows: Array<{
       selector: string;
@@ -183,6 +198,19 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
           entry.accountability = s;
         },
       },
+      {
+        selector: '#sec-log',
+        template: logTemplate,
+        getState: () => logState,
+        setState: (s) => {
+          entry.journalLog = s;
+          // Also keep entry.log in sync for backward compatibility
+          const logResponse = s.responses.find((r) => r.questionId === logQuestionId);
+          if (logResponse?.response?.kind === 'rich-text') {
+            entry.log = logResponse.response.value;
+          }
+        },
+      },
     ];
 
     for (const row of rows) {
@@ -199,6 +227,12 @@ export class JournalDay extends BaseComponent<JournalDayProps> {
       journalSection.props.state = state;
       journalSection.props.readonly = this.props.readonly;
       journalSection.render();
+    }
+
+    // Default the log section to open
+    const logSection = this.shadowRoot.querySelector('#sec-log') as JournalSection | null;
+    if (logSection) {
+      logSection.setOpen(true);
     }
   }
 }

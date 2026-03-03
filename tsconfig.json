@@ -11,7 +11,8 @@
     "lib": ["es2021", "dom", "webworker"],
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["jest", "node"]
   },
   "include": ["src/**/*", "scripts/build-dictionaries.js"],
   "exclude": ["node_modules", "dist"]

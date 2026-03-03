@@ -1,5 +1,5 @@
 import { BaseComponent } from '../../../src/components/Base/BaseComponent';
-import { jest } from '@jest/globals';
+import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
 describe('BaseComponent core behavior', () => {
   beforeEach(() => {
