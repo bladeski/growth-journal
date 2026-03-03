@@ -49,10 +49,8 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
 
   /** Keep textarea in sync with props.log */
   override render(): void {
-    // Spread translated toolbar labels into props
-    if (this.props.i18n) {
-      Object.assign(this.props, RichTextEditor.getLabels(this.props.i18n));
-    }
+    // Spread translated toolbar labels into props (with safe fallbacks even if i18n is missing)
+    Object.assign(this.props, RichTextEditor.getLabels(this.props.i18n));
 
     super.render();
     StarterKit.configure({
@@ -215,12 +213,13 @@ export class RichTextEditor extends BaseComponent<RichTextEditorProps, RichTextE
   }
 
   /** Resolve toolbar labels from i18n, falling back to English defaults. */
-  private static tr(i18n: I18n, key: string, fallback: string): string {
+  private static tr(i18n: I18n | undefined, key: string, fallback: string): string {
+    if (!i18n) return fallback;
     const resolved = t(i18n, key);
     return resolved === key ? fallback : resolved;
   }
 
-  private static getLabels(i18n: I18n) {
+  private static getLabels(i18n?: I18n) {
     const r = RichTextEditor.tr;
     return {
       toolbarAriaLabel: r(i18n, 'rte.toolbar', 'Text formatting'),
