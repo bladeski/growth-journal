@@ -1,4 +1,4 @@
-import { LoggingService } from '@bladeski/logger';
+import { LoggingService } from '@bladeski/logger/dist/LoggingService.js';
 import baseStyles from 'bundle-text:../../styles/base.css';
 import { IBaseComponent, IPropTypes } from '../../models/index.ts';
 
@@ -495,7 +495,8 @@ export abstract class BaseComponent<
       let match;
 
       // Collect attribute bindings so we can track them for reactive updates
-      const pendingAttrBindings: Array<{ propKey: string; attrName: string; markerId: string }> = [];
+      const pendingAttrBindings: Array<{ propKey: string; attrName: string; markerId: string }> =
+        [];
 
       while ((match = regex.exec(rawHtml)) !== null) {
         const key = match[1]; // Extract the property name from the capture group

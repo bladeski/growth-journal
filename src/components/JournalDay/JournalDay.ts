@@ -12,7 +12,11 @@ import { BaseComponent } from '../Base/BaseComponent.ts';
 import template from 'bundle-text:./JournalDay.pug';
 import styles from 'bundle-text:./JournalDay.css';
 import { JournalSection } from '../JournalSection/JournalSection.ts';
-import { getDayLabels, getDayEntryAriaLabel, getJournalDayTemplates } from '../../helpers/helpers.ts';
+import {
+  getDayLabels,
+  getDayEntryAriaLabel,
+  getJournalDayTemplates,
+} from '../../helpers/helpers.ts';
 import DataService from '../../services/data.service.ts';
 
 export interface JournalDayProps extends IPropTypes {

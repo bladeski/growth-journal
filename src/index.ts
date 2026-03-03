@@ -1,4 +1,4 @@
-import { LoggingService } from '@bladeski/logger';
+import { LoggingService } from '@bladeski/logger/dist/LoggingService.js';
 import type { PWAManager } from './utils/PwaManager.ts';
 import { ILoggingConfigurationOptions } from '@bladeski/logger/dist/interfaces/index.js';
 

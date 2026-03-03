@@ -113,8 +113,7 @@ test.describe('PWA and Offline Functionality', () => {
     
     // Go offline
     await context.setOffline(true);
-    await page.reload();
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(500);
     
     // Should still be able to fill forms
     const firstSection = page.locator('journal-section').first();

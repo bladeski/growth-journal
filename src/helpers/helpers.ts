@@ -247,5 +247,3 @@ export function getDayLabels(i18n: I18n): DayLabels {
 export function getDayEntryAriaLabel(i18n: I18n, date: string): string {
   return `${tr(i18n, 'journal.day.entryAria', 'Journal entry for')} ${date}`;
 }
-
-

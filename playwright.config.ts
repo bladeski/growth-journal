@@ -2,7 +2,8 @@ import { defineConfig } from '@playwright/test';
 import path from 'path';
 
 export default defineConfig({
-  testDir: './tests',
+  // Only run Playwright specs, not Jest suites
+  testDir: './tests/playwright',
   // Store Playwright artifacts in a dedicated folder to avoid accidental cleanup
   outputDir: path.join(process.cwd(), 'playwright-artifacts'),
   retries: 1,
@@ -13,6 +14,8 @@ export default defineConfig({
     viewport: { width: 1280, height: 800 },
     actionTimeout: 30_000,
     navigationTimeout: 60_000,
+    // Use system-installed Microsoft Edge to avoid downloading bundled Chromium
+    channel: 'msedge',
     // Capture trace for every test run in CI to ensure artifacts are available
     // (use 'on' so traces exist even when retries don't occur).
     trace: 'on',

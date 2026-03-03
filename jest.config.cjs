@@ -36,6 +36,7 @@ module.exports = {
     '^bundle-text:(.*)$': '<rootDir>/tests/__mocks__/textMock.mjs',
     '\\.(css|pug)$': '<rootDir>/tests/__mocks__/fileMock.mjs',
     '^@bladeski/logger$': '<rootDir>/__mocks__/@bladeski/logger.js',
+    '^@bladeski/logger/.*$': '<rootDir>/__mocks__/@bladeski/logger.js',
   },
   testMatch: ['<rootDir>/tests/jest/**/*.test.ts'],
   // Load test-environment helpers (TextEncoder/TextDecoder shim)

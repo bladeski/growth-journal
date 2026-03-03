@@ -9,10 +9,10 @@ test.describe('Journal Sections', () => {
     await page.waitForSelector('journal-day', { timeout: 10000 });
   });
 
-  test('should display all four main sections', async ({ page }) => {
+  test('should display all five main sections', async ({ page }) => {
     // Wait for sections to be rendered
     const sections = page.locator('journal-section');
-    await expect(sections).toHaveCount(4, { timeout: 10000 });
+    await expect(sections).toHaveCount(5, { timeout: 10000 });
   });
 
   test('should display section titles', async ({ page }) => {

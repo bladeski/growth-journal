@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 declare const self: ServiceWorkerGlobalScope;
 
-import { LoggingService } from '@bladeski/logger/dist/index.js';
+import { LoggingService } from '@bladeski/logger/dist/LoggingService.js';
 
 // Initialize logging proxy in the SW scope. Use console as a safe fallback.
 let Logger: Console | LoggingService = console;

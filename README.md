@@ -33,6 +33,16 @@ npm run lint
 npm run format
 ```
 
+## Documentation
+
+High-level docs live in the documentation folder; start here for translation flow, component patterns, styling approach, and services/data plumbing.
+
+- [documentation/README.md](documentation/README.md) — index
+- [documentation/language-i18n.md](documentation/language-i18n.md) — translations, helpers, rebuild/test steps
+- [documentation/components.md](documentation/components.md) — BaseComponent patterns, key components, translation flow
+- [documentation/styling.md](documentation/styling.md) — global vs scoped styles, variables, rich text editor styling
+- [documentation/services.md](documentation/services.md) — data/journal services, storage helpers, common commands
+
 ## What this project contains
 
 - PWA integration: `manifest.json` + `src/sw.ts` (service worker that coordinates data storage and sync)

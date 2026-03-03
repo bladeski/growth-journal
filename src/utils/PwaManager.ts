@@ -3,7 +3,7 @@
  * Handles service worker registration, installation prompts, and offline functionality
  */
 
-import { LoggingService } from '@bladeski/logger';
+import { LoggingService } from '@bladeski/logger/dist/LoggingService.js';
 
 const logger = LoggingService.getInstance();
 
